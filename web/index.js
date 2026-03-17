@@ -38,15 +38,221 @@ const RECIPES = [
   {id:"10",name:"Garlic Mashed Potatoes",ingredients:[{name:"Potato",amount:500,unit:"g"},{name:"Butter",amount:60,unit:"g"},{name:"Milk",amount:100,unit:"ml"},{name:"Garlic",amount:3,unit:"pcs"},{name:"Salt",amount:1,unit:"tsp"},{name:"Pepper",amount:0.5,unit:"tsp"}]}
 ];
 
+const DEFAULT_UNITS = ["g", "kg", "ml", "L", "cups", "tbsp", "tsp", "pcs"];
+
+const INGREDIENT_UNIT_RULES = {
+  "Chicken Breast": ["g", "kg"],
+  "Chicken Thigh": ["g", "kg"],
+  "Ground Beef": ["g", "kg"],
+  "Salmon": ["g", "kg"],
+  "Shrimp": ["g", "kg"],
+  "Tofu": ["g", "kg"],
+  "Rice": ["g", "kg", "cups"],
+  "Pasta": ["g", "kg", "cups"],
+  "Bread": ["pcs"],
+  "Flour": ["g", "kg", "cups", "tbsp", "tsp"],
+  "Sugar": ["g", "kg", "cups", "tbsp", "tsp"],
+  "Salt": ["g", "kg", "tbsp", "tsp"],
+  "Pepper": ["g", "tbsp", "tsp"],
+  "Olive Oil": ["ml", "L", "tbsp", "tsp"],
+  "Vegetable Oil": ["ml", "L", "tbsp", "tsp"],
+  "Butter": ["g", "kg", "tbsp"],
+  "Milk": ["ml", "L"],
+  "Heavy Cream": ["ml", "L"],
+  "Eggs": ["pcs"],
+  "Onion": ["pcs", "g", "kg"],
+  "Garlic": ["pcs", "g"],
+  "Tomato": ["pcs", "g", "kg"],
+  "Potato": ["pcs", "g", "kg"],
+  "Carrot": ["pcs", "g", "kg"],
+  "Broccoli": ["pcs", "g", "kg"],
+  "Spinach": ["g", "kg", "cups"],
+  "Bell Pepper": ["pcs", "g"],
+  "Mushroom": ["g", "kg", "pcs"],
+  "Zucchini": ["pcs", "g", "kg"],
+  "Cucumber": ["pcs", "g", "kg"],
+  "Lettuce": ["pcs"],
+  "Corn": ["pcs", "g"],
+  "Cheese": ["g", "kg"],
+  "Mozzarella": ["g", "kg"],
+  "Parmesan": ["g", "kg", "tbsp"],
+  "Cheddar": ["g", "kg"],
+  "Soy Sauce": ["ml", "L", "tbsp", "tsp"],
+  "Vinegar": ["ml", "L", "tbsp", "tsp"],
+  "Lemon": ["pcs"],
+  "Lime": ["pcs"],
+  "Ginger": ["g", "kg"],
+  "Cumin": ["g", "tbsp", "tsp"],
+  "Paprika": ["g", "tbsp", "tsp"],
+  "Oregano": ["g", "tbsp", "tsp"],
+  "Basil": ["g", "tbsp", "tsp"],
+  "Thyme": ["g", "tbsp", "tsp"],
+  "Rosemary": ["g", "tbsp", "tsp"],
+  "Chili Flakes": ["g", "tbsp", "tsp"],
+  "Chickpeas": ["g", "kg", "cups"],
+  "Black Beans": ["g", "kg", "cups"],
+  "Lentils": ["g", "kg", "cups"],
+  "Coconut Milk": ["ml", "L"],
+  "Honey": ["ml", "tbsp", "tsp"],
+  "Maple Syrup": ["ml", "tbsp", "tsp"],
+  "Vanilla Extract": ["ml", "tbsp", "tsp"],
+  "Baking Powder": ["g", "tbsp", "tsp"],
+  "Baking Soda": ["g", "tbsp", "tsp"],
+  "Avocado": ["pcs", "g"],
+  "Sweet Potato": ["pcs", "g", "kg"],
+  "Celery": ["pcs", "g"],
+  "Green Beans": ["g", "kg"],
+  "Peas": ["g", "kg", "cups"]
+};
+
+const UNIT_GROUPS = {
+  g: "weight",
+  kg: "weight",
+  ml: "volume",
+  L: "volume",
+  tbsp: "volume",
+  tsp: "volume",
+  cups: "volume",
+  pcs: "count"
+};
+
 // ── STATE ──────────────────────────────────────────────────────
 let searchIngs = [];
 
+// ── UNIT HELPERS ───────────────────────────────────────────────
+function findCanonicalIngredientName(name) {
+  const trimmed = (name || '').trim();
+  if (!trimmed) return '';
+  const exact = ALL_ING.find(i => i === trimmed);
+  if (exact) return exact;
+  const insensitive = ALL_ING.find(i => i.toLowerCase() === trimmed.toLowerCase());
+  return insensitive || trimmed;
+}
+
+function getAllowedUnits(name) {
+  const canonical = findCanonicalIngredientName(name);
+  return INGREDIENT_UNIT_RULES[canonical] || DEFAULT_UNITS;
+}
+
+function isUnitAllowed(name, unit) {
+  return getAllowedUnits(name).includes(unit);
+}
+
+function refreshUnitOptions() {
+  const name = document.getElementById('ingName')?.value.trim() || '';
+  const unitSelect = document.getElementById('ingUnit');
+  if (!unitSelect) return;
+
+  const allowed = getAllowedUnits(name);
+  const current = unitSelect.value;
+
+  unitSelect.innerHTML = allowed
+    .map(unit => `<option value="${unit}">${unit}</option>`)
+    .join('');
+
+  unitSelect.value = allowed.includes(current) ? current : allowed[0];
+}
+
+function convertToBase(amount, unit) {
+  const value = parseFloat(amount) || 0;
+
+  switch (unit) {
+    case 'kg':
+      return { value: value * 1000, base: 'g', group: 'weight' };
+    case 'g':
+      return { value, base: 'g', group: 'weight' };
+    case 'L':
+      return { value: value * 1000, base: 'ml', group: 'volume' };
+    case 'ml':
+      return { value, base: 'ml', group: 'volume' };
+    case 'tbsp':
+      return { value: value * 15, base: 'ml', group: 'volume' };
+    case 'tsp':
+      return { value: value * 5, base: 'ml', group: 'volume' };
+    case 'cups':
+      return { value: value * 240, base: 'ml', group: 'volume' };
+    case 'pcs':
+      return { value, base: 'pcs', group: 'count' };
+    default:
+      return { value, base: unit, group: UNIT_GROUPS[unit] || 'other' };
+  }
+}
+
+function calculateCoverage(haveAmount, haveUnit, needAmount, needUnit) {
+  const have = convertToBase(haveAmount, haveUnit);
+  const need = convertToBase(needAmount, needUnit);
+
+  if (!need.value) {
+    return { status: 'have', ratio: 1, haveText: `${haveAmount} ${haveUnit}` };
+  }
+
+  if (have.group !== need.group) {
+    return { status: 'missing', ratio: 0, haveText: `${haveAmount} ${haveUnit}` };
+  }
+
+  const ratio = have.value / need.value;
+  if (ratio >= 1) {
+    return { status: 'have', ratio: 1, haveText: `${haveAmount} ${haveUnit}` };
+  }
+
+  if (ratio > 0) {
+    return { status: 'partial', ratio, haveText: `${haveAmount} ${haveUnit}` };
+  }
+
+  return { status: 'missing', ratio: 0, haveText: `${haveAmount} ${haveUnit}` };
+}
+
+function combineIngredientEntries(entries) {
+  const map = {};
+
+  entries.forEach(entry => {
+    const canonicalName = findCanonicalIngredientName(entry.name);
+    const key = canonicalName.toLowerCase();
+    const amount = parseFloat(entry.amount) || 0;
+    const unit = entry.unit;
+
+    if (!canonicalName || !amount || !unit || !isUnitAllowed(canonicalName, unit)) return;
+
+    const converted = convertToBase(amount, unit);
+    if (!map[key]) {
+      map[key] = {
+        name: canonicalName,
+        group: converted.group,
+        totalBase: 0,
+        displayAmount: amount,
+        displayUnit: unit
+      };
+    }
+
+    if (map[key].group !== converted.group) return;
+
+    map[key].totalBase += converted.value;
+    map[key].displayAmount = Math.round(amount * 1000) / 1000;
+    map[key].displayUnit = unit;
+  });
+
+  return map;
+}
+
+function sanitizeIngredientList(entries) {
+  const cleaned = [];
+
+  entries.forEach(entry => {
+    const canonicalName = findCanonicalIngredientName(entry.name);
+    const amount = Math.round((parseFloat(entry.amount) || 0) * 1000) / 1000;
+    const allowedUnits = getAllowedUnits(canonicalName);
+    const unit = allowedUnits.includes(entry.unit) ? entry.unit : allowedUnits[0];
+
+    if (!canonicalName || !amount || amount <= 0) return;
+    cleaned.push({ name: canonicalName, amount, unit });
+  });
+
+  return cleaned;
+}
+
 // ── INVENTORY MAP ──────────────────────────────────────────────
 function getInvMap() {
-  const inv = loadUserIng();
-  const m = {};
-  inv.forEach(i => { m[i.name.toLowerCase()] = parseFloat(i.amount) || 0; });
-  return m;
+  return combineIngredientEntries(loadUserIng());
 }
 
 // ── COMMON INGREDIENTS GRID ────────────────────────────────────
@@ -59,6 +265,7 @@ function buildCommonGrid() {
     b.innerHTML = `<span>${c.icon}</span><span>${c.name}</span>`;
     b.onclick = () => {
       document.getElementById('ingName').value = c.name;
+      refreshUnitOptions();
       document.getElementById('ingQty').focus();
     };
     grid.appendChild(b);
@@ -78,6 +285,7 @@ function initAutofill() {
 
   input.addEventListener('input', function () {
     validateForm();
+    refreshUnitOptions();
     const val = this.value.trim();
     box.innerHTML = '';
     if (val.length < 2) { box.style.display = 'none'; return; }
@@ -86,9 +294,18 @@ function initAutofill() {
     hits.forEach((h, idx) => {
       const d = document.createElement('div');
       d.className = 'sug-item'; d.textContent = h; d.tabIndex = 0;
-      d.addEventListener('mousedown', () => { input.value = h; box.style.display = 'none'; document.getElementById('ingQty').focus(); });
+      d.addEventListener('mousedown', () => {
+        input.value = h;
+        refreshUnitOptions();
+        box.style.display = 'none';
+        document.getElementById('ingQty').focus();
+      });
       d.addEventListener('keydown', e => {
-        if (e.key === 'Enter') { input.value = h; box.style.display = 'none'; }
+        if (e.key === 'Enter') {
+          input.value = h;
+          refreshUnitOptions();
+          box.style.display = 'none';
+        }
         if (e.key === 'ArrowDown' && box.children[idx + 1]) box.children[idx + 1].focus();
         if (e.key === 'ArrowUp') { if (idx === 0) input.focus(); else box.children[idx - 1].focus(); }
       });
@@ -128,20 +345,34 @@ function validateForm() {
 
 // ── ADD / REMOVE ───────────────────────────────────────────────
 function addIng() {
-  const name = document.getElementById('ingName').value.trim();
+  const rawName = document.getElementById('ingName').value.trim();
+  const name = findCanonicalIngredientName(rawName);
   const qty  = parseFloat(document.getElementById('ingQty').value);
   const unit = document.getElementById('ingUnit').value;
 
-  // Guard — should not be callable when disabled, but double-check
   if (!name || isNaN(qty) || qty <= 0) {
     validateForm();
     return;
   }
 
-  const ex = searchIngs.findIndex(i => i.name.toLowerCase() === name.toLowerCase());
-  if (ex >= 0) { searchIngs[ex].amount = (parseFloat(searchIngs[ex].amount) || 0) + qty; }
-  else searchIngs.push({ name, amount: qty, unit });
+  if (!isUnitAllowed(name, unit)) {
+    showToast(`⚠️ "${name}" negali būti matuojamas vienetu "${unit}".`);
+    refreshUnitOptions();
+    return;
+  }
 
+  const ex = searchIngs.findIndex(i => i.name.toLowerCase() === name.toLowerCase());
+  if (ex >= 0) {
+    if (searchIngs[ex].unit !== unit) {
+      showToast(`⚠️ "${name}" jau pridėtas su kitu vienetu (${searchIngs[ex].unit}).`);
+      return;
+    }
+    searchIngs[ex].amount = Math.round(((parseFloat(searchIngs[ex].amount) || 0) + qty) * 1000) / 1000;
+  } else {
+    searchIngs.push({ name, amount: Math.round(qty * 1000) / 1000, unit });
+  }
+
+  searchIngs = sanitizeIngredientList(searchIngs);
   persistSearchIngs();
   clearForm();
   renderChips();
@@ -149,13 +380,7 @@ function addIng() {
 }
 
 function persistSearchIngs() {
-  const saved = loadUserIng();
-  searchIngs.forEach(si => {
-    const ex = saved.findIndex(s => s.name.toLowerCase() === si.name.toLowerCase());
-    if (ex >= 0) saved[ex].amount = si.amount ?? saved[ex].amount;
-    else saved.push({ name: si.name, amount: si.amount, unit: si.unit });
-  });
-  saveUserIng(saved);
+  saveUserIng(sanitizeIngredientList(searchIngs));
 }
 
 function clearForm() {
@@ -164,13 +389,13 @@ function clearForm() {
   document.getElementById('suggestions').style.display = 'none';
   document.getElementById('ingName').classList.remove('field-err');
   document.getElementById('ingQty').classList.remove('field-err');
+  refreshUnitOptions();
   validateForm();
 }
 
 function removeIng(idx) {
-  const removed = searchIngs.splice(idx, 1)[0];
-  const saved = loadUserIng().filter(s => s.name.toLowerCase() !== removed.name.toLowerCase());
-  saveUserIng(saved);
+  searchIngs.splice(idx, 1);
+  persistSearchIngs();
   renderChips();
   runSearch();
 }
@@ -194,24 +419,36 @@ function renderChips() {
 
 // ── RECIPE MATCHING ────────────────────────────────────────────
 function matchRecipes() {
-  const inv = getInvMap();
-  const userQty = {};
-  searchIngs.forEach(i => { userQty[i.name.toLowerCase()] = parseFloat(i.amount) || 0; });
-  Object.entries(inv).forEach(([k, v]) => { userQty[k] = (userQty[k] || 0) + v; });
-  const userNames = new Set(Object.keys(userQty));
+  const userMap = combineIngredientEntries([...loadUserIng(), ...searchIngs]);
 
   return RECIPES.map(recipe => {
     let score = 0;
     const details = recipe.ingredients.map(ri => {
       const key = ri.name.toLowerCase();
-      if (!userNames.has(key)) return { ...ri, status: 'missing' };
-      const have = userQty[key];
-      if (ri.amount && have < ri.amount) { score += have / ri.amount; return { ...ri, status: 'partial', have }; }
-      score += 1;
-      return { ...ri, status: 'have' };
+      const have = userMap[key];
+
+      if (!have) return { ...ri, status: 'missing' };
+
+      const coverage = calculateCoverage(have.displayAmount, have.displayUnit, ri.amount, ri.unit);
+      score += coverage.ratio;
+
+      return {
+        ...ri,
+        status: coverage.status,
+        have: have.displayAmount,
+        haveUnit: have.displayUnit,
+        haveText: coverage.haveText
+      };
     });
+
     const pct = Math.round((score / recipe.ingredients.length) * 100);
-    return { recipe, pct, details, missing: details.filter(d => d.status === 'missing'), partial: details.filter(d => d.status === 'partial') };
+    return {
+      recipe,
+      pct,
+      details,
+      missing: details.filter(d => d.status === 'missing'),
+      partial: details.filter(d => d.status === 'partial')
+    };
   }).filter(r => r.pct > 0).sort((a, b) => b.pct - a.pct);
 }
 
@@ -242,11 +479,15 @@ function runSearch() {
     const pc = complete ? 'pct-high' : r.pct >= 40 ? 'pct-mid' : 'pct-low';
     const bc = complete ? 'prog-high' : r.pct >= 40 ? 'prog-mid' : 'prog-low';
     const mTags = r.missing.map(m => `<span class="tag tag-missing">${m.name}</span>`).join('');
-    const pTags = r.partial.map(p => `<span class="tag tag-partial">${p.name} (${p.have || '?'}/${p.amount} ${p.unit})</span>`).join('');
+    const pTags = r.partial.map(p => `<span class="tag tag-partial">${p.name} (${p.haveText}/${p.amount} ${p.unit})</span>`).join('');
     const allHaveTags = r.details.map(d => `<span class="tag tag-have">${d.name}</span>`).join('');
     const detailRows = r.details.map(d => {
       const dc = d.status === 'have' ? 'dot-have' : d.status === 'partial' ? 'dot-partial' : 'dot-missing';
-      const qt = d.status === 'partial' ? `${d.have || '?'}/${d.amount} ${d.unit}` : `${d.amount} ${d.unit}`;
+      const qt = d.status === 'partial'
+        ? `${d.haveText}/${d.amount} ${d.unit}`
+        : d.status === 'have'
+          ? `${d.haveText}`
+          : `${d.amount} ${d.unit}`;
       return `<div class="detail-row"><span class="detail-name">${d.name}</span><span class="detail-right"><span class="detail-qty">${qt}</span><span class="status-dot ${dc}"></span></span></div>`;
     }).join('');
 
@@ -288,12 +529,14 @@ function toggleDetail(id) {
 document.addEventListener('DOMContentLoaded', () => {
   buildCommonGrid();
   initAutofill();
-  validateForm(); // ensure button starts disabled
+  refreshUnitOptions();
+  validateForm();
 
-  // Restore saved ingredients for this user
-  const saved = loadUserIng();
+  const saved = sanitizeIngredientList(loadUserIng());
+  searchIngs = saved;
+  saveUserIng(saved);
+
   if (saved.length > 0) {
-    searchIngs = saved.map(i => ({ name: i.name, amount: i.amount, unit: i.unit }));
     renderChips();
     runSearch();
   }
