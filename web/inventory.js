@@ -2,11 +2,93 @@
 // PantryChef — Inventory Page Logic
 // ============================================================
 
+const INVENTORY_DEFAULT_UNITS = ["g", "kg", "ml", "L", "cups", "tbsp", "tsp", "pcs"];
+const INVENTORY_UNIT_RULES = {
+  "Chicken Breast": ["g", "kg"],
+  "Chicken Thigh": ["g", "kg"],
+  "Ground Beef": ["g", "kg"],
+  "Salmon": ["g", "kg"],
+  "Shrimp": ["g", "kg"],
+  "Tofu": ["g", "kg"],
+  "Rice": ["g", "kg", "cups"],
+  "Pasta": ["g", "kg", "cups"],
+  "Bread": ["pcs"],
+  "Flour": ["g", "kg", "cups", "tbsp", "tsp"],
+  "Sugar": ["g", "kg", "cups", "tbsp", "tsp"],
+  "Salt": ["g", "kg", "tbsp", "tsp"],
+  "Pepper": ["g", "tbsp", "tsp"],
+  "Olive Oil": ["ml", "L", "tbsp", "tsp"],
+  "Vegetable Oil": ["ml", "L", "tbsp", "tsp"],
+  "Butter": ["g", "kg", "tbsp"],
+  "Milk": ["ml", "L"],
+  "Heavy Cream": ["ml", "L"],
+  "Eggs": ["pcs"],
+  "Onion": ["pcs", "g", "kg"],
+  "Garlic": ["pcs", "g"],
+  "Tomato": ["pcs", "g", "kg"],
+  "Potato": ["pcs", "g", "kg"],
+  "Carrot": ["pcs", "g", "kg"],
+  "Broccoli": ["pcs", "g", "kg"],
+  "Spinach": ["g", "kg", "cups"],
+  "Bell Pepper": ["pcs", "g"],
+  "Mushroom": ["g", "kg", "pcs"],
+  "Zucchini": ["pcs", "g", "kg"],
+  "Cucumber": ["pcs", "g", "kg"],
+  "Lettuce": ["pcs"],
+  "Corn": ["pcs", "g"],
+  "Cheese": ["g", "kg"],
+  "Mozzarella": ["g", "kg"],
+  "Parmesan": ["g", "kg", "tbsp"],
+  "Cheddar": ["g", "kg"],
+  "Soy Sauce": ["ml", "L", "tbsp", "tsp"],
+  "Vinegar": ["ml", "L", "tbsp", "tsp"],
+  "Lemon": ["pcs"],
+  "Lime": ["pcs"],
+  "Ginger": ["g", "kg"],
+  "Cumin": ["g", "tbsp", "tsp"],
+  "Paprika": ["g", "tbsp", "tsp"],
+  "Oregano": ["g", "tbsp", "tsp"],
+  "Basil": ["g", "tbsp", "tsp"],
+  "Thyme": ["g", "tbsp", "tsp"],
+  "Rosemary": ["g", "tbsp", "tsp"],
+  "Chili Flakes": ["g", "tbsp", "tsp"],
+  "Chickpeas": ["g", "kg", "cups"],
+  "Black Beans": ["g", "kg", "cups"],
+  "Lentils": ["g", "kg", "cups"],
+  "Coconut Milk": ["ml", "L"],
+  "Honey": ["ml", "tbsp", "tsp"],
+  "Maple Syrup": ["ml", "tbsp", "tsp"],
+  "Vanilla Extract": ["ml", "tbsp", "tsp"],
+  "Baking Powder": ["g", "tbsp", "tsp"],
+  "Baking Soda": ["g", "tbsp", "tsp"],
+  "Avocado": ["pcs", "g"],
+  "Sweet Potato": ["pcs", "g", "kg"],
+  "Celery": ["pcs", "g"],
+  "Green Beans": ["g", "kg"],
+  "Peas": ["g", "kg", "cups"]
+};
+
 let items     = [];
 let undoStack = null;
 let undoTimer = null;
 
-function save() { saveUserIng(items); }
+function inventoryAllowedUnits(name) {
+  return INVENTORY_UNIT_RULES[name] || INVENTORY_DEFAULT_UNITS;
+}
+
+function sanitizeInventory(entries) {
+  return entries
+    .map(entry => {
+      const amount = Math.round((parseFloat(entry.amount) || 0) * 1000) / 1000;
+      const unit = inventoryAllowedUnits(entry.name).includes(entry.unit)
+        ? entry.unit
+        : inventoryAllowedUnits(entry.name)[0];
+      return amount > 0 ? { ...entry, amount, unit } : null;
+    })
+    .filter(Boolean);
+}
+
+function save() { saveUserIng(sanitizeInventory(items)); }
 
 // ── RENDER ────────────────────────────────────────────────────
 function render() {
@@ -35,7 +117,6 @@ function render() {
       </div>
 
       <div class="inv-ctrl">
-        <!-- Current total amount (editable) -->
         <div class="inv-current" id="cur-${ri}">
           <span class="cur-label">In stock:</span>
           <input
@@ -50,7 +131,6 @@ function render() {
           >
         </div>
 
-        <!-- Step controls: − [step input] + -->
         <div class="inv-step">
           <button class="btn-qty btn-minus" onclick="applyStep(${ri}, -1)" title="Subtract">−</button>
           <input
@@ -69,7 +149,6 @@ function render() {
       <button class="btn-rm" onclick="askRemove(${ri})" title="Remove">✕</button>`;
     list.appendChild(d);
 
-    // Dynamically resize the "In stock" input to fit its content
     const curInp = d.querySelector('.cur-val-inp');
     if (curInp) {
       const resize = (el) => { el.style.width = Math.max(2, el.value.length + 0.5) + 'ch'; };
@@ -79,13 +158,10 @@ function render() {
   });
 }
 
-// ── APPLY STEP ────────────────────────────────────────────────
-// Reads the step input, adds or subtracts from current amount.
 function applyStep(idx, direction) {
   const stepEl  = document.getElementById(`step-${idx}`);
   const step    = parseFloat(stepEl.value);
 
-  // Validate step
   if (isNaN(step) || step <= 0) {
     stepEl.classList.add('inp-err');
     setTimeout(() => stepEl.classList.remove('inp-err'), 1200);
@@ -95,7 +171,6 @@ function applyStep(idx, direction) {
   const current = parseFloat(items[idx].amount) || 0;
   const newVal  = current + direction * step;
 
-  // Prevent negative amounts
   if (newVal < 0) {
     stepEl.classList.add('inp-err');
     showToast(`⚠️ Can't go below 0. You only have ${current} ${items[idx].unit}.`);
@@ -103,10 +178,9 @@ function applyStep(idx, direction) {
     return;
   }
 
-  items[idx].amount = Math.round(newVal * 1000) / 1000; // avoid floating point noise
+  items[idx].amount = Math.round(newVal * 1000) / 1000;
   save();
 
-  // Update just the displayed amount without full re-render (smooth UX)
   const curEl = document.getElementById(`cur-${idx}`);
   if (curEl) {
     const inp = curEl.querySelector('.cur-val-inp');
@@ -115,8 +189,6 @@ function applyStep(idx, direction) {
   }
 }
 
-// ── SET DIRECTLY ──────────────────────────────────────────────
-// Called when user edits the "In stock" field directly.
 function setDirect(idx, val) {
   const n = parseFloat(val);
   const inp = document.getElementById(`cur-${idx}`)?.querySelector('.cur-val-inp');
@@ -132,7 +204,6 @@ function setDirect(idx, val) {
   save();
 }
 
-// ── REMOVE + CONFIRM + UNDO ───────────────────────────────────
 function askRemove(idx) {
   document.getElementById('dlgMsg').textContent = `Remove "${items[idx].name}" from inventory?`;
   document.getElementById('overlay').classList.add('show');
@@ -168,9 +239,9 @@ function undoRemove() {
   undoStack = null;
 }
 
-// ── INIT ─────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  items = loadUserIng();
+  items = sanitizeInventory(loadUserIng());
+  saveUserIng(items);
   document.getElementById('search').addEventListener('input', render);
   document.getElementById('overlay').addEventListener('click', e => {
     if (e.target === document.getElementById('overlay'))
