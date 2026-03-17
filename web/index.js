@@ -77,6 +77,7 @@ function initAutofill() {
   if (!input || !box) return;
 
   input.addEventListener('input', function () {
+    validateForm();
     const val = this.value.trim();
     box.innerHTML = '';
     if (val.length < 2) { box.style.display = 'none'; return; }
@@ -106,20 +107,39 @@ function initAutofill() {
     if (!e.target.closest('.af-wrap')) box.style.display = 'none';
   });
 
+  document.getElementById('ingQty').addEventListener('input', validateForm);
   document.getElementById('ingQty').addEventListener('keydown', e => {
     if (e.key === 'Enter') addIng();
   });
 }
 
+// ── FORM VALIDATION ───────────────────────────────────────────
+function validateForm() {
+  const name  = document.getElementById('ingName').value.trim();
+  const qty   = parseFloat(document.getElementById('ingQty').value);
+  const btn   = document.getElementById('btnAddIng');
+
+  const nameOk = name.length > 0;
+  const qtyOk  = !isNaN(qty) && qty > 0;
+  const valid  = nameOk && qtyOk;
+
+  if (btn) btn.disabled = !valid;
+}
+
 // ── ADD / REMOVE ───────────────────────────────────────────────
 function addIng() {
   const name = document.getElementById('ingName').value.trim();
-  const qty  = parseFloat(document.getElementById('ingQty').value) || null;
+  const qty  = parseFloat(document.getElementById('ingQty').value);
   const unit = document.getElementById('ingUnit').value;
-  if (!name) { document.getElementById('ingName').focus(); return; }
+
+  // Guard — should not be callable when disabled, but double-check
+  if (!name || isNaN(qty) || qty <= 0) {
+    validateForm();
+    return;
+  }
 
   const ex = searchIngs.findIndex(i => i.name.toLowerCase() === name.toLowerCase());
-  if (ex >= 0) { if (qty) searchIngs[ex].amount = (parseFloat(searchIngs[ex].amount) || 0) + qty; }
+  if (ex >= 0) { searchIngs[ex].amount = (parseFloat(searchIngs[ex].amount) || 0) + qty; }
   else searchIngs.push({ name, amount: qty, unit });
 
   persistSearchIngs();
@@ -142,6 +162,9 @@ function clearForm() {
   document.getElementById('ingName').value = '';
   document.getElementById('ingQty').value  = '';
   document.getElementById('suggestions').style.display = 'none';
+  document.getElementById('ingName').classList.remove('field-err');
+  document.getElementById('ingQty').classList.remove('field-err');
+  validateForm();
 }
 
 function removeIng(idx) {
@@ -265,6 +288,7 @@ function toggleDetail(id) {
 document.addEventListener('DOMContentLoaded', () => {
   buildCommonGrid();
   initAutofill();
+  validateForm(); // ensure button starts disabled
 
   // Restore saved ingredients for this user
   const saved = loadUserIng();
