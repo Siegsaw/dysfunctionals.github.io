@@ -1,0 +1,201 @@
+/* ============================================================
+   PantryChef — Shared Styles
+   Covers: design tokens, dark mode, header, nav, buttons, toast
+   ============================================================ */
+
+/* ── GOOGLE FONTS ── */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+/* ── LIGHT THEME TOKENS ── */
+:root {
+  --bg: #ffffff;
+  --bg-s: #f9fafb;
+  --bg-m: #f3f4f6;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-h: rgba(0, 0, 0, 0.16);
+  --ink: #0f172a;
+  --ink2: #374151;
+  --muted: #6b7280;
+  --muted2: #9ca3af;
+  --green: #22c55e;
+  --gd: #16a34a;
+  --gl: #dcfce7;
+  --gm: #bbf7d0;
+  --red: #ef4444;
+  --rl: #fee2e2;
+  --yellow: #f59e0b;
+  --yl: #fef3c7;
+  --sh-xs: 0 1px 2px rgba(0,0,0,.05);
+  --sh-sm: 0 0 0 1px rgba(0,0,0,.04), 0 2px 4px rgba(0,0,0,.05), 0 4px 12px rgba(0,0,0,.04);
+  --sh-md: 0 0 0 1px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.08);
+  --sh-lg: 0 0 0 1px rgba(0,0,0,.05), 0 8px 32px rgba(0,0,0,.12);
+  --r: 12px;
+  --rs: 8px;
+  --rl2: 16px;
+  --rf: 9999px;
+}
+
+/* ── DARK THEME TOKENS ── */
+html.dark {
+  --bg: #0f172a;
+  --bg-s: #1e293b;
+  --bg-m: #334155;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-h: rgba(255, 255, 255, 0.16);
+  --ink: #f1f5f9;
+  --ink2: #cbd5e1;
+  --muted: #94a3b8;
+  --muted2: #64748b;
+  --green: #22c55e;
+  --gd: #16a34a;
+  --gl: rgba(34, 197, 94, 0.15);
+  --gm: rgba(34, 197, 94, 0.25);
+  --red: #f87171;
+  --rl: rgba(248, 113, 113, 0.15);
+  --yellow: #fbbf24;
+  --yl: rgba(251, 191, 36, 0.15);
+  --sh-xs: 0 1px 2px rgba(0,0,0,.3);
+  --sh-sm: 0 0 0 1px rgba(255,255,255,.04), 0 2px 4px rgba(0,0,0,.3), 0 4px 12px rgba(0,0,0,.3);
+  --sh-md: 0 0 0 1px rgba(255,255,255,.04), 0 4px 16px rgba(0,0,0,.4);
+  --sh-lg: 0 0 0 1px rgba(255,255,255,.05), 0 8px 32px rgba(0,0,0,.5);
+}
+
+html { color-scheme: light; -webkit-font-smoothing: antialiased; }
+html.dark { color-scheme: dark; }
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── BASE ── */
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  transition: background .2s, color .2s;
+}
+button { font-family: 'Inter', sans-serif; cursor: pointer; transition: all .15s; border: none; }
+
+/* ── HEADER ── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  height: 57px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: background .2s;
+}
+.logo {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  letter-spacing: -.3px;
+}
+.h-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.nav-btn {
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  border-radius: var(--rs);
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+  transition: color .15s, background .15s;
+}
+.nav-btn:hover, .nav-btn.active { color: var(--ink); background: var(--bg-m); font-weight: 600; }
+
+.h-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+#userBadge {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  padding: 5px 12px;
+  background: var(--bg-s);
+  border: 1px solid var(--border);
+  border-radius: var(--rf);
+  display: none;
+}
+
+/* ── HEADER BUTTONS ── */
+.btn-theme {
+  width: 34px; height: 34px;
+  border-radius: var(--rs);
+  border: 1px solid var(--border);
+  background: var(--bg-s);
+  color: var(--ink);
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.btn-theme:hover { background: var(--bg-m); border-color: var(--border-h); }
+
+.btn-signin {
+  padding: 8px 18px;
+  background: var(--green);
+  color: #fff;
+  border-radius: var(--rf);
+  font-size: 14px;
+  font-weight: 600;
+}
+.btn-signin:hover { background: var(--gd); transform: translateY(-1px); }
+
+.btn-logout {
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  background: var(--bg);
+  color: var(--red);
+  font-size: 13.5px;
+  font-weight: 500;
+  display: none;
+}
+.btn-logout:hover { background: var(--rl); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: var(--ink);
+  color: var(--bg);
+  padding: 10px 20px;
+  border-radius: var(--rf);
+  font-size: 13.5px;
+  font-weight: 500;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: all .25s;
+  box-shadow: var(--sh-md);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn  { from { opacity: 0; transform: scale(.9); }        to { opacity: 1; transform: scale(1); } }
+@keyframes spin   { to { transform: rotate(360deg); } }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  header { padding: 0 20px; }
+  .h-nav { display: none; }
+}

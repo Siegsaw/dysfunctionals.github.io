@@ -1,0 +1,208 @@
+/* ============================================================
+   PantryChef — Inventory Page Styles
+   ============================================================ */
+
+.inv-main {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 48px 40px;
+  animation: fadeUp .4s ease both;
+}
+.inv-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.inv-hdr h2 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -.4px;
+}
+
+/* ── SEARCH BAR ── */
+.search-wrap { position: relative; }
+.search-wrap input {
+  padding-left: 32px;
+  width: 240px;
+  font-size: 13.5px;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  background: var(--bg-m);
+  color: var(--ink);
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  transition: border-color .15s, box-shadow .15s;
+}
+.search-wrap input:focus { border-color: var(--green); background: var(--bg-s); box-shadow: 0 0 0 3px rgba(34,197,94,.15); }
+.search-wrap input::placeholder { color: var(--muted2); }
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted2);
+  font-size: 13px;
+  pointer-events: none;
+}
+
+/* ── INVENTORY ITEMS ── */
+.inv-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-s);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 6px;
+  box-shadow: var(--sh-xs);
+  transition: box-shadow .15s, border-color .15s;
+}
+.inv-item:hover { box-shadow: var(--sh-sm); border-color: var(--border-h); }
+
+.inv-info  { flex: 1; display: flex; align-items: center; gap: 8px; }
+.inv-name  { font-weight: 600; font-size: 14px; color: var(--ink); }
+.inv-unit  { font-size: 11px; color: var(--muted); background: var(--bg-m); border-radius: 4px; padding: 2px 7px; font-weight: 500; }
+
+.inv-ctrl  { display: flex; align-items: center; gap: 5px; }
+.btn-qty {
+  width: 28px; height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-m);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink2);
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+.btn-qty:hover   { background: var(--bg-s); border-color: var(--border-h); }
+.btn-minus:hover { background: var(--rl);   border-color: var(--red); color: var(--red); }
+.btn-plus:hover  { background: var(--gl);   border-color: var(--gm);  color: var(--gd);  }
+
+.qty-inp {
+  width: 60px;
+  text-align: center;
+  padding: 5px 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-m);
+  color: var(--ink);
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  transition: border-color .15s;
+}
+.qty-inp:focus { border-color: var(--green); background: var(--bg-s); }
+
+.btn-rm {
+  padding: 5px 9px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted2);
+  font-size: 12px;
+}
+.btn-rm:hover { background: var(--rl); border-color: var(--red); color: var(--red); }
+
+/* ── EMPTY STATE ── */
+.empty { text-align: center; padding: 64px 20px; color: var(--muted); }
+.empty-ico { font-size: 44px; display: block; margin-bottom: 14px; }
+.empty p   { font-size: 14px; }
+
+/* ── CONFIRM DIALOG ── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, .5);
+  z-index: 800;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+}
+.overlay.show { display: flex; animation: fdIn .15s ease; }
+@keyframes fdIn { from { opacity: 0; } to { opacity: 1; } }
+
+.dialog {
+  background: var(--bg-s);
+  border: 1px solid var(--border);
+  border-radius: var(--rl2);
+  padding: 28px 30px;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: var(--sh-lg);
+  animation: popIn .18s ease;
+}
+.dialog h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 6px; color: var(--ink); }
+.dialog p  { font-size: 13.5px; color: var(--muted); margin-bottom: 22px; }
+
+.dlg-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.btn-cancel {
+  padding: 9px 17px;
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  background: var(--bg-m);
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .12s;
+  font-family: 'Inter', sans-serif;
+}
+.btn-cancel:hover { background: var(--bg-s); }
+.btn-danger {
+  padding: 9px 17px;
+  border: none;
+  border-radius: var(--rs);
+  background: var(--red);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+.btn-danger:hover { background: #dc2626; }
+
+/* ── UNDO BAR ── */
+.undo-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: var(--bg-s);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  padding: 10px 18px;
+  border-radius: var(--rf);
+  font-size: 13.5px;
+  font-weight: 500;
+  display: flex; align-items: center; gap: 14px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 700;
+  transition: all .25s;
+  box-shadow: var(--sh-lg);
+}
+.undo-bar.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+.btn-undo {
+  background: none; border: none;
+  color: var(--green);
+  font-size: 13px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em;
+  padding: 0; cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+.btn-undo:hover { color: var(--gd); }
+
+@media (max-width: 768px) {
+  .inv-main { padding: 28px 16px; }
+  .inv-item { flex-wrap: wrap; }
+}

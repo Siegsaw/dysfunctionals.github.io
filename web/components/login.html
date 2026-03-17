@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PantryChef — Sign In</title>
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="login.css">
+  <script>if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark');</script>
+</head>
+<body>
+
+<header>
+  <div class="logo" onclick="location.href='index.html'">PantryChef</div>
+  <button class="btn-theme" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+</header>
+
+<div class="auth-wrap">
+  <div class="auth-card" id="authCard">
+    <!-- Rendered by login.js -->
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script src="login.js"></script>
+</body>
+</html>

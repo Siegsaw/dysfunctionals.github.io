@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PantryChef — Inventory</title>
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="inventory.css">
+  <script>if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark');</script>
+</head>
+<body>
+
+<header>
+  <div class="logo" onclick="location.href='index.html'">PantryChef</div>
+  <nav class="h-nav">
+    <button class="nav-btn" onclick="location.href='index.html'">Home</button>
+    <button class="nav-btn active">Inventory</button>
+  </nav>
+  <div class="h-right">
+    <span id="userBadge"></span>
+    <button class="btn-theme" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+    <button class="btn-signin" id="btnSignIn" onclick="location.href='login.html'">Sign In</button>
+    <button class="btn-logout" id="btnLogout" onclick="doLogout()">Sign Out</button>
+  </div>
+</header>
+
+<div class="toast" id="toast"></div>
+
+<div class="inv-main">
+  <div class="inv-hdr">
+    <h2>Your Inventory</h2>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input id="search" type="text" placeholder="Search ingredients…">
+    </div>
+  </div>
+  <div id="list"></div>
+</div>
+
+<!-- Confirm dialog -->
+<div class="overlay" id="overlay">
+  <div class="dialog">
+    <h3>Remove ingredient?</h3>
+    <p id="dlgMsg"></p>
+    <div class="dlg-btns">
+      <button class="btn-cancel" id="btnNo">Cancel</button>
+      <button class="btn-danger" id="btnYes">Remove</button>
+    </div>
+  </div>
+</div>
+
+<!-- Undo bar -->
+<div class="undo-bar" id="undoBar">
+  <span id="undoMsg"></span>
+  <button class="btn-undo" onclick="undoRemove()">Undo</button>
+</div>
+
+<script src="shared.js"></script>
+<script src="inventory.js"></script>
+</body>
+</html>
