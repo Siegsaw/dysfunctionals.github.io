@@ -108,6 +108,12 @@
   margin-top: 1px;
 }
 .btn-add-ing:hover { background: var(--gd); transform: translateY(-1px); }
+.btn-add-ing:disabled {
+  background: var(--bg-m);
+  color: var(--muted2);
+  cursor: not-allowed;
+  transform: none;
+}
 
 .btn-clear-ing {
   width: 34px; height: 34px;
