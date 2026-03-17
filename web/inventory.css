@@ -70,7 +70,60 @@
 .inv-name  { font-weight: 600; font-size: 14px; color: var(--ink); }
 .inv-unit  { font-size: 11px; color: var(--muted); background: var(--bg-m); border-radius: 4px; padding: 2px 7px; font-weight: 500; }
 
-.inv-ctrl  { display: flex; align-items: center; gap: 5px; }
+.inv-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Current stock display */
+.inv-current {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg-m);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  min-width: 90px;
+}
+.cur-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.cur-val-inp {
+  min-width: 2ch;
+  width: 3ch;
+  max-width: 12ch;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  padding: 2px 4px;
+  text-align: center;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  transition: border-color .15s, background .15s, box-shadow .15s;
+  /* Hide number input spinners */
+  -moz-appearance: textfield;
+}
+.cur-val-inp::-webkit-outer-spin-button,
+.cur-val-inp::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.cur-val-inp:hover { border-color: var(--border-h); background: var(--bg-s); }
+.cur-val-inp:focus { border-color: var(--green); background: var(--bg-s); box-shadow: 0 0 0 3px rgba(34,197,94,.15); }
+.cur-val-inp.inp-err { border-color: var(--red) !important; box-shadow: 0 0 0 3px rgba(239,68,68,.18) !important; animation: shake .3s ease; }
+
+/* Step controls row */
+.inv-step {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .btn-qty {
   width: 28px; height: 28px;
   border: 1px solid var(--border);
@@ -84,24 +137,35 @@
   line-height: 1;
 }
 .btn-qty:hover   { background: var(--bg-s); border-color: var(--border-h); }
-.btn-minus:hover { background: var(--rl);   border-color: var(--red); color: var(--red); }
-.btn-plus:hover  { background: var(--gl);   border-color: var(--gm);  color: var(--gd);  }
+.btn-minus:hover { background: var(--rl); border-color: var(--red); color: var(--red); }
+.btn-plus:hover  { background: var(--gl); border-color: var(--gm); color: var(--gd); }
 
-.qty-inp {
-  width: 60px;
+/* Step amount input */
+.step-inp {
+  width: 58px;
   text-align: center;
-  padding: 5px 8px;
+  padding: 5px 6px;
   font-size: 13.5px;
   font-weight: 600;
   border: 1px solid var(--border);
   border-radius: 6px;
-  background: var(--bg-m);
+  background: var(--bg-s);
   color: var(--ink);
   outline: none;
   font-family: 'Inter', sans-serif;
-  transition: border-color .15s;
+  transition: border-color .15s, box-shadow .15s;
 }
-.qty-inp:focus { border-color: var(--green); background: var(--bg-s); }
+.step-inp:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(34,197,94,.15); }
+.step-inp.inp-err {
+  border-color: var(--red) !important;
+  box-shadow: 0 0 0 3px rgba(239,68,68,.18) !important;
+  animation: shake .3s ease;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25%      { transform: translateX(-4px); }
+  75%      { transform: translateX(4px); }
+}
 
 .btn-rm {
   padding: 5px 9px;
