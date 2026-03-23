@@ -332,15 +332,31 @@ function initAutofill() {
 
 // ── FORM VALIDATION ───────────────────────────────────────────
 function validateForm() {
-  const name  = document.getElementById('ingName').value.trim();
-  const qty   = parseFloat(document.getElementById('ingQty').value);
-  const btn   = document.getElementById('btnAddIng');
+  const inputName = document.getElementById('ingName').value.trim();
+  const qty = parseFloat(document.getElementById('ingQty').value);
+  const btn = document.getElementById('btnAddIng');
 
-  const nameOk = name.length > 0;
-  const qtyOk  = !isNaN(qty) && qty > 0;
-  const valid  = nameOk && qtyOk;
+  // 1. Patikriname, ar kiekis yra tinkamas skaičius
+  const qtyOk = !isNaN(qty) && qty > 0;
 
-  if (btn) btn.disabled = !valid;
+  // 2. Patikriname, ar įvestas pavadinimas egzistuoja ALL_ING sąraše
+  // Naudojame .toLowerCase(), kad patikra nebūtų jautri raidžių dydžiui
+  const exists = ALL_ING.some(ing => ing.toLowerCase() === inputName.toLowerCase());
+
+  // Mygtukas aktyvuojamas tik jei abi sąlygos teisingos
+  const valid = exists && qtyOk;
+
+  if (btn) {
+    btn.disabled = !valid;
+  }
+  
+  // (Pasirinktinai) Galite pridėti vizualų įspėjimą input laukeliui
+  const nameInput = document.getElementById('ingName');
+  if (inputName.length > 2 && !exists) {
+    nameInput.style.borderColor = "var(--err, #ff4d4d)"; // Parodo klaidą, jei tokio produkto nėra
+  } else {
+    nameInput.style.borderColor = ""; // Grąžina standartinę spalvą
+  }
 }
 
 // ── ADD / REMOVE ───────────────────────────────────────────────
