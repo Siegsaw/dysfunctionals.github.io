@@ -12,7 +12,7 @@ echo "</head>";
 echo "<body>";
 echo "";
 echo "<header>";
-echo "<div class=\"logo\" onclick=\"location.href='index.html'\">PantryChef</div>";
+echo "<div class=\"logo\" onclick=\"location.href='index.php'\">PantryChef</div>";
 echo "<button class=\"btn-theme\" onclick=\"toggleTheme()\" title=\"Toggle dark mode\">🌙</button>";
 echo "</header>";
 echo "";
