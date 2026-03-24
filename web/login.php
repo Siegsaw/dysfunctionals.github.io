@@ -1,0 +1,31 @@
+<?php
+echo "<!DOCTYPE html>";
+echo "<html lang=\"en\">";
+echo "<head>";
+echo "<meta charset=\"UTF-8\">";
+echo "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
+echo "<title>PantryChef — Sign In</title>";
+echo "<link rel=\"stylesheet\" href=\"shared.css\">";
+echo "<link rel=\"stylesheet\" href=\"login.css\">";
+echo "<script>if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark');</script>";
+echo "</head>";
+echo "<body>";
+echo "";
+echo "<header>";
+echo "<div class=\"logo\" onclick=\"location.href='index.html'\">PantryChef</div>";
+echo "<button class=\"btn-theme\" onclick=\"toggleTheme()\" title=\"Toggle dark mode\">🌙</button>";
+echo "</header>";
+echo "";
+echo "<div class=\"auth-wrap\">";
+echo "<div class=\"auth-card\" id=\"authCard\">";
+echo "<!-- Rendered by login.js -->";
+echo "</div>";
+echo "</div>";
+echo "";
+echo "<script src=\"https://accounts.google.com/gsi/client\" async defer></script>";
+echo "<script src=\"shared.js\"></script>";
+echo "<script src=\"login.js\"></script>";
+echo "</body>";
+echo "</html>";
+echo "";
+?>
