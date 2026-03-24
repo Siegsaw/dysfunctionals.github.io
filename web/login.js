@@ -176,7 +176,7 @@ function doLogin() {
     localStorage.setItem('userName', accounts[emailLow].username);
     msg.style.color = '#16a34a';
     msg.textContent = `✓ Welcome back, ${accounts[emailLow].username}! Redirecting…`;
-    setTimeout(() => location.href = 'index.html', 900);
+    setTimeout(() => location.href = 'index.php', 900);
   }, 700);
 }
 
@@ -228,7 +228,7 @@ function doRegister() {
     localStorage.setItem('userName', username);
     msg.style.color = '#16a34a';
     msg.textContent = `✓ Account created! Welcome, ${username}!`;
-    setTimeout(() => location.href = 'index.html', 900);
+    setTimeout(() => location.href = 'index.php', 900);
   }, 700);
 }
 
