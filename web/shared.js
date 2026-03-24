@@ -44,7 +44,7 @@ function doLogout() {
   localStorage.removeItem('userEmail');
   localStorage.removeItem('userName');
   showToast('✓ You have been successfully signed out.');
-  setTimeout(() => location.href = 'login.html', 1800);
+  setTimeout(() => location.href = 'login.php', 1800);
 }
 
 function updateAuthUI() {
