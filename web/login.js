@@ -4,7 +4,7 @@
 
 // Redirect if already logged in
 if (localStorage.getItem('isLoggedIn') === 'true') {
-  location.href = 'index.html';
+  location.href = 'index.php';
 }
 
 // ── RENDER LOGIN FORM ─────────────────────────────────────────
@@ -292,7 +292,7 @@ function googleSignIn() {
 
         msg.style.color = '#16a34a';
         msg.textContent = `✓ Welcome, ${user.name}! Redirecting…`;
-        setTimeout(() => location.href = 'index.html', 900);
+        setTimeout(() => location.href = 'index.php', 900);
       })
       .catch(() => {
         spin.style.display = 'none';
