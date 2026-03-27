@@ -49,9 +49,15 @@ echo "<button class=\"btn-clear-ing\" onclick=\"clearForm()\" title=\"Clear\">âœ
 echo "</div>";
 echo "";
 echo "";
-echo "<div class=\"time-filter\">";
-echo "<label for=\"timeRange\">Max cooking time: <span id=\"timeValue\">30</span> min</label>";
-echo "<input type=\"range\" id=\"timeRange\" min=\"0\" max=\"180\" step=\"5\" value=\"30\" oninput=\"updateTimeValue()\">";
+echo "<div class=\"filter-row\">";
+echo "  <div class=\"filter-group\">";
+echo "    <label for=\"timeRange\">Max time: <span id=\"timeValue\">45</span> min</label>";
+echo "    <input type=\"range\" id=\"timeRange\" min=\"0\" max=\"180\" step=\"5\" value=\"45\" oninput=\"updateTimeValue()\">";
+echo "  </div>";
+echo "  <div class=\"filter-group\">";
+echo "    <label for=\"calRange\">Max calories: <span id=\"calValue\">800</span> kcal</label>";
+echo "    <input type=\"range\" id=\"calRange\" min=\"100\" max=\"2000\" step=\"50\" value=\"800\" oninput=\"updateCalValue()\">";
+echo "  </div>";
 echo "</div>";
 echo "<button class=\"common-toggle\" id=\"commonToggle\" onclick=\"toggleCommon()\">";
 echo "<svg width=\"12\" height=\"12\" viewBox=\"0 0 12 12\" fill=\"none\">";
