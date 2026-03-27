@@ -544,6 +544,7 @@ function toggleDetail(id) {
 function updateTimeValue() {
   var val = document.getElementById("timeRange").value;
   document.getElementById("timeValue").innerText = val;
+  runSearch();
 }
 
 // ── INIT ───────────────────────────────────────────────────────
@@ -552,7 +553,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initAutofill();
   refreshUnitOptions();
   validateForm();
-  updateTimeValue();
   
   const saved = sanitizeIngredientList(loadUserIng());
   searchIngs = saved;
