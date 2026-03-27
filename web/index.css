@@ -44,7 +44,31 @@
 }
 .af-wrap input:focus { border-color: var(--green); background: var(--bg-s); box-shadow: 0 0 0 3px rgba(34,197,94,.15); }
 .af-wrap input::placeholder { color: var(--muted2); }
-
+.time-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 140px;
+  flex: 1;
+}
+.time-filter label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--muted2);
+  letter-spacing: .05em;
+  white-space: nowrap;
+}
+#timeValue {
+  color: var(--green);
+  font-weight: 700;
+}
+#timeRange {
+  width: 100%;
+  cursor: pointer;
+  accent-color: var(--green); /* Padaro slankiklį žalią moderniose naršyklėse */
+  height: 6px;
+   
 /* Suggestions dropdown */
 #suggestions {
   position: absolute;
