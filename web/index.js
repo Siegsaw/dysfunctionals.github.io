@@ -547,12 +547,20 @@ function updateTimeValue() {
   runSearch();
 }
 
+function updateCalValue() {
+  const val = document.getElementById("calRange").value;
+  document.getElementById("calValue").innerText = val;
+  runSearch(); 
+}
+
 // ── INIT ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   buildCommonGrid();
   initAutofill();
   refreshUnitOptions();
   validateForm();
+  updateTimeValue();
+  updateCalValue();
   
   const saved = sanitizeIngredientList(loadUserIng());
   searchIngs = saved;
