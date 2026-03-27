@@ -541,13 +541,19 @@ function toggleDetail(id) {
   btn.lastChild.textContent = d.classList.contains('open') ? ' Hide ingredients' : ' Show all ingredients';
 }
 
+function updateTimeValue() {
+  var val = document.getElementById("timeRange").value;
+  document.getElementById("timeValue").innerText = val;
+}
+
 // ── INIT ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   buildCommonGrid();
   initAutofill();
   refreshUnitOptions();
   validateForm();
-
+  updateTimeValue();
+  
   const saved = sanitizeIngredientList(loadUserIng());
   searchIngs = saved;
   saveUserIng(saved);
