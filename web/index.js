@@ -118,6 +118,7 @@ const UNIT_GROUPS = {
 
 // ── STATE ──────────────────────────────────────────────────────
 let searchIngs = [];
+let serverInventory = [];
 
 // ── UNIT HELPERS ───────────────────────────────────────────────
 function findCanonicalIngredientName(name) {
@@ -252,7 +253,7 @@ function sanitizeIngredientList(entries) {
 
 // ── INVENTORY MAP ──────────────────────────────────────────────
 function getInvMap() {
-  return combineIngredientEntries(loadUserIng());
+  return combineIngredientEntries([...serverInventory, ...searchIngs]);
 }
 
 // ── COMMON INGREDIENTS GRID ────────────────────────────────────
@@ -355,12 +356,11 @@ function validateForm() {
 // ── ADD / REMOVE ───────────────────────────────────────────────
 async function addIng() {
   const rawName = document.getElementById('ingName').value.trim();
-  const exists = ALL_ING.some(ing => ing.toLowerCase() === rawName.toLowerCase());
   const name = findCanonicalIngredientName(rawName);
   const qty  = parseFloat(document.getElementById('ingQty').value);
   const unit = document.getElementById('ingUnit').value;
 
-  if (!exists || !name || isNaN(qty) || qty <= 0) {
+  if (!name || isNaN(qty) || qty <= 0) {
     validateForm();
     return;
   }
@@ -411,7 +411,6 @@ function clearForm() {
 
 function removeIng(idx) {
   searchIngs.splice(idx, 1);
-  persistSearchIngs();
   renderChips();
   runSearch();
 }
@@ -435,7 +434,7 @@ function renderChips() {
 
 // ── RECIPE MATCHING ────────────────────────────────────────────
 function matchRecipes() {
-  const userMap = combineIngredientEntries([...loadUserIng(), ...searchIngs]);
+  const userMap = getInvMap();
 
   return RECIPES.map(recipe => {
     let score = 0;
@@ -559,8 +558,8 @@ async function loadAndRenderInventory() {
     const response = await fetch('get_inventory.php');
     const inventory = await response.json();
     
-    // Sanitize and update searchIngs
-    searchIngs = sanitizeIngredientList(inventory);
+    // Store sanitized server inventory
+    serverInventory = sanitizeIngredientList(inventory);
     
     // Re-render everything
     renderChips();
@@ -569,12 +568,6 @@ async function loadAndRenderInventory() {
   } catch (err) {
     console.error('Error loading inventory:', err);
   }
-}
-
-// ── PERSIST SEARCH INGREDIENTS ─────────────────────────────────
-function persistSearchIngs() {
-  // This is no longer needed since we use add_inventory.php
-  // But keeping for compatibility with removeIng()
 }
 
 // ── INIT ───────────────────────────────────────────────────────
