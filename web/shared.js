@@ -35,21 +35,19 @@ function showToast(msg) {
 }
 
 // ── AUTH ───────────────────────────────────────────────────────
-function isLoggedIn() {
-  return localStorage.getItem('isLoggedIn') === 'true';
+async function getAuthStatus() {
+  const response = await fetch('auth_status.php');
+  return await response.json();
 }
 
-function doLogout() {
-  localStorage.removeItem('isLoggedIn');
-  localStorage.removeItem('userEmail');
-  localStorage.removeItem('userName');
-  showToast('✓ You have been successfully signed out.');
-  setTimeout(() => location.href = 'login.php', 1800);
+async function doLogout() {
+  await fetch('logout.php');
+  location.href = 'login.php';
 }
 
-function updateAuthUI() {
-  const on   = isLoggedIn();
-  const name = localStorage.getItem('userName') || localStorage.getItem('userEmail') || '';
+
+async function updateAuthUI() {
+  const auth = await getAuthStatus();
 
   const signInBtn = document.getElementById('btnSignIn');
   const logoutBtn = document.getElementById('btnLogout');
@@ -59,7 +57,7 @@ function updateAuthUI() {
   if (logoutBtn) logoutBtn.style.display = on ? 'inline-flex'  : 'none';
   if (badge) {
     badge.style.display = on ? 'inline-block' : 'none';
-    badge.textContent   = name;
+    badge.textContent = auth.username || auth.email || '';
   }
 }
 
