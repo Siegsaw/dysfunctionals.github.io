@@ -100,11 +100,7 @@ function showToast(message) {
 
 function getIngredientObj(name) {
   const trimmed = (name || '').trim().toLowerCase();
-
-  return ALL_ING.find(i => 
-    i.name.toLowerCase() === trimmed ||
-    i.name.toLowerCase().includes(trimmed)
-  ) || null;
+  return ALL_ING.find(i => i.name.toLowerCase() === trimmed) || null;
 }
 
 function findCanonicalIngredientName(name) {
