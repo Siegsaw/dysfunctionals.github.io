@@ -25,7 +25,7 @@ function renderLogin(prefillEmail = '') {
     <h2>Welcome back</h2>
     <p class="auth-sub">Sign in to access your pantry and recipes.</p>
 
-    <button class="btn-google" id="btnGoogle" onclick="googleSignIn()">
+    <button type="button" class="btn-google" id="btnGoogle" onclick="googleSignIn()">
       <span class="g-icon"></span>
       <span id="gText">Continue with Google</span>
       <span class="g-spinner" id="gSpinner"></span>
@@ -47,13 +47,13 @@ function renderLogin(prefillEmail = '') {
         <div class="f-wrap">
           <input type="password" id="password" placeholder="Your password"
             oninput="clearErrors(); validateLogin()">
-          <button class="btn-eye" id="btnEye" onclick="togglePw('password','btnEye')">👁</button>
+          <button type="button" class="btn-eye" id="btnEye" onclick="togglePw('password','btnEye')">👁</button>
         </div>
         <span class="f-err" id="pwErr"></span>
       </div>
     </div>
 
-    <button class="btn-submit" id="btnSubmit" onclick="doLogin()" disabled>
+    <button type="button" class="btn-submit" id="btnSubmit" onclick="doLogin()" disabled>
       Sign In <span class="btn-spinner" id="spinner"></span>
     </button>
 
@@ -93,7 +93,7 @@ function renderRegister() {
         <div class="f-wrap">
           <input type="password" id="regPassword" placeholder="At least 6 characters"
             oninput="validateRegister()">
-          <button class="btn-eye" id="btnEyeReg" onclick="togglePw('regPassword','btnEyeReg')">👁</button>
+          <button type="button" class="btn-eye" id="btnEyeReg" onclick="togglePw('regPassword','btnEyeReg')">👁</button>
         </div>
         <span class="f-err" id="regPwErr"></span>
       </div>
@@ -102,13 +102,13 @@ function renderRegister() {
         <div class="f-wrap">
           <input type="password" id="regPasswordConf" placeholder="Repeat your password"
             oninput="validateRegister()">
-          <button class="btn-eye" id="btnEyeConf" onclick="togglePw('regPasswordConf','btnEyeConf')">👁</button>
+          <button type="button" class="btn-eye" id="btnEyeConf" onclick="togglePw('regPasswordConf','btnEyeConf')">👁</button>
         </div>
         <span class="f-err" id="regPwConfErr"></span>
       </div>
     </div>
 
-    <button class="btn-submit" id="btnRegSubmit" onclick="doRegister()" disabled>
+    <button type="button" class="btn-submit" id="btnRegSubmit" onclick="doRegister()" disabled>
       Create Account <span class="btn-spinner" id="regSpinner"></span>
     </button>
 
@@ -175,22 +175,29 @@ location.href = 'index.php';
 
 // ── REGISTER ──────────────────────────────────────────────────
 async function doRegister() {
-const username = document.getElementById('regUsername').value.trim();
-const email = document.getElementById('regEmail').value.trim();
-const password = document.getElementById('regPassword').value;
-const response = await fetch('register.php', {
-method: 'POST',
-headers: {
-'Content-Type': 'application/json'
-},
-body: JSON.stringify({ username, email, password })
-});
-const data = await response.json();
-if (!data.success) {
-  document.getElementById('msg').textContent = data.message;
-return;
-}
-location.href = 'index.php';
+  const username = document.getElementById('regUsername').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const confirm = document.getElementById('regPasswordConf').value;
+
+  if (password !== confirm) return;
+
+  const response = await fetch('register.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username, email, password })
+  });
+
+  const data = await response.json();
+
+  if (!data.success) {
+    document.getElementById('msg').textContent = data.message;
+    return;
+  }
+
+  location.href = 'index.php';
 }
 
 
