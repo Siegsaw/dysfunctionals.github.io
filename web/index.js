@@ -2,6 +2,8 @@
 // PantryChef — Home / Recipe Search Logic
 // ============================================================
 
+
+// COMMON LIST REIKES ISTRINTI
 const COMMON_LIST = [
   {name:"Eggs",icon:"🥚"},{name:"Milk",icon:"🥛"},{name:"Butter",icon:"🧈"},
   {name:"Salt",icon:"🧂"},{name:"Pepper",icon:"🌶️"},{name:"Onion",icon:"🧅"},
@@ -12,6 +14,7 @@ const COMMON_LIST = [
 
 const DEFAULT_UNITS = ["g", "kg", "ml", "L", "cups", "tbsp", "tsp", "pcs"];
 
+// REIKES ISTRINTI
 const INGREDIENT_UNIT_RULES = {
   "Chicken Breast": ["g", "kg"],
   "Chicken Thigh": ["g", "kg"],
