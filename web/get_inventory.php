@@ -13,8 +13,8 @@ $userId = $_SESSION['user_id'];
 $stmt = $conn->prepare('
     SELECT 
         i.ingredient_id,
-        i.name_ing as name,
-        ui.quantity as amount,
+        i.name_ing AS name,
+        ui.quantity AS amount,
         ui.unit
     FROM user_inventory ui
     JOIN ingredients i ON ui.ingredient_id = i.ingredient_id
