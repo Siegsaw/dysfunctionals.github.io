@@ -476,7 +476,15 @@ function runSearch() {
   const lbl   = document.getElementById('resultsLabel');
   grid.innerHTML = '';
 
-  if (!searchIngs.length) { sec.style.display = 'none'; empty.style.display = 'block'; return; }
+  // Check if there are ANY ingredients (server + search)
+  const hasAnyIngredients = serverInventory.length > 0 || searchIngs.length > 0;
+  
+  if (!hasAnyIngredients) { 
+    sec.style.display = 'none'; 
+    empty.style.display = 'block'; 
+    return; 
+  }
+  
   empty.style.display = 'none';
 
   if (!results.length) {
