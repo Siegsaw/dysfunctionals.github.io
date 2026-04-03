@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/json');
-
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
 // Debug: Check if db.php exists and load it
 if (!file_exists('/var/www/private/db.php')) {
     echo json_encode(['success' => false, 'message' => 'Database config not found']);
