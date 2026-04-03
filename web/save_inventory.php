@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-require 'db.php';
+require '/var/www/private/db.php';
 require 'session.php';
 
 requireLogin();
@@ -9,7 +9,10 @@ $userId = $_SESSION['user_id'];
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-$conn->query("DELETE FROM user_inventory WHERE user_id = $userId");
+// Delete old inventory using prepared statement
+$deleteStmt = $conn->prepare("DELETE FROM user_inventory WHERE user_id = ?");
+$deleteStmt->bind_param('i', $userId);
+$deleteStmt->execute();
 
 foreach ($data as $item) {
     $name = $item['name'];
