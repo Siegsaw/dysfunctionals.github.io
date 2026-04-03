@@ -1,0 +1,51 @@
+{
+ "cells": [
+  {
+   "metadata": {},
+   "cell_type": "code",
+   "outputs": [],
+   "execution_count": null,
+   "source": [
+    "<?php\n",
+    "header('Content-Type: application/json');\n",
+    "require 'db.php';\n",
+    "session_start();\n",
+    "$data = json_decode(file_get_contents('php://input'), true);\n",
+    "$username = trim($data['username'] ?? '');\n",
+    "$email = trim($data['email'] ?? '');\n",
+    "$password = $data['password'] ?? '';\n",
+    "if (!$username || !$email || strlen($password) < 6) {\n",
+    "echo json_encode(['success' => false, 'message' => 'Invalid input']);\n",
+    "exit;\n",
+    "}\n",
+    "$check = $conn->prepare('SELECT user_id FROM users WHERE email = ? OR username\n",
+    "= ?');\n",
+    "$check->bind_param('ss', $email, $username);\n",
+    "$check->execute();\n",
+    "$result = $check->get_result();\n",
+    "if ($result->num_rows > 0) {\n",
+    "echo json_encode(['success' => false, 'message' => 'Email or username\n",
+    "already exists']);\n",
+    "exit;\n",
+    "}\n",
+    "$passwordHash = password_hash($password, PASSWORD_DEFAULT);\n",
+    "$stmt = $conn->prepare('INSERT INTO users (username, email, password_hash)\n",
+    "VALUES (?, ?, ?)');\n",
+    "$stmt->bind_param('sss', $username, $email, $passwordHash);\n",
+    "$stmt->execute();\n",
+    "$_SESSION['user_id'] = $stmt->insert_id;\n",
+    "$_SESSION['username'] = $username;\n",
+    "$_SESSION['email'] = $email;\n",
+    "echo json_encode([\n",
+    "'success' => true,\n",
+    "'username' => $username,\n",
+    "'email' => $email\n",
+    "]);"
+   ],
+   "id": "e8bad7010badd16d"
+  }
+ ],
+ "metadata": {},
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
