@@ -77,7 +77,7 @@ if ($result->num_rows > 0) {
 
 $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-$stmt = $conn->prepare('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)');
+$stmt = $conn->prepare('INSERT INTO users (username, email, password_hash, created_at) VALUES (?, ?, ?, NOW())');
 if (!$stmt) {
     echo json_encode(['success' => false, 'message' => 'Insert prepare error: ' . $conn->error]);
     exit;
