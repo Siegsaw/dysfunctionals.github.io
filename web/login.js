@@ -162,56 +162,25 @@ location.href = 'index.php';
 
 
 // ── REGISTER ──────────────────────────────────────────────────
-function doRegister() {
-  const username = document.getElementById('regUsername').value.trim();
-  const email    = document.getElementById('regEmail').value.trim();
-  const pw       = document.getElementById('regPassword').value;
-  const conf     = document.getElementById('regPasswordConf').value;
-  const btn      = document.getElementById('btnRegSubmit');
-  const spin     = document.getElementById('regSpinner');
-  const msg      = document.getElementById('msg');
-
-  if (pw !== conf) {
-    document.getElementById('regPasswordConf').classList.add('err');
-    const e = document.getElementById('regPwConfErr');
-    e.textContent = "Passwords don't match."; e.classList.add('show');
-    return;
-  }
-
-  btn.disabled = true; spin.style.display = 'block'; msg.textContent = '';
-
-  setTimeout(() => {
-    spin.style.display = 'none';
-    const accounts = getAccounts();
-    const emailLow = email.toLowerCase();
-
-    if (accounts[emailLow]) {
-      msg.style.color = 'var(--red)';
-      msg.textContent = '⚠️ An account with this email already exists.';
-      document.getElementById('regEmail').classList.add('err');
-      btn.disabled = false;
-      return;
-    }
-    const usernameTaken = Object.values(accounts)
-      .some(a => a.username.toLowerCase() === username.toLowerCase());
-    if (usernameTaken) {
-      msg.style.color = 'var(--red)';
-      msg.textContent = '⚠️ This username is already taken.';
-      document.getElementById('regUsername').classList.add('err');
-      btn.disabled = false;
-      return;
-    }
-
-    accounts[emailLow] = { username, passwordHash: hashPw(pw) };
-    saveAccounts(accounts);
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('userEmail', email);
-    localStorage.setItem('userName', username);
-    msg.style.color = '#16a34a';
-    msg.textContent = `✓ Account created! Welcome, ${username}!`;
-    setTimeout(() => location.href = 'index.php', 900);
-  }, 700);
+async function doRegister() {
+const username = document.getElementById('regUsername').value.trim();
+const email = document.getElementById('regEmail').value.trim();
+const password = document.getElementById('regPassword').value;
+const response = await fetch('register.php', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({ username, email, password })
+});
+const data = await response.json();
+if (!data.success) {
+  document.getElementById('msg').textContent = data.message;
+return;
 }
+location.href = 'index.php';
+}
+
 
 // ── GOOGLE OAUTH 2.0 ──────────────────────────────────────────
 // Replace the Client ID below with your own from:
