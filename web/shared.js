@@ -67,12 +67,18 @@ function ingKey() {
   return 'ingredients_' + email.toLowerCase();
 }
 
-function loadUserIng() {
-  return JSON.parse(localStorage.getItem(ingKey())) || [];
+async function loadUserIng() {
+  const response = await fetch('get_inventory.php');
+  return await response.json();
 }
-
-function saveUserIng(arr) {
-  localStorage.setItem(ingKey(), JSON.stringify(arr));
+async function saveUserIng(arr) {
+  await fetch('save_inventory.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(arr)
+  });
 }
 
 // ── ACCOUNT STORAGE ────────────────────────────────────────────
