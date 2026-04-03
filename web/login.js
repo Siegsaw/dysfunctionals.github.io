@@ -142,43 +142,24 @@ function validateRegister() {
 }
 
 // ── LOGIN ─────────────────────────────────────────────────────
-function doLogin() {
-  const email = document.getElementById('email').value.trim();
-  const pw    = document.getElementById('password').value;
-  const btn   = document.getElementById('btnSubmit');
-  const spin  = document.getElementById('spinner');
-  const msg   = document.getElementById('msg');
-
-  btn.disabled = true; spin.style.display = 'block'; msg.textContent = '';
-
-  setTimeout(() => {
-    spin.style.display = 'none';
-    const accounts = getAccounts();
-    const emailLow = email.toLowerCase();
-
-    if (!accounts[emailLow]) {
-      msg.style.color = 'var(--red)';
-      msg.textContent = '⚠️ No account found with this email.';
-      document.getElementById('email').classList.add('err');
-      btn.disabled = false;
-      return;
-    }
-    if (accounts[emailLow].passwordHash !== hashPw(pw)) {
-      msg.style.color = 'var(--red)';
-      msg.textContent = '⚠️ Wrong password. Please try again.';
-      document.getElementById('password').classList.add('err');
-      btn.disabled = false;
-      return;
-    }
-
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('userEmail', email);
-    localStorage.setItem('userName', accounts[emailLow].username);
-    msg.style.color = '#16a34a';
-    msg.textContent = `✓ Welcome back, ${accounts[emailLow].username}! Redirecting…`;
-    setTimeout(() => location.href = 'index.php', 900);
-  }, 700);
+async function doLogin() {
+const email = document.getElementById('email').value.trim();
+const pw = document.getElementById('password').value;
+const response = await fetch('login_api.php', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({ email, password: pw })
+});
+const data = await response.json();
+if (!data.success) {
+document.getElementById('msg').textContent = data.message;
+return;
 }
+location.href = 'index.php';
+}
+
 
 // ── REGISTER ──────────────────────────────────────────────────
 function doRegister() {
