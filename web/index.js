@@ -360,7 +360,7 @@ async function addIng() {
   const qty  = parseFloat(document.getElementById('ingQty').value);
   const unit = document.getElementById('ingUnit').value;
 
-  if (!name || isNaN(qty) || qty <= 0) {
+  if (!exists || !name || isNaN(qty) || qty <= 0) {
     validateForm();
     return;
   }
