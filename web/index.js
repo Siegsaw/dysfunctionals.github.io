@@ -353,7 +353,7 @@ function validateForm() {
   }
 }
 
-// ── ADD / REMOVE ───────────────────────────────────────────────
+// ── ADD / REMOVE ───────────��───────────────────────────────────
 async function addIng() {
   const rawName = document.getElementById('ingName').value.trim();
   const name = findCanonicalIngredientName(rawName);
@@ -556,10 +556,17 @@ function updateCalValue() {
 async function loadAndRenderInventory() {
   try {
     const response = await fetch('get_inventory.php');
+    if (!response.ok) {
+      console.error('Failed to fetch inventory:', response.status);
+      return;
+    }
+    
     const inventory = await response.json();
+    console.log('Loaded inventory:', inventory);
     
     // Store sanitized server inventory
     serverInventory = sanitizeIngredientList(inventory);
+    console.log('Sanitized inventory:', serverInventory);
     
     // Re-render everything
     renderChips();
@@ -572,6 +579,8 @@ async function loadAndRenderInventory() {
 
 // ── INIT ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
+  console.log('DOMContentLoaded fired');
+  
   buildCommonGrid();
   initAutofill();
   refreshUnitOptions();
@@ -580,5 +589,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateCalValue();
   
   // Load inventory from server on page load
+  console.log('Calling loadAndRenderInventory');
   await loadAndRenderInventory();
+  console.log('loadAndRenderInventory completed');
 });
