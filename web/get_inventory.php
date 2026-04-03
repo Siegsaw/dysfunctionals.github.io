@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-require 'db.php';
+require '/var/www/private/db.php';
 require 'session.php';
 
 requireLogin();
