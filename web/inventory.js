@@ -239,8 +239,8 @@ function undoRemove() {
   undoStack = null;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  items = sanitizeInventory(loadUserIng());
+document.addEventListener('DOMContentLoaded', async () => {
+  const items = await sanitizeInventory(loadUserIng());
   saveUserIng(items);
   document.getElementById('search').addEventListener('input', render);
   document.getElementById('overlay').addEventListener('click', e => {
