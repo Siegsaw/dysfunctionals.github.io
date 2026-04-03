@@ -3,14 +3,6 @@
 // ============================================================
 
 
-// COMMON LIST REIKES ISTRINTI
-const COMMON_LIST = [
-  {name:"Eggs",icon:"🥚"},{name:"Milk",icon:"🥛"},{name:"Butter",icon:"🧈"},
-  {name:"Salt",icon:"🧂"},{name:"Pepper",icon:"🌶️"},{name:"Onion",icon:"🧅"},
-  {name:"Garlic",icon:"🧄"},{name:"Olive Oil",icon:"🫒"},{name:"Sugar",icon:"🍬"},
-  {name:"Flour",icon:"🌾"},{name:"Rice",icon:"🍚"},{name:"Cheese",icon:"🧀"},
-  {name:"Tomato",icon:"🍅"},{name:"Chicken Breast",icon:"🍗"},{name:"Pasta",icon:"🍝"}
-];
 
 const DEFAULT_UNITS = ["g", "kg", "ml", "L", "cups", "tbsp", "tsp", "pcs"];
 
