@@ -25,7 +25,7 @@ function renderLogin(prefillEmail = '') {
     <h2>Welcome back</h2>
     <p class="auth-sub">Sign in to access your pantry and recipes.</p>
 
-    <button type="button" class="btn-google" id="btnGoogle" onclick="googleSignIn()">
+    <button class="btn-google" id="btnGoogle" onclick="googleSignIn()">
       <span class="g-icon"></span>
       <span id="gText">Continue with Google</span>
       <span class="g-spinner" id="gSpinner"></span>
@@ -47,13 +47,13 @@ function renderLogin(prefillEmail = '') {
         <div class="f-wrap">
           <input type="password" id="password" placeholder="Your password"
             oninput="clearErrors(); validateLogin()">
-          <button type="button" class="btn-eye" id="btnEye" onclick="togglePw('password','btnEye')">👁</button>
+          <button class="btn-eye" id="btnEye" onclick="togglePw('password','btnEye')">👁</button>
         </div>
         <span class="f-err" id="pwErr"></span>
       </div>
     </div>
 
-    <button type="button" class="btn-submit" id="btnSubmit" onclick="doLogin()" disabled>
+    <button class="btn-submit" id="btnSubmit" onclick="doLogin()" disabled>
       Sign In <span class="btn-spinner" id="spinner"></span>
     </button>
 
@@ -93,7 +93,7 @@ function renderRegister() {
         <div class="f-wrap">
           <input type="password" id="regPassword" placeholder="At least 6 characters"
             oninput="validateRegister()">
-          <button type="button" class="btn-eye" id="btnEyeReg" onclick="togglePw('regPassword','btnEyeReg')">👁</button>
+          <button class="btn-eye" id="btnEyeReg" onclick="togglePw('regPassword','btnEyeReg')">👁</button>
         </div>
         <span class="f-err" id="regPwErr"></span>
       </div>
@@ -102,13 +102,13 @@ function renderRegister() {
         <div class="f-wrap">
           <input type="password" id="regPasswordConf" placeholder="Repeat your password"
             oninput="validateRegister()">
-          <button type="button" class="btn-eye" id="btnEyeConf" onclick="togglePw('regPasswordConf','btnEyeConf')">👁</button>
+          <button class="btn-eye" id="btnEyeConf" onclick="togglePw('regPasswordConf','btnEyeConf')">👁</button>
         </div>
         <span class="f-err" id="regPwConfErr"></span>
       </div>
     </div>
 
-    <button type="button" class="btn-submit" id="btnRegSubmit" onclick="doRegister()" disabled>
+    <button class="btn-submit" id="btnRegSubmit" onclick="doRegister()" disabled>
       Create Account <span class="btn-spinner" id="regSpinner"></span>
     </button>
 
@@ -155,51 +155,88 @@ function validateRegister() {
 
 // ── LOGIN ─────────────────────────────────────────────────────
 async function doLogin() {
-const email = document.getElementById('email').value.trim();
-const pw = document.getElementById('password').value;
-const response = await fetch('login_api.php', {
-method: 'POST',
-headers: {
-'Content-Type': 'application/json'
-},
-body: JSON.stringify({ email, password: pw })
-});
-const data = await response.json();
-if (!data.success) {
-document.getElementById('msg').textContent = data.message;
-return;
-}
-location.href = 'index.php';
-}
+  const btn = document.getElementById('btnSubmit');
+  const spinner = document.getElementById('spinner');
+  const msg = document.getElementById('msg');
+  
+  btn.disabled = true;
+  spinner.style.display = 'inline-block';
+  msg.textContent = '';
 
+  try {
+    const email = document.getElementById('email').value.trim();
+    const pw = document.getElementById('password').value;
+    
+    const response = await fetch('login_api.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pw })
+    });
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+      msg.textContent = data.message;
+      msg.style.color = 'var(--red)';
+      btn.disabled = false;
+      spinner.style.display = 'none';
+      return;
+    }
+    
+    msg.textContent = '✓ Logging in...';
+    msg.style.color = '#16a34a';
+    setTimeout(() => location.href = 'index.php', 600);
+  } catch (err) {
+    console.error('Login error:', err);
+    msg.textContent = '⚠️ Connection error';
+    msg.style.color = 'var(--red)';
+    btn.disabled = false;
+    spinner.style.display = 'none';
+  }
+}
 
 // ── REGISTER ──────────────────────────────────────────────────
 async function doRegister() {
-  const username = document.getElementById('regUsername').value.trim();
-  const email = document.getElementById('regEmail').value.trim();
-  const password = document.getElementById('regPassword').value;
-  const confirm = document.getElementById('regPasswordConf').value;
+  const btn = document.getElementById('btnRegSubmit');
+  const spinner = document.getElementById('regSpinner');
+  const msg = document.getElementById('msg');
+  
+  btn.disabled = true;
+  spinner.style.display = 'inline-block';
+  msg.textContent = '';
 
-  if (password !== confirm) return;
-
-  const response = await fetch('register.php', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ username, email, password })
-  });
-
-  const data = await response.json();
-
-  if (!data.success) {
-    document.getElementById('msg').textContent = data.message;
-    return;
+  try {
+    const username = document.getElementById('regUsername').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+    
+    const response = await fetch('register.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, email, password })
+    });
+    
+    const data = await response.json();
+    
+    if (!data.success) {
+      msg.textContent = data.message;
+      msg.style.color = 'var(--red)';
+      btn.disabled = false;
+      spinner.style.display = 'none';
+      return;
+    }
+    
+    msg.textContent = '✓ Account created! Redirecting...';
+    msg.style.color = '#16a34a';
+    setTimeout(() => location.href = 'index.php', 600);
+  } catch (err) {
+    console.error('Register error:', err);
+    msg.textContent = '⚠️ Connection error';
+    msg.style.color = 'var(--red)';
+    btn.disabled = false;
+    spinner.style.display = 'none';
   }
-
-  location.href = 'index.php';
 }
-
 
 // ── GOOGLE OAUTH 2.0 ──────────────────────────────────────────
 // Replace the Client ID below with your own from:
@@ -275,3 +312,8 @@ function googleSignIn() {
 
   client.requestAccessToken({ prompt: 'select_account' });
 }
+
+// ── INIT ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  renderLogin();
+});
