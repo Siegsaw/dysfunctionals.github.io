@@ -231,16 +231,28 @@
 }
 .ing-chip-qty { color: var(--muted); font-size: 12px; }
 .chip-rm {
-  background: none;
+  background: rgba(0,0,0,.04);
   border: none;
   color: var(--muted2);
-  font-size: 13px;
-  padding: 0 2px;
+  font-size: 12px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  padding: 0;
   line-height: 1;
   cursor: pointer;
-  display: flex; align-items: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: .65;
+  transition: opacity .15s, background .15s, color .15s, transform .15s;
 }
-.chip-rm:hover { color: var(--red); }
+.chip-rm:hover {
+  opacity: 1;
+  background: var(--rl);
+  color: var(--red);
+  transform: scale(1.05);
+}
 
 /* ── RESULTS SECTION ── */
 .results-section { margin-top: 32px; }
