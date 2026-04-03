@@ -108,7 +108,11 @@ function showToast(message) {
 
 function getIngredientObj(name) {
   const trimmed = (name || '').trim().toLowerCase();
-  return ALL_ING.find(i => i.name.toLowerCase() === trimmed) || null;
+
+  return ALL_ING.find(i => 
+    i.name.toLowerCase() === trimmed ||
+    i.name.toLowerCase().includes(trimmed)
+  ) || null;
 }
 
 function findCanonicalIngredientName(name) {
@@ -229,7 +233,9 @@ function sanitizeIngredientList(entries) {
 
   return cleaned;
 }
-
+function getInvMap() {
+  return combineIngredientEntries([...serverInventory, ...searchIngs]);
+}
 // ── DATA LOADING ───────────────────────────────────────────────
 async function loadIngredients() {
   const response = await fetch('get_ingredients.php', { cache: 'no-store' });
