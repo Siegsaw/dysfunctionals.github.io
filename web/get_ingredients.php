@@ -2,12 +2,24 @@
 header('Content-Type: application/json');
 require '/var/www/private/db.php';
 
-$result = $conn->query('SELECT name_ing FROM ingredients ORDER BY name_ing ASC');
+$result = $conn->query("
+  SELECT 
+    ingredient_id,
+    name_ing,
+    default_unit
+  FROM ingredients
+  ORDER BY name_ing
+");
 
-$ingredients = [];
+$data = [];
+
 while ($row = $result->fetch_assoc()) {
-    $ingredients[] = $row['name_ing'];
+  $data[] = [
+    'id' => (int)$row['ingredient_id'],
+    'name' => $row['name_ing'],
+    'default_unit' => $row['default_unit']
+  ];
 }
 
-echo json_encode($ingredients);
+echo json_encode($data);
 ?>
