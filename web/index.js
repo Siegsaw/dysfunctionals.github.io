@@ -307,7 +307,7 @@ function initAutofill() {
       d.tabIndex = 0;
 
       d.addEventListener('mousedown', () => {
-        input.value = h;
+        input.value = h.name;
         refreshUnitOptions();
         validateForm();
         box.style.display = 'none';
