@@ -1,7 +1,20 @@
 <?php
 header('Content-Type: application/json');
+
+// Debug: Check if db.php exists and load it
+if (!file_exists('/var/www/private/db.php')) {
+    echo json_encode(['success' => false, 'message' => 'Database config not found']);
+    exit;
+}
+
 require '/var/www/private/db.php';
 session_start();
+
+// Debug: Check if connection exists
+if (!isset($conn) || !$conn) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    exit;
+}
 
 $data = json_decode(file_get_contents('php://input'), true);
 
@@ -27,8 +40,16 @@ if ($result->num_rows > 0) {
 $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
 $stmt = $conn->prepare('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)');
+if (!$stmt) {
+    echo json_encode(['success' => false, 'message' => 'Database error: ' . $conn->error]);
+    exit;
+}
+
 $stmt->bind_param('sss', $username, $email, $passwordHash);
-$stmt->execute();
+if (!$stmt->execute()) {
+    echo json_encode(['success' => false, 'message' => 'Insert failed: ' . $stmt->error]);
+    exit;
+}
 
 $_SESSION['user_id'] = $stmt->insert_id;
 $_SESSION['username'] = $username;
