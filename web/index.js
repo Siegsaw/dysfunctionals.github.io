@@ -106,22 +106,24 @@ function showToast(message) {
   console.log(message);
 }
 
+function getIngredientObj(name) {
+  const trimmed = (name || '').trim().toLowerCase();
+  return ALL_ING.find(i => i.name.toLowerCase() === trimmed) || null;
+}
+
 function findCanonicalIngredientName(name) {
-  const trimmed = (name || '').trim();
-  if (!trimmed) return '';
-  const exact = ALL_ING.find(i => i === trimmed);
-  if (exact) return exact;
-  const insensitive = ALL_ING.find(i => i.toLowerCase() === trimmed.toLowerCase());
-  return insensitive || trimmed;
+  const ing = getIngredientObj(name);
+  return ing ? ing.name : '';
 }
 
 function getAllowedUnits(name) {
-  const canonical = findCanonicalIngredientName(name);
-  return INGREDIENT_UNIT_RULES[canonical] || DEFAULT_UNITS;
+  const ing = getIngredientObj(name);
+  return ing ? [ing.default_unit] : DEFAULT_UNITS;
 }
 
 function isUnitAllowed(name, unit) {
-  return getAllowedUnits(name).includes(unit);
+  const ing = getIngredientObj(name);
+  return ing ? ing.default_unit === unit : false;
 }
 
 function refreshUnitOptions() {
@@ -129,14 +131,11 @@ function refreshUnitOptions() {
   const unitSelect = document.getElementById('ingUnit');
   if (!unitSelect) return;
 
-  const allowed = getAllowedUnits(name);
-  const current = unitSelect.value;
+  const ing = getIngredientObj(name);
+  const unit = ing ? ing.default_unit : 'pcs';
 
-  unitSelect.innerHTML = allowed
-    .map(unit => `<option value="${unit}">${unit}</option>`)
-    .join('');
-
-  unitSelect.value = allowed.includes(current) ? current : allowed[0];
+  unitSelect.innerHTML = `<option value="${unit}">${unit}</option>`;
+  unitSelect.value = unit;
 }
 
 function convertToBase(amount, unit) {
@@ -212,11 +211,14 @@ function sanitizeIngredientList(entries) {
 
   entries.forEach(entry => {
     const canonicalName = findCanonicalIngredientName(entry.name);
+    if (!canonicalName) return;
+
     const amount = Math.round((parseFloat(entry.amount) || 0) * 1000) / 1000;
     const allowedUnits = getAllowedUnits(canonicalName);
     const unit = allowedUnits.includes(entry.unit) ? entry.unit : allowedUnits[0];
 
-    if (!canonicalName || !amount || amount <= 0) return;
+    if (!amount || amount <= 0) return;
+
     cleaned.push({
       ...entry,
       name: canonicalName,
@@ -228,13 +230,9 @@ function sanitizeIngredientList(entries) {
   return cleaned;
 }
 
-function getInvMap() {
-  return combineIngredientEntries([...serverInventory, ...searchIngs]);
-}
-
 // ── DATA LOADING ───────────────────────────────────────────────
 async function loadIngredients() {
-  const response = await fetch('get_ingredients.php');
+  const response = await fetch('get_ingredients.php', { cache: 'no-store' });
   if (!response.ok) throw new Error('Failed to load ingredients');
 
   const data = await response.json();
@@ -242,7 +240,7 @@ async function loadIngredients() {
 }
 
 async function loadRecipes() {
-  const response = await fetch('get_recipes.php');
+  const response = await fetch('get_recipes.php', { cache: 'no-store' });
   if (!response.ok) throw new Error('Failed to load recipes');
 
   const data = await response.json();
@@ -256,10 +254,10 @@ function buildCommonGrid() {
 
   grid.innerHTML = '';
 
-  COMMON_LIST.forEach(c => {
+  ALL_ING.slice(0, 12).forEach(c => {
     const b = document.createElement('button');
     b.className = 'cmn-btn';
-    b.innerHTML = `<span>${c.icon}</span><span>${c.name}</span>`;
+    b.innerHTML = `<span>${c.name}</span>`;
     b.onclick = () => {
       document.getElementById('ingName').value = c.name;
       refreshUnitOptions();
@@ -294,7 +292,7 @@ function initAutofill() {
     }
 
     const hits = ALL_ING
-      .filter(i => i.toLowerCase().includes(val.toLowerCase()))
+      .filter(i => i.name.toLowerCase().includes(val.toLowerCase()))
       .slice(0, 7);
 
     if (!hits.length) {
@@ -305,7 +303,7 @@ function initAutofill() {
     hits.forEach((h, idx) => {
       const d = document.createElement('div');
       d.className = 'sug-item';
-      d.textContent = h;
+      d.textContent = h.name;
       d.tabIndex = 0;
 
       d.addEventListener('mousedown', () => {
@@ -318,7 +316,7 @@ function initAutofill() {
 
       d.addEventListener('keydown', e => {
         if (e.key === 'Enter') {
-          input.value = h;
+          input.value = h.name;
           refreshUnitOptions();
           validateForm();
           box.style.display = 'none';
@@ -362,7 +360,7 @@ function validateForm() {
   const btn = document.getElementById('btnAddIng');
 
   const qtyOk = !isNaN(qty) && qty > 0;
-  const exists = ALL_ING.some(ing => ing.toLowerCase() === inputName.toLowerCase());
+  const exists = !!getIngredientObj(inputName);
   const valid = exists && qtyOk;
 
   if (btn) btn.disabled = !valid;
@@ -378,19 +376,19 @@ function validateForm() {
 // ── ADD / REMOVE ───────────────────────────────────────────────
 async function addIng() {
   const rawName = document.getElementById('ingName').value.trim();
+  const ingredient = getIngredientObj(rawName);
   const qty = parseFloat(document.getElementById('ingQty').value);
   const unit = document.getElementById('ingUnit').value;
 
-  const exists = ALL_ING.some(ing => ing.toLowerCase() === rawName.toLowerCase());
-  if (!exists) {
-    showToast('⚠️ Please select a valid ingredient');
+  if (!ingredient) {
+    showToast('⚠️ Invalid ingredient');
     validateForm();
     return;
   }
 
-  const name = findCanonicalIngredientName(rawName);
+  const name = ingredient.name;
 
-  if (!name || isNaN(qty) || qty <= 0) {
+  if (isNaN(qty) || qty <= 0) {
     validateForm();
     return;
   }
@@ -687,7 +685,6 @@ async function loadAndRenderInventory() {
 // ── INIT ───────────────────────────────────────────────────────
 // ── INIT ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  buildCommonGrid();
   initAutofill();
   refreshUnitOptions();
   validateForm();
@@ -696,6 +693,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     await loadIngredients();
+    buildCommonGrid();
   } catch (err) {
     console.error('Failed to load ingredients:', err);
   }
