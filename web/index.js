@@ -482,7 +482,7 @@ function renderChips() {
     chip.className = 'ing-chip';
 
     const removeHandler = isServerItem
-      ? `removeServerIng(${idx})`
+      ? `removeInventoryIng(${i.ingredient_id})`
       : `removeIng(${idx - serverInventory.length})`;
 
     chip.innerHTML = `
@@ -666,6 +666,7 @@ async function loadAndRenderInventory() {
 }
 
 // ── INIT ───────────────────────────────────────────────────────
+// ── INIT ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   buildCommonGrid();
   initAutofill();
@@ -685,9 +686,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Initialization error:', err);
     showToast('⚠️ Failed to load ingredients or recipes');
   }
-  window.addEventListener('pageshow', async () => {
+});
+
+window.addEventListener('pageshow', async (event) => {
   try {
-    await loadAndRenderInventory();
+    if (event.persisted) {
+      await loadAndRenderInventory();
+    }
   } catch (err) {
     console.error('Pageshow inventory reload error:', err);
   }
