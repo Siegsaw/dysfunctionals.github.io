@@ -3,9 +3,6 @@ header('Content-Type: application/json');
 require '/var/www/private/db.php';
 require 'session.php';
 
-// session_start() is already called in session.php, don't call it again
-
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     echo json_encode([]);
     exit;
@@ -14,7 +11,11 @@ if (!isset($_SESSION['user_id'])) {
 $userId = $_SESSION['user_id'];
 
 $stmt = $conn->prepare('
-    SELECT i.name_ing as name, ui.quantity as amount, ui.unit 
+    SELECT 
+        i.ingredient_id,
+        i.name_ing AS name,
+        ui.quantity AS amount,
+        ui.unit
     FROM user_inventory ui
     JOIN ingredients i ON ui.ingredient_id = i.ingredient_id
     WHERE ui.user_id = ?
