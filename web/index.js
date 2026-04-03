@@ -355,6 +355,7 @@ function validateForm() {
 // ── ADD / REMOVE ───────────────────────────────────────────────
 async function addIng() {
   const rawName = document.getElementById('ingName').value.trim();
+  const exists = ALL_ING.some(ing => ing.toLowerCase() === rawName.toLowerCase());
   const name = findCanonicalIngredientName(rawName);
   const qty  = parseFloat(document.getElementById('ingQty').value);
   const unit = document.getElementById('ingUnit').value;
