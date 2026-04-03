@@ -37,18 +37,32 @@ if ($ingredientResult->num_rows === 0) {
     $ingredientId = $ingredient['ingredient_id'];
 }
 
-// Add or increment quantity using INSERT ... ON DUPLICATE KEY UPDATE
-$insertStmt = $conn->prepare('
-    INSERT INTO user_inventory (user_id, ingredient_id, quantity, unit) 
-    VALUES (?, ?, ?, ?)
-    ON DUPLICATE KEY UPDATE 
-    quantity = quantity + VALUES(quantity)
-');
-$insertStmt->bind_param('iids', $userId, $ingredientId, $amount, $unit);
+// Check if user already has this ingredient (for same unit)
+$checkStmt = $conn->prepare('SELECT inventory_id, quantity FROM user_inventory WHERE user_id = ? AND ingredient_id = ?');
+$checkStmt->bind_param('ii', $userId, $ingredientId);
+$checkStmt->execute();
+$checkResult = $checkStmt->get_result();
 
-if (!$insertStmt->execute()) {
-    echo json_encode(['success' => false, 'message' => 'Failed to add ingredient']);
-    exit;
+if ($checkResult->num_rows > 0) {
+    // Update existing - ADD to quantity
+    $row = $checkResult->fetch_assoc();
+    $newQuantity = floatval($row['quantity']) + $amount;
+    $inventoryId = $row['inventory_id'];
+    
+    $updateStmt = $conn->prepare('UPDATE user_inventory SET quantity = ? WHERE inventory_id = ?');
+    $updateStmt->bind_param('di', $newQuantity, $inventoryId);
+    if (!$updateStmt->execute()) {
+        echo json_encode(['success' => false, 'message' => 'Failed to update quantity']);
+        exit;
+    }
+} else {
+    // Insert new inventory entry
+    $insertStmt = $conn->prepare('INSERT INTO user_inventory (quantity, unit, user_id, ingredient_id) VALUES (?, ?, ?, ?)');
+    $insertStmt->bind_param('dsii', $amount, $unit, $userId, $ingredientId);
+    if (!$insertStmt->execute()) {
+        echo json_encode(['success' => false, 'message' => 'Failed to add ingredient']);
+        exit;
+    }
 }
 
 echo json_encode(['success' => true, 'message' => 'Ingredient added']);
