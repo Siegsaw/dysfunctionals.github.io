@@ -51,12 +51,13 @@ async function updateAuthUI() {
 
   const signInBtn = document.getElementById('btnSignIn');
   const logoutBtn = document.getElementById('btnLogout');
-  const badge     = document.getElementById('userBadge');
+  const badge = document.getElementById('userBadge');
 
-  if (signInBtn) signInBtn.style.display = on ? 'none'         : 'inline-flex';
-  if (logoutBtn) logoutBtn.style.display = on ? 'inline-flex'  : 'none';
+  if (signInBtn) signInBtn.style.display = auth.loggedIn ? 'none' : 'inline-flex';
+  if (logoutBtn) logoutBtn.style.display = auth.loggedIn ? 'inline-flex' : 'none';
+
   if (badge) {
-    badge.style.display = on ? 'inline-block' : 'none';
+    badge.style.display = auth.loggedIn ? 'inline-block' : 'none';
     badge.textContent = auth.username || auth.email || '';
   }
 }
