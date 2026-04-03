@@ -676,23 +676,27 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateCalValue();
 
   try {
-    await Promise.all([
-      loadIngredients(),
-      loadRecipes()
-    ]);
+    await loadIngredients();
+  } catch (err) {
+    console.error('Failed to load ingredients:', err);
+  }
 
+  try {
+    await loadRecipes();
+  } catch (err) {
+    console.error('Failed to load recipes:', err);
+  }
+
+  try {
     await loadAndRenderInventory();
   } catch (err) {
-    console.error('Initialization error:', err);
-    showToast('⚠️ Failed to load ingredients or recipes');
+    console.error('Failed to load inventory:', err);
   }
 });
 
-window.addEventListener('pageshow', async (event) => {
+window.addEventListener('pageshow', async () => {
   try {
-    if (event.persisted) {
-      await loadAndRenderInventory();
-    }
+    await loadAndRenderInventory();
   } catch (err) {
     console.error('Pageshow inventory reload error:', err);
   }
