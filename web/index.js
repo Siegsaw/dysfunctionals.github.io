@@ -649,7 +649,7 @@ function updateCalValue() {
 // ── INVENTORY ──────────────────────────────────────────────────
 async function loadAndRenderInventory() {
   try {
-    const response = await fetch('get_inventory.php');
+    const response = await fetch('get_inventory.php', { cache: 'no-store' });
     if (!response.ok) {
       console.error('Failed to fetch inventory:', response.status);
       return;
@@ -684,5 +684,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (err) {
     console.error('Initialization error:', err);
     showToast('⚠️ Failed to load ingredients or recipes');
+  }
+  window.addEventListener('pageshow', async () => {
+  try {
+    await loadAndRenderInventory();
+  } catch (err) {
+    console.error('Pageshow inventory reload error:', err);
   }
 });
