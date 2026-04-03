@@ -268,8 +268,3 @@ function googleSignIn() {
 
   client.requestAccessToken({ prompt: 'select_account' });
 }
-
-// ── INIT ──────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  renderLogin();
-});
