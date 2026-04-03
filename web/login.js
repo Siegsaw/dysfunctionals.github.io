@@ -3,9 +3,21 @@
 // ============================================================
 
 // Redirect if already logged in
-if (localStorage.getItem('isLoggedIn') === 'true') {
-  location.href = 'index.php';
-}
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const response = await fetch('auth_status.php');
+    const auth = await response.json();
+
+    if (auth.loggedIn) {
+      location.href = 'index.php';
+      return;
+    }
+  } catch (err) {
+    console.error('Auth status check failed:', err);
+  }
+
+  renderLogin();
+});
 
 // ── RENDER LOGIN FORM ─────────────────────────────────────────
 function renderLogin(prefillEmail = '') {
