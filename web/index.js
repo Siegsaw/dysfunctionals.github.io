@@ -375,9 +375,17 @@ function validateForm() {
 // ── ADD / REMOVE ───────────────────────────────────────────────
 async function addIng() {
   const rawName = document.getElementById('ingName').value.trim();
-  const name = findCanonicalIngredientName(rawName);
   const qty = parseFloat(document.getElementById('ingQty').value);
   const unit = document.getElementById('ingUnit').value;
+
+  const exists = ALL_ING.some(ing => ing.toLowerCase() === rawName.toLowerCase());
+  if (!exists) {
+    showToast('⚠️ Please select a valid ingredient');
+    validateForm();
+    return;
+  }
+
+  const name = findCanonicalIngredientName(rawName);
 
   if (!name || isNaN(qty) || qty <= 0) {
     validateForm();
