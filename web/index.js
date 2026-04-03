@@ -457,44 +457,39 @@ function clearForm() {
 
 // ── CHIP RENDERING ─────────────────────────────────────────────
 function renderChips() {
-  const sec = document.getElementById('chipsSection');
+  const sec  = document.getElementById('chipsSection');
   const list = document.getElementById('chipsList');
-  const lbl = document.getElementById('chipsLabel');
+  const lbl  = document.getElementById('chipsLabel');
+
+  if (!sec || !list || !lbl) return;
 
   list.innerHTML = '';
 
-  const combinedChips = [
-    ...serverInventory.map(item => ({ ...item, source: 'server' })),
-    ...searchIngs.map((item, idx) => ({ ...item, source: 'search', searchIndex: idx }))
-  ];
+  const combined = [...serverInventory, ...searchIngs];
 
-  if (!combinedChips.length) {
+  if (!combined.length) {
     sec.style.display = 'none';
     return;
   }
 
   sec.style.display = 'block';
-  lbl.textContent = `YOUR INGREDIENTS (${combinedChips.length})`;
+  lbl.textContent = `YOUR INGREDIENTS (${combined.length})`;
 
-  combinedChips.forEach(item => {
+  combined.forEach((i, idx) => {
+    const isServerItem = idx < serverInventory.length;
+
     const chip = document.createElement('div');
     chip.className = 'ing-chip';
 
-    const qtyText = item.amount ? `<span class="ing-chip-qty">${item.amount} ${item.unit}</span>` : '';
+    const removeHandler = isServerItem
+      ? `removeServerIng(${idx})`
+      : `removeIng(${idx - serverInventory.length})`;
 
     chip.innerHTML = `
-      <span>${item.name}</span>
-      ${qtyText}
-      <button class="chip-rm" title="Remove">✕</button>
+      <span>${i.name}</span>
+      ${i.amount ? `<span class="ing-chip-qty">${i.amount} ${i.unit}</span>` : ''}
+      <button class="chip-rm" onclick="${removeHandler}" title="Remove">✕</button>
     `;
-
-    const rmBtn = chip.querySelector('.chip-rm');
-
-    if (item.source === 'server') {
-      rmBtn.addEventListener('click', () => removeInventoryIng(item.ingredient_id));
-    } else {
-      rmBtn.addEventListener('click', () => removeIng(item.searchIndex));
-    }
 
     list.appendChild(chip);
   });
