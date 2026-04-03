@@ -240,8 +240,7 @@ function undoRemove() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const items = await sanitizeInventory(loadUserIng());
-  saveUserIng(items);
+  items = await sanitizeInventory(await loadUserIng());
   document.getElementById('search').addEventListener('input', render);
   document.getElementById('overlay').addEventListener('click', e => {
     if (e.target === document.getElementById('overlay'))
