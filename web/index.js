@@ -1,76 +1,7 @@
 // ============================================================
 // PantryChef — Home / Recipe Search Logic
 // ============================================================
-
-
-
 const DEFAULT_UNITS = ["g", "kg", "ml", "L", "cups", "tbsp", "tsp", "pcs"];
-
-// REIKES ISTRINTI
-const INGREDIENT_UNIT_RULES = {
-  "Chicken Breast": ["g", "kg"],
-  "Chicken Thigh": ["g", "kg"],
-  "Ground Beef": ["g", "kg"],
-  "Salmon": ["g", "kg"],
-  "Shrimp": ["g", "kg"],
-  "Tofu": ["g", "kg"],
-  "Rice": ["g", "kg", "cups"],
-  "Pasta": ["g", "kg", "cups"],
-  "Bread": ["pcs"],
-  "Flour": ["g", "kg", "cups", "tbsp", "tsp"],
-  "Sugar": ["g", "kg", "cups", "tbsp", "tsp"],
-  "Salt": ["g", "kg", "tbsp", "tsp"],
-  "Pepper": ["g", "tbsp", "tsp"],
-  "Olive Oil": ["ml", "L", "tbsp", "tsp"],
-  "Vegetable Oil": ["ml", "L", "tbsp", "tsp"],
-  "Butter": ["g", "kg", "tbsp"],
-  "Milk": ["ml", "L"],
-  "Heavy Cream": ["ml", "L"],
-  "Eggs": ["pcs"],
-  "Onion": ["pcs", "g", "kg"],
-  "Garlic": ["pcs", "g"],
-  "Tomato": ["pcs", "g", "kg"],
-  "Potato": ["pcs", "g", "kg"],
-  "Carrot": ["pcs", "g", "kg"],
-  "Broccoli": ["pcs", "g", "kg"],
-  "Spinach": ["g", "kg", "cups"],
-  "Bell Pepper": ["pcs", "g"],
-  "Mushroom": ["g", "kg", "pcs"],
-  "Zucchini": ["pcs", "g", "kg"],
-  "Cucumber": ["pcs", "g", "kg"],
-  "Lettuce": ["pcs"],
-  "Corn": ["pcs", "g"],
-  "Cheese": ["g", "kg"],
-  "Mozzarella": ["g", "kg"],
-  "Parmesan": ["g", "kg", "tbsp"],
-  "Cheddar": ["g", "kg"],
-  "Soy Sauce": ["ml", "L", "tbsp", "tsp"],
-  "Vinegar": ["ml", "L", "tbsp", "tsp"],
-  "Lemon": ["pcs"],
-  "Lime": ["pcs"],
-  "Ginger": ["g", "kg"],
-  "Cumin": ["g", "tbsp", "tsp"],
-  "Paprika": ["g", "tbsp", "tsp"],
-  "Oregano": ["g", "tbsp", "tsp"],
-  "Basil": ["g", "tbsp", "tsp"],
-  "Thyme": ["g", "tbsp", "tsp"],
-  "Rosemary": ["g", "tbsp", "tsp"],
-  "Chili Flakes": ["g", "tbsp", "tsp"],
-  "Chickpeas": ["g", "kg", "cups"],
-  "Black Beans": ["g", "kg", "cups"],
-  "Lentils": ["g", "kg", "cups"],
-  "Coconut Milk": ["ml", "L"],
-  "Honey": ["ml", "tbsp", "tsp"],
-  "Maple Syrup": ["ml", "tbsp", "tsp"],
-  "Vanilla Extract": ["ml", "tbsp", "tsp"],
-  "Baking Powder": ["g", "tbsp", "tsp"],
-  "Baking Soda": ["g", "tbsp", "tsp"],
-  "Avocado": ["pcs", "g"],
-  "Sweet Potato": ["pcs", "g", "kg"],
-  "Celery": ["pcs", "g"],
-  "Green Beans": ["g", "kg"],
-  "Peas": ["g", "kg", "cups"]
-};
 
 const UNIT_GROUPS = {
   g: "weight",
