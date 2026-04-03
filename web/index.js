@@ -336,31 +336,24 @@ function validateForm() {
   const qty = parseFloat(document.getElementById('ingQty').value);
   const btn = document.getElementById('btnAddIng');
 
-  // 1. Patikriname, ar kiekis yra tinkamas skaičius
   const qtyOk = !isNaN(qty) && qty > 0;
-
-  // 2. Patikriname, ar įvestas pavadinimas egzistuoja ALL_ING sąraše
-  // Naudojame .toLowerCase(), kad patikra nebūtų jautri raidžių dydžiui
   const exists = ALL_ING.some(ing => ing.toLowerCase() === inputName.toLowerCase());
-
-  // Mygtukas aktyvuojamas tik jei abi sąlygos teisingos
   const valid = exists && qtyOk;
 
   if (btn) {
     btn.disabled = !valid;
   }
   
-  // (Pasirinktinai) Galite pridėti vizualų įspėjimą input laukeliui
   const nameInput = document.getElementById('ingName');
   if (inputName.length > 2 && !exists) {
-    nameInput.style.borderColor = "var(--err, #ff4d4d)"; // Parodo klaidą, jei tokio produkto nėra
+    nameInput.style.borderColor = "var(--err, #ff4d4d)";
   } else {
-    nameInput.style.borderColor = ""; // Grąžina standartinę spalvą
+    nameInput.style.borderColor = "";
   }
 }
 
 // ── ADD / REMOVE ───────────────────────────────────────────────
-function addIng() {
+async function addIng() {
   const rawName = document.getElementById('ingName').value.trim();
   const name = findCanonicalIngredientName(rawName);
   const qty  = parseFloat(document.getElementById('ingQty').value);
@@ -377,26 +370,32 @@ function addIng() {
     return;
   }
 
-  const ex = searchIngs.findIndex(i => i.name.toLowerCase() === name.toLowerCase());
-  if (ex >= 0) {
-    if (searchIngs[ex].unit !== unit) {
-      showToast(`⚠️ "${name}" jau pridėtas su kitu vienetu (${searchIngs[ex].unit}).`);
-      return;
+  // Disable button during submission
+  const btn = document.getElementById('btnAddIng');
+  btn.disabled = true;
+
+  try {
+    const response = await fetch('add_inventory.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, amount: qty, unit })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      showToast(`✓ Added ${qty} ${unit} of ${name}`);
+      clearForm();
+      await loadAndRenderInventory();
+    } else {
+      showToast('⚠️ ' + (data.message || 'Failed to add ingredient'));
+      btn.disabled = false;
     }
-    searchIngs[ex].amount = Math.round(((parseFloat(searchIngs[ex].amount) || 0) + qty) * 1000) / 1000;
-  } else {
-    searchIngs.push({ name, amount: Math.round(qty * 1000) / 1000, unit });
+  } catch (err) {
+    console.error('Error adding ingredient:', err);
+    showToast('⚠️ Connection error');
+    btn.disabled = false;
   }
-
-  searchIngs = sanitizeIngredientList(searchIngs);
-  persistSearchIngs();
-  clearForm();
-  renderChips();
-  runSearch();
-}
-
-function persistSearchIngs() {
-  saveUserIng(sanitizeIngredientList(searchIngs));
 }
 
 function clearForm() {
@@ -553,8 +552,32 @@ function updateCalValue() {
   runSearch(); 
 }
 
+// ── LOAD INVENTORY FROM SERVER ─────────────────────────────────
+async function loadAndRenderInventory() {
+  try {
+    const response = await fetch('get_inventory.php');
+    const inventory = await response.json();
+    
+    // Sanitize and update searchIngs
+    searchIngs = sanitizeIngredientList(inventory);
+    
+    // Re-render everything
+    renderChips();
+    runSearch();
+    
+  } catch (err) {
+    console.error('Error loading inventory:', err);
+  }
+}
+
+// ── PERSIST SEARCH INGREDIENTS ─────────────────────────────────
+function persistSearchIngs() {
+  // This is no longer needed since we use add_inventory.php
+  // But keeping for compatibility with removeIng()
+}
+
 // ── INIT ───────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   buildCommonGrid();
   initAutofill();
   refreshUnitOptions();
@@ -562,12 +585,6 @@ document.addEventListener('DOMContentLoaded', () => {
   updateTimeValue();
   updateCalValue();
   
-  const saved = sanitizeIngredientList(loadUserIng());
-  searchIngs = saved;
-  saveUserIng(saved);
-
-  if (saved.length > 0) {
-    renderChips();
-    runSearch();
-  }
+  // Load inventory from server on page load
+  await loadAndRenderInventory();
 });
