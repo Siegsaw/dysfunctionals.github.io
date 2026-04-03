@@ -8,9 +8,9 @@ requireLogin();
 $userId = $_SESSION['user_id'];
 $data = json_decode(file_get_contents('php://input'), true);
 
-$name = $data['name'] ?? '';
+$name = trim($data['name'] ?? '');
 $amount = floatval($data['amount'] ?? 0);
-$unit = $data['unit'] ?? '';
+$unit = trim($data['unit'] ?? '');
 
 if (!$name || $amount <= 0 || !$unit) {
     echo json_encode(['success' => false, 'message' => 'Invalid input']);
@@ -37,32 +37,18 @@ if ($ingredientResult->num_rows === 0) {
     $ingredientId = $ingredient['ingredient_id'];
 }
 
-// Check if user already has this ingredient
-$checkStmt = $conn->prepare('SELECT inventory_id, quantity FROM user_inventory WHERE user_id = ? AND ingredient_id = ?');
-$checkStmt->bind_param('ii', $userId, $ingredientId);
-$checkStmt->execute();
-$checkResult = $checkStmt->get_result();
+// Add or increment quantity using INSERT ... ON DUPLICATE KEY UPDATE
+$insertStmt = $conn->prepare('
+    INSERT INTO user_inventory (user_id, ingredient_id, quantity, unit) 
+    VALUES (?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE 
+    quantity = quantity + VALUES(quantity)
+');
+$insertStmt->bind_param('iids', $userId, $ingredientId, $amount, $unit);
 
-if ($checkResult->num_rows > 0) {
-    // Update quantity (ADD to it)
-    $row = $checkResult->fetch_assoc();
-    $newQuantity = $row['quantity'] + $amount;
-    $inventoryId = $row['inventory_id'];
-    
-    $updateStmt = $conn->prepare('UPDATE user_inventory SET quantity = ? WHERE inventory_id = ?');
-    $updateStmt->bind_param('di', $newQuantity, $inventoryId);
-    if (!$updateStmt->execute()) {
-        echo json_encode(['success' => false, 'message' => 'Failed to update quantity']);
-        exit;
-    }
-} else {
-    // Insert new inventory entry
-    $insertStmt = $conn->prepare('INSERT INTO user_inventory (quantity, unit, user_id, ingredient_id) VALUES (?, ?, ?, ?)');
-    $insertStmt->bind_param('dsii', $amount, $unit, $userId, $ingredientId);
-    if (!$insertStmt->execute()) {
-        echo json_encode(['success' => false, 'message' => 'Failed to add ingredient']);
-        exit;
-    }
+if (!$insertStmt->execute()) {
+    echo json_encode(['success' => false, 'message' => 'Failed to add ingredient']);
+    exit;
 }
 
 echo json_encode(['success' => true, 'message' => 'Ingredient added']);
