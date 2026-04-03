@@ -506,42 +506,50 @@ function renderChips() {
 // ── RECIPE MATCHING ────────────────────────────────────────────
 function matchRecipes() {
   const userMap = getInvMap();
+  const maxTime = parseInt(document.getElementById('timeRange')?.value || '9999', 10);
+  const maxCalories = parseInt(document.getElementById('calRange')?.value || '999999', 10);
 
-  return RECIPES.map(recipe => {
-    let score = 0;
+  return RECIPES
+    .filter(recipe => {
+      const timeOk = recipe.time == null || recipe.time <= maxTime;
+      const calOk = recipe.calories == null || recipe.calories <= maxCalories;
+      return timeOk && calOk;
+    })
+    .map(recipe => {
+      let score = 0;
 
-    const details = recipe.ingredients.map(ri => {
-      const key = ri.name.toLowerCase();
-      const have = userMap[key];
+      const details = recipe.ingredients.map(ri => {
+        const key = ri.name.toLowerCase();
+        const have = userMap[key];
 
-      if (!have) return { ...ri, status: 'missing' };
+        if (!have) return { ...ri, status: 'missing' };
 
-      const coverage = calculateCoverage(have.displayAmount, have.displayUnit, ri.amount, ri.unit);
-      score += coverage.ratio;
+        const coverage = calculateCoverage(have.displayAmount, have.displayUnit, ri.amount, ri.unit);
+        score += coverage.ratio;
+
+        return {
+          ...ri,
+          status: coverage.status,
+          have: have.displayAmount,
+          haveUnit: have.displayUnit,
+          haveText: coverage.haveText
+        };
+      });
+
+      const pct = recipe.ingredients.length
+        ? Math.round((score / recipe.ingredients.length) * 100)
+        : 0;
 
       return {
-        ...ri,
-        status: coverage.status,
-        have: have.displayAmount,
-        haveUnit: have.displayUnit,
-        haveText: coverage.haveText
+        recipe,
+        pct,
+        details,
+        missing: details.filter(d => d.status === 'missing'),
+        partial: details.filter(d => d.status === 'partial')
       };
-    });
-
-    const pct = recipe.ingredients.length
-      ? Math.round((score / recipe.ingredients.length) * 100)
-      : 0;
-
-    return {
-      recipe,
-      pct,
-      details,
-      missing: details.filter(d => d.status === 'missing'),
-      partial: details.filter(d => d.status === 'partial')
-    };
-  })
-  .filter(r => r.pct > 0)
-  .sort((a, b) => b.pct - a.pct);
+    })
+    .filter(r => r.pct > 0)
+    .sort((a, b) => b.pct - a.pct);
 }
 
 // ── RESULTS ────────────────────────────────────────────────────
