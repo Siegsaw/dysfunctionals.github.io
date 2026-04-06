@@ -94,9 +94,9 @@
   white-space: nowrap;
 }
 .cur-val-inp {
-  min-width: 2ch;
-  width: 3ch;
-  max-width: 12ch;
+  min-width: 3ch;
+  width: 5ch;
+  max-width: 16ch;
   font-size: 14px;
   font-weight: 700;
   color: var(--ink);
