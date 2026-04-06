@@ -512,35 +512,6 @@ function runSearch() {
     const complete = r.pct === 100;
     const pc = complete ? 'pct-high' : r.pct >= 40 ? 'pct-mid' : 'pct-low';
     const bc = complete ? 'prog-high' : r.pct >= 40 ? 'prog-mid' : 'prog-low';
-
-    const card = document.createElement('div');
-    card.className = `recipe-card${complete ? ' complete' : ''}`;
-    card.innerHTML = `
-      <div class="card-top">
-        <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
-        <span class="card-pct ${pc}">${r.pct}%</span>
-      </div>
-
-      <div class="card-info">
-        <span class="recipe-calories">🔥 ${r.recipe.calories || '0'} kcal</span>
-      </div>
-
-      <div class="prog-wrap"><div class="prog-bar ${bc}"></div></div>
-      
-      ${complete
-        ? `<div class="card-sec-lbl green">✓ You have everything!</div><div class="tags">${allHaveTags}</div>`
-        : `${r.missing.length ? `<div class="card-sec-lbl">Missing:</div><div class="tags">${mTags}</div>` : ''}
-           ${r.partial.length ? `<div class="card-sec-lbl">Partial:</div><div class="tags">${pTags}</div>` : ''}`
-      }
-      
-      <button class="card-toggle" id="ct-${r.recipe.id}" onclick="toggleDetail('${r.recipe.id}')">
-        <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 3l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
-        Show all ingredients
-      </button>
-      <div class="card-detail" id="detail-${r.recipe.id}">${detailRows}</div>
-    `;
-
-    grid.appendChild(card);
     
     const mTags = r.missing.map(m => `<span class="tag tag-missing">${m.name}</span>`).join('');
     const pTags = r.partial.map(p => `<span class="tag tag-partial">${p.name} (${p.haveText}/${p.amount} ${p.unit})</span>`).join('');
@@ -572,13 +543,19 @@ function runSearch() {
         <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
         <span class="card-pct ${pc}">${r.pct}%</span>
       </div>
+
+      <div class="card-info">
+        <span class="recipe-calories">🔥 ${r.recipe.calories || '0'} kcal</span>
+      </div>
+
       <div class="prog-wrap"><div class="prog-bar ${bc}"></div></div>
-      ${
-        complete
-          ? `<div class="card-sec-lbl green">✓ You have everything!</div><div class="tags">${allHaveTags}</div>`
-          : `${r.missing.length ? `<div class="card-sec-lbl">Missing:</div><div class="tags">${mTags}</div>` : ''}
-             ${r.partial.length ? `<div class="card-sec-lbl">Partial:</div><div class="tags">${pTags}</div>` : ''}`
+      
+      ${complete
+        ? `<div class="card-sec-lbl green">✓ You have everything!</div><div class="tags">${allHaveTags}</div>`
+        : `${r.missing.length ? `<div class="card-sec-lbl">Missing:</div><div class="tags">${mTags}</div>` : ''}
+           ${r.partial.length ? `<div class="card-sec-lbl">Partial:</div><div class="tags">${pTags}</div>` : ''}`
       }
+      
       <button class="card-toggle" id="ct-${r.recipe.id}" onclick="toggleDetail('${r.recipe.id}')">
         <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 3l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
         Show all ingredients
