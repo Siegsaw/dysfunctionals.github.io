@@ -546,6 +546,7 @@ function runSearch() {
 
       <div class="card-info">
         <span class="recipe-calories">🔥 ${r.recipe.calories || '0'} kcal</span>
+        <span class="recipe-time">⏱️ ${r.recipe.time || 0} min</span>
       </div>
 
       <div class="prog-wrap"><div class="prog-bar ${bc}"></div></div>
@@ -560,7 +561,14 @@ function runSearch() {
         <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 3l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
         Show all ingredients
       </button>
-      <div class="card-detail" id="detail-${r.recipe.id}">${detailRows}</div>
+      
+      <div class="card-detail" id="detail-${r.recipe.id}">
+        <div class="time-breakdown">
+          <div>Prep time: ${r.recipe.prep_time || 0} min</div>
+          <div>Cook time: ${r.recipe.cook_time || 0} min</div>
+        </div>
+        ${detailRows}
+      </div>
     `;
 
     grid.appendChild(card);
