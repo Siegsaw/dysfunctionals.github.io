@@ -94,7 +94,7 @@
   white-space: nowrap;
 }
 .cur-val-inp {
-  min-width: 4ch;
+  min-width: 5ch;
   width: 6ch;
   max-width: 20ch;
   font-size: 14px;
