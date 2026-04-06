@@ -313,6 +313,20 @@ html.dark .pct-mid { color: #fde68a; }
     color: #aaa;
 }
 
+.recipe-time {
+  font-size: 0.85rem;
+  color: var(--muted2);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 10px;
+}
+
+.dark .recipe-time {
+  color: #aaa;
+}
+
 .prog-wrap { height: 4px; background: var(--bg-m); border-radius: var(--rf); margin-bottom: 12px; overflow: hidden; }
 .prog-bar  { height: 100%; border-radius: var(--rf); width: 0%; transition: width .6s cubic-bezier(.4,0,.2,1); }
 .prog-high { background: var(--green); }
@@ -351,6 +365,19 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 .card-toggle svg { transition: transform .2s; }
 
 .card-detail { display: none; margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; }
+.time-breakdown {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--border);
+}
+
+.time-breakdown div {
+  font-weight: 500;
+}
 .card-detail.open { display: block; }
 .detail-row {
   display: flex;
