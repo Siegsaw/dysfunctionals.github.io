@@ -187,7 +187,7 @@ function applyStep(idx, direction) {
   if (curEl) {
     const inp = curEl.querySelector('.cur-val-inp');
     inp.value = items[idx].amount;
-    inp.style.width = Math.max(2, inp.value.length + 0.5) + 'ch';
+    inp.style.width = Math.max(2.5, inp.value.length + 0.8) + 'ch';
   }
 }
 
@@ -201,7 +201,7 @@ function setDirect(idx, val) {
   items[idx].amount = Math.round(n * 1000) / 1000;
   if (inp) {
     inp.value = items[idx].amount;
-    inp.style.width = Math.max(2, inp.value.length + 0.5) + 'ch';
+    inp.style.width = Math.max(2.5, inp.value.length + 0.8) + 'ch';
   }
   save();
 }
