@@ -148,16 +148,6 @@ function render() {
 
       <button class="btn-rm" onclick="askRemove(${ri})" title="Remove">✕</button>`;
     list.appendChild(d);
-
-    const curInp = d.querySelector('.cur-val-inp');
-    if (curInp) {
-    const resize = (el) => {
-      const charWidthEm = 0.6; // roughly width per character in em
-      el.style.width = Math.max(2.5, el.value.length * charWidthEm) + 'em';
-    };
-      resize(curInp);
-      curInp.addEventListener('input', () => resize(curInp));
-    }
   });
 }
 
