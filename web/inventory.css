@@ -107,6 +107,8 @@
   outline: none;
   font-family: 'Inter', sans-serif;
   -moz-appearance: textfield;
+   box-sizing: border-box;
+   border: 1px solid transparent;
 }
 .cur-val-inp::-webkit-outer-spin-button,
 .cur-val-inp::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
