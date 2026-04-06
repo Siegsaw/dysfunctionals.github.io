@@ -294,6 +294,24 @@
 .pct-low  { background: var(--rl); color: var(--red); }
 html.dark .pct-mid { color: #fde68a; }
 
+.card-info {
+  margin: 4px 0 12px 0;
+  display: flex;
+  align-items: center;
+}
+
+.recipe-calories {
+  font-size: 0.85rem;
+  color: var(--muted2);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dark .recipe-calories {
+    color: #aaa;
+
 .prog-wrap { height: 4px; background: var(--bg-m); border-radius: var(--rf); margin-bottom: 12px; overflow: hidden; }
 .prog-bar  { height: 100%; border-radius: var(--rf); width: 0%; transition: width .6s cubic-bezier(.4,0,.2,1); }
 .prog-high { background: var(--green); }
