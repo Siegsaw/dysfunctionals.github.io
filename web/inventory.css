@@ -80,12 +80,13 @@
 .inv-current {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0.3em;
   background: var(--bg-m);
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 5px 10px;
-  min-width: 90px;
+  border-radius: 0.375em;
+  padding: 0.3em 0.6em;
+  min-width: 5em;
+  flex: none;
 }
 .cur-label {
   font-size: 11px;
@@ -94,21 +95,20 @@
   white-space: nowrap;
 }
 .cur-val-inp {
-  min-width: 5ch;
-  width: 6ch;
-  max-width: 20ch;
-  font-size: 14px;
+  min-width: 2.5em;
+  max-width: 10em;
+  flex: none;
+  font-size: 1em;
   font-weight: 700;
   color: var(--ink);
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: 5px;
-  padding: 2px 4px;
+  border: 0.0625em solid transparent;
+  border-radius: 0.3125em;
+  padding: 0.125em 0.25em;
   text-align: center;
   outline: none;
   font-family: 'Inter', sans-serif;
-  transition: border-color .15s, background .15s, box-shadow .15s;
-  /* Hide number input spinners */
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
   -moz-appearance: textfield;
 }
 .cur-val-inp::-webkit-outer-spin-button,
