@@ -311,6 +311,7 @@ html.dark .pct-mid { color: #fde68a; }
 
 .dark .recipe-calories {
     color: #aaa;
+}
 
 .prog-wrap { height: 4px; background: var(--bg-m); border-radius: var(--rf); margin-bottom: 12px; overflow: hidden; }
 .prog-bar  { height: 100%; border-radius: var(--rf); width: 0%; transition: width .6s cubic-bezier(.4,0,.2,1); }
