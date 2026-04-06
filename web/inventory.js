@@ -147,6 +147,13 @@ function render() {
       </div>
 
       <button class="btn-rm" onclick="askRemove(${ri})" title="Remove">✕</button>`;
+    const curInp = d.querySelector('.cur-val-inp');
+    if (curInp) {
+      const resize = (el) => {
+        el.style.width = Math.max(2.5, el.value.length + 0.5) + 'ch';
+  };
+  resize(curInp);
+  curInp.addEventListener('input', () => resize(curInp));
     list.appendChild(d);
   });
 }
