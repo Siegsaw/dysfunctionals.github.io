@@ -151,7 +151,7 @@ function render() {
 
     const curInp = d.querySelector('.cur-val-inp');
     if (curInp) {
-      const resize = (el) => { el.style.width = Math.max(2, el.value.length + 0.8) + 'ch'; };
+      const resize = (el) => { el.style.width = Math.max(2, el.value.length + 1.5) + 'ch'; };
       resize(curInp);
       curInp.addEventListener('input', () => resize(curInp));
     }
