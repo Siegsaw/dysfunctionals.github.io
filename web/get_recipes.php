@@ -11,13 +11,20 @@ $sql = "
     i.name_ing,
     ri.quantity,
     ri.unit,
-    
-    SUM(CASE WHEN rs.step_type = 'prep' THEN rs.time_minutes ELSE 0 END) AS prep_time,
-    SUM(CASE WHEN rs.step_type = 'cook' THEN rs.time_minutes ELSE 0 END) AS cook_time
+    COALESCE(rs.prep_time, 0) AS prep_time,
+    COALESCE(rs.cook_time, 0) AS cook_time
     
   FROM recipes r
   JOIN recipe_ingredients ri ON r.recipe_id = ri.recipe_id
   JOIN ingredients i ON ri.ingredient_id = i.ingredient_id
+  LEFT JOIN (
+    SELECT 
+        recipe_id,
+        SUM(CASE WHEN step_type = 'prep' THEN time_minutes ELSE 0 END) AS prep_time,
+        SUM(CASE WHEN step_type = 'cook' THEN time_minutes ELSE 0 END) AS cook_time
+    FROM recipe_steps
+    GROUP BY recipe_id
+    ) rs ON r.recipe_id = rs.recipe_id
   ORDER BY r.recipe_id
 ";
 
