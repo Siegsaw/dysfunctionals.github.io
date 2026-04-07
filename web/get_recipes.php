@@ -6,7 +6,7 @@ $sql = "
   SELECT 
     r.recipe_id,
     r.title,
-    r.total_time_minutes,
+    (COALESCE(rs.prep_time, 0) + COALESCE(rs.cook_time, 0)) AS total_time_minutes,
     r.calories,
     i.name_ing,
     ri.quantity,
