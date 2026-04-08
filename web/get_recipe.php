@@ -1,4 +1,17 @@
 <?php
+header('Content-Type: application/json');
+require '/var/www/private/db.php';
+
+$recipeId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+if ($recipeId <= 0) {
+  echo json_encode(['error' => 'Invalid recipe ID']);
+  exit;
+}
+
+$recipeQuery = $conn->prepare("
+  SELECT
+    r.recipe_id,
     r.title,
     r.description,
     r.calories,
@@ -73,9 +86,4 @@ while ($row = $stepResult->fetch_assoc()) {
 echo json_encode([
   'id' => (int)$recipe['recipe_id'],
   'name' => $recipe['title'],
-  'description' => $recipe['description'],
-  'calories' => (float)$recipe['calories'],
-  'total_time' => (int)$recipe['total_time'],
-  'ingredients' => $ingredients,
-  'steps' => $steps
 ]);
