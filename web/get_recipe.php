@@ -86,4 +86,9 @@ while ($row = $stepResult->fetch_assoc()) {
 echo json_encode([
   'id' => (int)$recipe['recipe_id'],
   'name' => $recipe['title'],
+  'description' => $recipe['description'],
+  'calories' => (float)$recipe['calories'],
+  'total_time' => (int)$recipe['total_time'],
+  'ingredients' => $ingredients,
+  'steps' => $steps
 ]);
