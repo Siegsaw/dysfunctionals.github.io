@@ -327,6 +327,27 @@ html.dark .pct-mid { color: #fde68a; }
   color: #aaa;
 }
 
+/* detailed recipe */
+.btn-view-recipe {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 14px;
+  padding: 9px 14px;
+  border-radius: var(--rs);
+  background: var(--green);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .15s, transform .15s;
+}
+
+.btn-view-recipe:hover {
+  background: var(--gd);
+  transform: translateY(-1px);
+}
+
 .prog-wrap { height: 4px; background: var(--bg-m); border-radius: var(--rf); margin-bottom: 12px; overflow: hidden; }
 .prog-bar  { height: 100%; border-radius: var(--rf); width: 0%; transition: width .6s cubic-bezier(.4,0,.2,1); }
 .prog-high { background: var(--green); }

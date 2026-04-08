@@ -569,6 +569,9 @@ function runSearch() {
         </div>
         ${detailRows}
       </div>
+      <a class="btn-view-recipe" href="recipe.php?id=${r.recipe.id}">
+      Detailed Recipe
+    </a>
     `;
 
     grid.appendChild(card);
