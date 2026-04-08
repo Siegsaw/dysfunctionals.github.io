@@ -1,7 +1,4 @@
 <?php
-$recipeQuery = $conn->prepare("
-  SELECT
-    r.recipe_id,
     r.title,
     r.description,
     r.calories,
