@@ -188,7 +188,7 @@
   color: var(--muted);
 }
 
-nutrition-box {
+.nutrition-box {
   margin-top: 24px;
   display: flex;
   flex-direction: column;
