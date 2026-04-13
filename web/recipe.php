@@ -107,7 +107,30 @@ async function loadRecipe() {
           <div class="ingredients-list">
             ${ingredients}
           </div>
-        </div>
+          <div class="nutrition-box">
+    <div class="section-label">Nutrition</div>
+
+    <div class="nutrition-row">
+      <span>Calories</span>
+      <span>${recipe.calories || 0} kcal</span>
+    </div>
+
+    <div class="nutrition-row">
+      <span>Protein</span>
+      <span>${recipe.protein || 0} g</span>
+    </div>
+
+    <div class="nutrition-row">
+      <span>Carbs</span>
+      <span>${recipe.carbs || 0} g</span>
+    </div>
+
+    <div class="nutrition-row">
+      <span>Fat</span>
+      <span>${recipe.fat || 0} g</span>
+    </div>
+  </div>
+ </div>
 
         <div class="recipe-card-main">
           <div class="section-label">Instructions</div>
