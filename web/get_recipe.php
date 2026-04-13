@@ -91,6 +91,9 @@ echo json_encode([
   'name' => $recipe['title'],
   'description' => $recipe['description'],
   'calories' => (float)$recipe['calories'],
+  'protein' => (float)$recipe['protein'], 
+  'carbs' => (float)$recipe['carbs'],     
+  'fat' => (float)$recipe['fat'],
   'total_time' => (int)$recipe['total_time'],
   'ingredients' => $ingredients,
   'steps' => $steps
