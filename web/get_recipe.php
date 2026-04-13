@@ -15,6 +15,9 @@ $recipeQuery = $conn->prepare("
     r.title,
     r.description,
     r.calories,
+    r.protein,  
+    r.carbs,    
+    r.fat,
     COALESCE(SUM(rs.time_minutes), 0) AS total_time
   FROM recipes r
   LEFT JOIN recipe_steps rs ON r.recipe_id = rs.recipe_id
