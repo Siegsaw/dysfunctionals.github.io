@@ -19,6 +19,7 @@ let searchIngs = [];
 let serverInventory = [];
 let ALL_ING = [];
 let RECIPES = [];
+let selectedFlavor = '';
 
 // ── HELPERS ────────────────────────────────────────────────────
 function showToast(message) {
@@ -389,6 +390,11 @@ function clearForm() {
   validateForm();
 }
 
+function setFlavor(flavor) {
+  selectedFlavor = flavor;
+  runSearch();
+}
+
 // ── CHIP RENDERING ─────────────────────────────────────────────
 function renderChips() {
   const sec  = document.getElementById('chipsSection');
@@ -437,9 +443,11 @@ function matchRecipes() {
 
   return RECIPES
     .filter(recipe => {
+      const flavorOk = !selectedFlavor || recipe.flavor === selectedFlavor;
       const timeOk = recipe.time == null || recipe.time <= maxTime;
       const calOk = recipe.calories == null || recipe.calories <= maxCalories;
-      return timeOk && calOk;
+      return flavorOk && timeOk && calOk;
+      
     })
     .map(recipe => {
       let score = 0;
