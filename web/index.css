@@ -417,6 +417,26 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 .dot-missing  { background: var(--red); }
 .dot-partial  { background: var(--yellow); }
 
+.flavor-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.flavor-buttons button {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  background: var(--bg-m);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.flavor-buttons button:hover {
+  background: var(--gl);
+  color: var(--green);
+}
+
 @media (max-width: 768px) {
   .page { padding: 28px 16px 60px; }
   .results-grid { grid-template-columns: 1fr; }
