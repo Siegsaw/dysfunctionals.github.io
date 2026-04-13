@@ -107,28 +107,27 @@ async function loadRecipe() {
           <div class="ingredients-list">
             ${ingredients}
           </div>
-          <div class="nutrition-box">
-            <div class="section-label">Nutrition</div>
-        
-            <div class="nutrition-row">
-              <span>Calories</span>
-              <span>${recipe.calories || 0} kcal</span>
-            </div>
-        
-            <div class="nutrition-row">
-              <span>Protein</span>
-              <span>${recipe.protein || 0} g</span>
-            </div>
-        
-            <div class="nutrition-row">
-              <span>Carbs</span>
-              <span>${recipe.carbs || 0} g</span>
-            </div>
-        
-            <div class="nutrition-row">
-              <span>Fat</span>
-              <span>${recipe.fat || 0} g</span>
-    </div>
+          <div class="section-label">Nutrition</div>
+          <div class="ingredients-list">
+            <div class="recipe-ing">
+            <span class="recipe-ing-name">Calories</span>
+            <span class="recipe-ing-qty">${recipe.calories || 0} kcal</span>
+          </div>
+          
+          <div class="recipe-ing">
+            <span class="recipe-ing-name">Protein</span>
+            <span class="recipe-ing-qty">${recipe.protein || 0} g</span>
+          </div>
+          
+          <div class="recipe-ing">
+            <span class="recipe-ing-name">Carbs</span>
+            <span class="recipe-ing-qty">${recipe.carbs || 0} g</span>
+          </div>
+          
+          <div class="recipe-ing">
+            <span class="recipe-ing-name">Fat</span>
+            <span class="recipe-ing-qty">${recipe.fat || 0} g</span>
+          </div>
   </div>
  </div>
 
@@ -138,7 +137,6 @@ async function loadRecipe() {
             ${steps}
           </div>
         </div>
-      </div>
     `;
 
   } catch (err) {
