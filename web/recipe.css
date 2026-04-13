@@ -188,25 +188,22 @@
   color: var(--muted);
 }
 
-.nutrition-box {
-  margin-top: 20px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-}
-
-.nutrition-box .section-label {
-  margin-top: 10px;
+nutrition-box {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; 
 }
 
 .nutrition-row {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
-  padding: 4px 0;
-}
-
-.nutrition-row span:first-child {
-  color: var(--muted);
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--bg-m);
+  border: 1px solid var(--border);
+  border-radius: var(--rs); 
+  transition: transform 0.1s;
 }
 
 @media (max-width: 900px) {
