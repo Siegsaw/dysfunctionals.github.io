@@ -12,14 +12,12 @@ echo "<body>";
 
 echo "<div class='layout'>";
 
-/* SIDEBAR */
 echo "<aside class='sidebar'>";
 echo "<a class='logo' href='admin.php'>PantryAdmin</a>";
 echo "<a class='nav' href='admin.php'>Dashboard</a>";
 echo "<a class='nav active' href='add_recipe.php'>Add Recipe</a>";
 echo "</aside>";
 
-/* MAIN */
 echo "<main class='main'>";
 
 echo "<div class='page-title'>Create Recipe</div>";
@@ -27,25 +25,21 @@ echo "<div class='page-sub'>Insert structured recipe data into database</div>";
 
 echo "<div class='card'>";
 
-/* BASIC INFO */
 echo "<div class='section'>Basic Info</div>";
-
 echo "<input id='title' class='input' placeholder='Recipe title'>";
 echo "<textarea id='description' class='textarea' placeholder='Description'></textarea>";
 
-/* INGREDIENTS */
 echo "<div class='section'>Ingredients</div>";
 echo "<div id='ingredients'></div>";
-echo "<button class='btn' onclick='addIngredientRow()'>+ Add ingredient</button>";
+echo "<button class='btn' type='button' onclick='addIngredientRow()'>+ Add ingredient</button>";
 
-/* STEPS */
 echo "<div class='section'>Steps</div>";
 echo "<div id='steps'></div>";
-echo "<button class='btn' onclick='addStepRow()'>+ Add step</button>";
+echo "<button class='btn' type='button' onclick='addStepRow()'>+ Add step</button>";
 
 echo "<hr>";
 
-echo "<button class='btn primary' onclick='submitRecipe()'>Save Recipe</button>";
+echo "<button class='btn primary' type='button' onclick='submitRecipe()'>Save Recipe</button>";
 
 echo "</div>";
 
