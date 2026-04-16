@@ -11,11 +11,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 $name = trim($data['name'] ?? '');
 $amount = floatval($data['amount'] ?? 0);
 $unit = trim($data['unit'] ?? '');
-$expirationDate = $data['expiration_date'] ?? null;
-
-if ($expirationDate === '') {
-    $expirationDate = null;
-}
+$expirationDate = trim($data['expiration_date'] ?? '');
 
 if (!$name || $amount <= 0 || !$unit) {
     echo json_encode(['success' => false, 'message' => 'Invalid input']);
@@ -31,10 +27,12 @@ $ingredientResult = $ingredientStmt->get_result();
 if ($ingredientResult->num_rows === 0) {
     $insertIng = $conn->prepare('INSERT INTO ingredients (name_ing) VALUES (?)');
     $insertIng->bind_param('s', $name);
+
     if (!$insertIng->execute()) {
-        echo json_encode(['success' => false, 'message' => 'Failed to create ingredient']);
+        echo json_encode(['success' => false, 'message' => 'Failed to create ingredient: ' . $conn->error]);
         exit;
     }
+
     $ingredientId = $insertIng->insert_id;
 } else {
     $ingredient = $ingredientResult->fetch_assoc();
@@ -52,19 +50,26 @@ if ($checkResult->num_rows > 0) {
     $newQuantity = floatval($row['quantity']) + $amount;
     $inventoryId = $row['inventory_id'];
 
-    $updateStmt = $conn->prepare('UPDATE user_inventory SET quantity = ?, expiration_date = ? WHERE inventory_id = ?');
+    $updateStmt = $conn->prepare("
+        UPDATE user_inventory
+        SET quantity = ?, expiration_date = NULLIF(?, '')
+        WHERE inventory_id = ?
+    ");
     $updateStmt->bind_param('dsi', $newQuantity, $expirationDate, $inventoryId);
 
     if (!$updateStmt->execute()) {
-        echo json_encode(['success' => false, 'message' => 'Failed to update quantity']);
+        echo json_encode(['success' => false, 'message' => 'Failed to update quantity: ' . $conn->error]);
         exit;
     }
 } else {
-    $insertStmt = $conn->prepare('INSERT INTO user_inventory (quantity, unit, user_id, ingredient_id, expiration_date) VALUES (?, ?, ?, ?, ?)');
+    $insertStmt = $conn->prepare("
+        INSERT INTO user_inventory (quantity, unit, user_id, ingredient_id, expiration_date)
+        VALUES (?, ?, ?, ?, NULLIF(?, ''))
+    ");
     $insertStmt->bind_param('dsiis', $amount, $unit, $userId, $ingredientId, $expirationDate);
 
     if (!$insertStmt->execute()) {
-        echo json_encode(['success' => false, 'message' => 'Failed to add ingredient']);
+        echo json_encode(['success' => false, 'message' => 'Failed to add ingredient: ' . $conn->error]);
         exit;
     }
 }
