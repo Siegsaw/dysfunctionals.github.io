@@ -192,6 +192,19 @@ function applyStep(idx, direction) {
   }
 }
 
+function sortInventoryByExpiry(items) {
+  return [...items].sort((a, b) => {
+    const aDate = a.expiration_date ? new Date(a.expiration_date) : null;
+    const bDate = b.expiration_date ? new Date(b.expiration_date) : null;
+
+    if (!aDate && !bDate) return 0;
+    if (!aDate) return 1;
+    if (!bDate) return -1;
+
+    return aDate - bDate;
+  });
+}
+
 function setDirect(idx, val) {
   const n = parseFloat(val);
   const inp = document.getElementById(`cur-${idx}`)?.querySelector('.cur-val-inp');
