@@ -1,67 +1,60 @@
 <?php
-header('Content-Type: application/json');
-require '/var/www/private/db.php';
+echo "<!DOCTYPE html>";
+echo "<html lang='en'>";
+echo "<head>";
+echo "<meta charset='UTF-8'>";
+echo "<meta name='viewport' content='width=device-width, initial-scale=1.0'>";
+echo "<title>Add Recipe</title>";
+echo "<link rel='stylesheet' href='admin.css'>";
+echo "</head>";
 
-$data = json_decode(file_get_contents("php://input"), true);
+echo "<body>";
 
-$title = $data['title'] ?? '';
-$description = $data['description'] ?? '';
-$ingredients = $data['ingredients'] ?? [];
-$steps = $data['steps'] ?? [];
+echo "<div class='layout'>";
 
-if (!$title || !$ingredients || !$steps) {
-  echo json_encode(['success' => false, 'message' => 'Missing data']);
-  exit;
-}
+/* SIDEBAR */
+echo "<aside class='sidebar'>";
+echo "<div class='logo'>PantryAdmin</div>";
+echo "<a class='nav' href='admin.php'>Dashboard</a>";
+echo "<a class='nav active' href='add_recipe.php'>Add Recipe</a>";
+echo "</aside>";
 
-// ── INSERT RECIPE ──
-$stmt = $conn->prepare("
-  INSERT INTO recipes (title, description, created_at)
-  VALUES (?, ?, NOW())
-");
-$stmt->bind_param("ss", $title, $description);
-$stmt->execute();
+/* MAIN */
+echo "<main class='main'>";
 
-$recipe_id = $stmt->insert_id;
+echo "<div class='page-title'>Create Recipe</div>";
+echo "<div class='page-sub'>Insert structured recipe data into database</div>";
 
-// ── INGREDIENTS ──
-$ingStmt = $conn->prepare("
-  INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit)
-  VALUES (?, ?, ?, ?)
-");
+echo "<div class='card'>";
 
-foreach ($ingredients as $i) {
-  $ingStmt->bind_param(
-    "iids",
-    $recipe_id,
-    $i['ingredient_id'],
-    $i['qty'],
-    $i['unit']
-  );
-  $ingStmt->execute();
-}
+/* BASIC INFO */
+echo "<div class='section'>Basic Info</div>";
 
-// ── STEPS ──
-$stepStmt = $conn->prepare("
-  INSERT INTO recipe_steps (recipe_id, step_number, step_type, instructions, time_minutes)
-  VALUES (?, ?, ?, ?, ?)
-");
+echo "<input id='title' class='input' placeholder='Recipe title'>";
+echo "<textarea id='description' class='textarea' placeholder='Description'></textarea>";
 
-$stepNumber = 1;
+/* INGREDIENTS */
+echo "<div class='section'>Ingredients</div>";
+echo "<div id='ingredients'></div>";
+echo "<button class='btn' onclick='addIngredientRow()'>+ Add ingredient</button>";
 
-foreach ($steps as $s) {
-  $stepStmt->bind_param(
-    "iissi",
-    $recipe_id,
-    $stepNumber,
-    $s['type'],
-    $s['text'],
-    $s['time']
-  );
-  $stepStmt->execute();
+/* STEPS */
+echo "<div class='section'>Steps</div>";
+echo "<div id='steps'></div>";
+echo "<button class='btn' onclick='addStepRow()'>+ Add step</button>";
 
-  $stepNumber++;
-}
+echo "<hr>";
 
-echo json_encode(['success' => true]);
+echo "<button class='btn primary' onclick='submitRecipe()'>Save Recipe</button>";
+
+echo "</div>";
+
+echo "</main>";
+
+echo "</div>";
+
+echo "<script src='add_recipe.js'></script>";
+
+echo "</body>";
+echo "</html>";
 ?>
