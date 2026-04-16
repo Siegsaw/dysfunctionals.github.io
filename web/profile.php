@@ -72,8 +72,29 @@ if (!isset($_SESSION['user_id'])) {
             </div>
           </form>
         </div>
-      </div>
+                  <div class="profile-card">
+          <h2>Allergens</h2>
+          <p class="card-desc">Select ingredients you are allergic to so recipes can avoid them.</p>
 
+          <form id="allergensForm">
+            <div class="allergen-grid">
+              <label class="allergen-tag"><input type="checkbox" name="allergens" value="Nuts"> <span>Nuts</span></label>
+              <label class="allergen-tag"><input type="checkbox" name="allergens" value="Dairy"> <span>Dairy</span></label>
+              <label class="allergen-tag"><input type="checkbox" name="allergens" value="Gluten"> <span>Gluten</span></label>
+              <label class="allergen-tag"><input type="checkbox" name="allergens" value="Shellfish"> <span>Shellfish</span></label>
+              <label class="allergen-tag"><input type="checkbox" name="allergens" value="Eggs"> <span>Eggs</span></label>
+              <label class="allergen-tag"><input type="checkbox" name="allergens" value="Soy"> <span>Soy</span></label>
+              <label class="allergen-tag"><input type="checkbox" name="allergens" value="Fish"> <span>Fish</span></label>
+              <label class="allergen-tag"><input type="checkbox" name="allergens" value="Sesame"> <span>Sesame</span></label>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn-primary">Save allergens</button>
+            </div>
+          </form>
+        </div>
+      </div>
+     
       <aside class="profile-side">
         <div class="profile-card">
           <h2>Quick overview</h2>
