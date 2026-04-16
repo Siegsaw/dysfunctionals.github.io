@@ -114,6 +114,7 @@ function render() {
       <div class="inv-info">
         <span class="inv-name">${item.name}</span>
         <span class="inv-unit">${item.unit}</span>
+        ${item.expiration_date ? `<span class="item-exp">Exp: ${item.expiration_date}</span>` : ''}
       </div>
 
       <div class="inv-ctrl">
