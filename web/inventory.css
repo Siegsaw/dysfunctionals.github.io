@@ -98,7 +98,29 @@
   padding: 0.3em 0.6em;
   box-sizing: border-box;
 }
+.inv-tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
 
+.sort-sel {
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-m);
+  color: var(--ink);
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.sort-sel:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.14);
+}
 .cur-label {
   font-size: 11px;
   font-weight: 500;
