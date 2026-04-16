@@ -92,7 +92,7 @@ function save() { saveUserIng(sanitizeInventory(items)); }
 
 // ── RENDER ────────────────────────────────────────────────────
 function render() {
-  const q    = document.getElementById('search').value.toLowerCase();
+  const q = document.getElementById('search').value.toLowerCase();
   const sortValue = document.getElementById('sortExpiry')?.value || 'default';
   const list = document.getElementById('list');
   list.innerHTML = '';
@@ -101,6 +101,7 @@ function render() {
 
   if (sortValue === 'expiry_asc') {
     filtered = sortInventoryByExpiry(filtered);
+  }
 
   if (!filtered.length) {
     list.innerHTML = `<div class="empty">
@@ -114,6 +115,7 @@ function render() {
     const ri = items.indexOf(item);
     const d  = document.createElement('div');
     d.className = 'inv-item';
+
     d.innerHTML = `
       <div class="inv-info">
         <span class="inv-name">${item.name}</span>
@@ -130,37 +132,30 @@ function render() {
             value="${item.amount}"
             min="0"
             step="any"
-            title="Edit amount directly"
             onchange="setDirect(${ri}, this.value)"
             onblur="setDirect(${ri}, this.value)"
           >
         </div>
 
         <div class="inv-step">
-          <button class="btn-qty btn-minus" onclick="applyStep(${ri}, -1)" title="Subtract">−</button>
-          <input
-            class="step-inp"
-            id="step-${ri}"
-            type="number"
-            value="1"
-            min="1"
-            step="any"
-            title="Amount to add or subtract"
-          >
-          <button class="btn-qty btn-plus" onclick="applyStep(${ri}, 1)" title="Add">+</button>
+          <button class="btn-qty btn-minus" onclick="applyStep(${ri}, -1)">−</button>
+          <input class="step-inp" id="step-${ri}" type="number" value="1" min="1">
+          <button class="btn-qty btn-plus" onclick="applyStep(${ri}, 1)">+</button>
         </div>
       </div>
 
-      <button class="btn-rm" onclick="askRemove(${ri})" title="Remove">✕</button>`;
-    list.appendChild(d); // append first
+      <button class="btn-rm" onclick="askRemove(${ri})">✕</button>
+    `;
+
+    list.appendChild(d);
 
     const curInp = d.querySelector('.cur-val-inp');
     if (curInp) {
       const resize = (el) => {
         el.style.width = Math.max(2.5, el.value.length + 0.8) + 'ch';
       };
-      resize(curInp); // initial resize
-      curInp.addEventListener('input', () => resize(curInp)); // resize on input
+      resize(curInp);
+      curInp.addEventListener('input', () => resize(curInp));
     }
   });
 }
