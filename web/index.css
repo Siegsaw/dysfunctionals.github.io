@@ -26,6 +26,27 @@
   box-shadow: var(--sh-sm);
   margin-bottom: 14px;
 }
+.exp-inp {
+  height: 42px;
+  min-width: 160px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-m);
+  color: var(--ink);
+  padding: 0 12px;
+  font-size: 14px;
+  outline: none;
+}
+
+.exp-inp:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.14);
+}
+
+.exp-inp::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.9;
+}
 .input-row { display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; }
 
 /* Autofill wrapper */
