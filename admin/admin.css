@@ -45,10 +45,17 @@ body {
 }
 
 .logo {
+  display: inline-block;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 800;
   font-size: 18px;
   margin-bottom: 20px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.logo:hover {
+  color: var(--green);
 }
 
 .nav {
