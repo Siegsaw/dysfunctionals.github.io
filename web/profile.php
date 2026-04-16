@@ -1,158 +1,151 @@
 <?php
-require 'session.php';
-requireLogin();
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PantryChef — Profile</title>
+  <title>Profile - PantryChef</title>
   <link rel="stylesheet" href="shared.css">
   <link rel="stylesheet" href="profile.css">
   <script>if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark');</script>
 </head>
 <body>
-<header>
-  <div class="logo" onclick="location.href='index.php'">PantryChef</div>
-  <nav class="h-nav">
-    <button class="nav-btn" onclick="location.href='index.php'">Home</button>
-    <button class="nav-btn" onclick="location.href='inventory.php'">Inventory</button>
-    <button class="nav-btn active">Profile</button>
-  </nav>
-  <div class="h-right">
-    <span id="userBadge"></span>
-    <button class="btn-theme" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
-    <button class="btn-signin" id="btnSignIn" onclick="location.href='login.php'">Sign In</button>
-    <button class="btn-profile" id="btnProfile" onclick="location.href='profile.php'">Profile</button>
-    <button class="btn-logout" id="btnLogout" onclick="doLogout()">Sign Out</button>
-  </div>
-</header>
+  <header>
+    <div class="logo" onclick="location.href='index.php'">PantryChef</div>
 
-<div class="toast" id="toast"></div>
+    <nav class="h-nav">
+      <button class="nav-btn" onclick="location.href='index.php'">Home</button>
+      <button class="nav-btn" onclick="location.href='inventory.php'">Inventory</button>
+      <button class="nav-btn active" onclick="location.href='profile.php'">Profile</button>
+    </nav>
 
-<main class="profile-page">
-  <section class="profile-hero">
-    <div>
-      <p class="eyebrow">Account settings</p>
-      <h1>Your profile</h1>
-      <p class="profile-sub">See your information, update it when needed, change your password, or permanently delete your account.</p>
+    <div class="h-right">
+      <span id="userBadge" onclick="location.href='profile.php'" style="cursor:pointer;"></span>
+      <button class="btn-theme" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+      <button class="btn-signin" id="btnSignIn" onclick="location.href='login.php'">Sign In</button>
+      <button class="btn-logout" id="btnLogout" onclick="doLogout()">Sign Out</button>
     </div>
-    <div class="avatar-placeholder" id="avatarPlaceholder">PC</div>
-  </section>
+  </header>
 
-  <div class="profile-grid">
-    <section class="profile-card">
-      <div class="card-head">
-        <div>
-          <h2>Personal information</h2>
-          <p>Manage the main details connected to your account.</p>
-        </div>
-        <span class="status-pill">Editable</span>
-      </div>
+  <div class="toast" id="toast"></div>
 
-      <form id="profileForm" class="form-grid">
-        <div class="field">
-          <label for="username">Username</label>
-          <input id="username" name="username" type="text" placeholder="Your username" required>
-        </div>
-        <div class="field">
-          <label for="email">Email address</label>
-          <input id="email" name="email" type="email" placeholder="you@example.com" required>
-        </div>
-        <div class="field field-full">
-          <label for="createdAt">Member since</label>
-          <input id="createdAt" type="text" placeholder="Date placeholder" disabled>
-        </div>
-        <div class="actions field-full">
-          <button type="submit" class="btn-primary" id="saveProfileBtn">Save changes</button>
-        </div>
-      </form>
+  <main class="profile-page">
+    <section class="profile-hero">
+      <div class="profile-eyebrow">Account settings</div>
+      <h1 class="profile-title">Your profile</h1>
+      <p class="profile-subtitle">
+        See your information, update it when needed, change your password, or permanently delete your account.
+      </p>
     </section>
 
-    <aside class="side-stack">
-      <section class="profile-card">
-        <div class="card-head">
-          <div>
-            <h2>Quick overview</h2>
-            <p>Helpful placeholders for future account features.</p>
+    <section class="profile-grid">
+      <div class="profile-main">
+        <div class="profile-card">
+          <h2>Personal information</h2>
+          <p class="card-desc">Manage the main details connected to your account.</p>
+
+          <form id="profileForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="profileUsername">Username</label>
+                <input class="form-input" id="profileUsername" type="text" placeholder="Your username">
+              </div>
+
+              <div class="form-group">
+                <label for="profileEmail">Email address</label>
+                <input class="form-input" id="profileEmail" type="email" placeholder="you@example.com">
+              </div>
+
+              <div class="form-group full">
+                <label for="profileMemberSince">Member since</label>
+                <input class="form-input" id="profileMemberSince" type="text" readonly placeholder="Date placeholder">
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn-primary">Save changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <aside class="profile-side">
+        <div class="profile-card">
+          <h2>Quick overview</h2>
+          <p class="card-desc">Helpful placeholders for future account features.</p>
+
+          <div class="info-list">
+            <div class="info-item">
+              <span>Preferred language</span>
+              <strong>Placeholder</strong>
+            </div>
+
+            <div class="info-item">
+              <span>Notification settings</span>
+              <strong>Placeholder</strong>
+            </div>
+
+            <div class="info-item">
+              <span>Saved recipes</span>
+              <strong>Placeholder</strong>
+            </div>
           </div>
         </div>
-        <div class="placeholder-list">
-          <div class="placeholder-item">
-            <span>Preferred language</span>
-            <strong>Placeholder</strong>
+
+        <div class="profile-card">
+          <h2>Security & account removal</h2>
+          <p class="card-desc">Use these actions carefully.</p>
+
+          <div class="btn-row">
+            <button type="button" class="btn-secondary" onclick="togglePasswordBox()">Change password</button>
+            <button type="button" class="btn-danger" onclick="toggleDeleteBox()">Delete profile</button>
           </div>
-          <div class="placeholder-item">
-            <span>Notification settings</span>
-            <strong>Placeholder</strong>
+
+          <div id="passwordBox" class="hidden">
+            <form id="passwordForm" style="margin-top:20px;">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="newPassword">New password</label>
+                  <input class="form-input" id="newPassword" type="password" placeholder="At least 6 characters">
+                </div>
+
+                <div class="form-group">
+                  <label for="repeatPassword">Repeat new password</label>
+                  <input class="form-input" id="repeatPassword" type="password" placeholder="Repeat the new password">
+                </div>
+              </div>
+
+              <div class="btn-row">
+                <button type="button" class="btn-secondary" onclick="togglePasswordBox()">Cancel</button>
+                <button type="submit" class="btn-primary">Save new password</button>
+              </div>
+            </form>
           </div>
-          <div class="placeholder-item">
-            <span>Saved recipes</span>
-            <strong>Placeholder</strong>
+
+          <div id="deleteBox" class="danger-box hidden">
+            <h3>Delete your profile?</h3>
+            <p>
+              This action is permanent and cannot be undone.
+              Before deleting the profile, please confirm that you really want to do this.
+            </p>
+
+            <div class="btn-row">
+              <button type="button" class="btn-secondary" onclick="toggleDeleteBox()">Keep profile</button>
+              <button type="button" class="btn-danger" onclick="deleteProfileNow()">Yes, delete profile</button>
+            </div>
           </div>
         </div>
-      </section>
+      </aside>
+    </section>
+  </main>
 
-      <section class="profile-card danger-card">
-        <div class="card-head">
-          <div>
-            <h2>Security & account removal</h2>
-            <p>Use these actions carefully.</p>
-          </div>
-        </div>
-        <div class="danger-actions">
-          <button class="btn-secondary" id="openPasswordBtn" type="button">Change password</button>
-          <button class="btn-danger-solid" id="deleteProfileBtn" type="button">Delete profile</button>
-        </div>
-      </section>
-    </aside>
-  </div>
-</main>
-
-<div class="modal-backdrop" id="passwordModal">
-  <div class="modal-card">
-    <div class="card-head">
-      <div>
-        <h2>Change password</h2>
-        <p>Enter your new password twice.</p>
-      </div>
-      <button class="icon-btn" type="button" onclick="closePasswordModal()">✕</button>
-    </div>
-    <form id="passwordForm" class="form-grid single-col">
-      <div class="field">
-        <label for="newPassword">New password</label>
-        <input id="newPassword" type="password" placeholder="At least 6 characters" required>
-      </div>
-      <div class="field">
-        <label for="repeatPassword">Repeat new password</label>
-        <input id="repeatPassword" type="password" placeholder="Repeat the new password" required>
-      </div>
-      <div class="actions">
-        <button class="btn-secondary" type="button" onclick="closePasswordModal()">Cancel</button>
-        <button class="btn-primary" type="submit">Save new password</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<div class="modal-backdrop" id="deleteModal">
-  <div class="modal-card danger-card">
-    <div class="card-head">
-      <div>
-        <h2>Delete your profile?</h2>
-        <p>This action is permanent and cannot be undone.</p>
-      </div>
-    </div>
-    <p class="confirm-copy">Before deleting the profile, please confirm that you really want to do this.</p>
-    <div class="actions">
-      <button class="btn-secondary" type="button" onclick="closeDeleteModal()">Keep profile</button>
-      <button class="btn-danger-solid" type="button" onclick="deleteProfile()">Yes, delete profile</button>
-    </div>
-  </div>
-</div>
-
-<script src="shared.js"></script>
-<script src="profile.js"></script>
+  <script src="shared.js"></script>
+  <script src="profile.js"></script>
 </body>
 </html>
