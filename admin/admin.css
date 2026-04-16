@@ -1,20 +1,24 @@
-.admin-page {
+body {
+  margin: 0;
+  font-family: Inter, sans-serif;
+  background: var(--bg, #0f1115);
+  color: var(--ink, #e5e7eb);
+}
+
+.admin-wrap {
   max-width: 900px;
   margin: 0 auto;
-  padding: 48px 40px 80px;
+  padding: 40px 20px;
 }
 
-.admin-title {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+.admin-header h1 {
   font-size: 28px;
-  font-weight: 800;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
-.admin-sub {
-  font-size: 14px;
-  color: var(--muted);
-  margin-bottom: 28px;
+.admin-header p {
+  color: var(--muted, #9ca3af);
+  margin-bottom: 30px;
 }
 
 .admin-grid {
@@ -24,79 +28,33 @@
 }
 
 .admin-card {
-  background: var(--bg-s);
-  border: 1px solid var(--border);
-  border-radius: var(--rl2);
-  padding: 20px;
-  text-decoration: none;
-  color: var(--ink);
   display: block;
-  transition: all .2s;
+  padding: 18px;
+  border-radius: 12px;
+  background: var(--bg-s, #1a1d24);
+  border: 1px solid var(--border, #2a2f3a);
+  text-decoration: none;
+  color: inherit;
+  transition: 0.15s;
 }
 
 .admin-card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--sh-md);
-  border-color: var(--border-h);
+  border-color: #22c55e;
 }
 
-.admin-card-ico {
-  font-size: 26px;
-  margin-bottom: 10px;
-}
-
-.admin-card-title {
+.admin-card h2 {
+  margin: 0 0 6px;
   font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 4px;
 }
 
-.admin-card-desc {
+.admin-card p {
+  margin: 0;
   font-size: 13px;
-  color: var(--muted);
+  color: var(--muted, #9ca3af);
 }
 
-.admin-card.disabled {
+.disabled {
   opacity: 0.5;
   pointer-events: none;
-}
-.form-card {
-  background: var(--bg-s);
-  border: 1px solid var(--border);
-  border-radius: var(--rl2);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.admin-input,
-.admin-textarea {
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: var(--rs);
-  background: var(--bg-m);
-  color: var(--ink);
-}
-
-.admin-textarea {
-  min-height: 80px;
-}
-
-.row, .step {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.btn-add {
-  margin-top: 6px;
-}
-
-.btn-save {
-  margin-top: 16px;
-  background: var(--green);
-  color: white;
-  padding: 10px;
-  border-radius: var(--rs);
 }
