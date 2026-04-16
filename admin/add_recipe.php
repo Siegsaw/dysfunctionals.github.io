@@ -38,17 +38,22 @@ echo "<div id='steps'></div>";
 echo "<button class='btn' type='button' onclick='addStepRow()'>+ Add step</button>";
 
 echo "<hr>";
+echo "<div class='action-row'>";
+echo "<button class='btn' type='button' onclick='previewRecipe()'>Preview Recipe</button>";
+echo "<button class='btn primary' type='button' id='confirmSaveBtn' onclick='confirmSaveRecipe()' disabled>Confirm Save</button>";
+echo "</div>";
 
-echo "<button class='btn primary' type='button' onclick='submitRecipe()'>Save Recipe</button>";
+echo "</div>";
 
+echo "<div class='card preview-card' id='previewCard' style='display:none'>";
+echo "<div class='section'>Verification Preview</div>";
+echo "<div id='previewContent'></div>";
 echo "</div>";
 
 echo "</main>";
-
 echo "</div>";
 
 echo "<script src='add_recipe.js'></script>";
-
 echo "</body>";
 echo "</html>";
 ?>
