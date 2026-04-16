@@ -155,7 +155,7 @@ $carbs    = 0.0;
 
 $nutritionStmt = $conn->prepare("
   SELECT
-    n.name AS nutrient_name,
+    n.name_nutr AS nutrient_name,
     n.unit AS nutrient_unit,
     inut.amount_per_100g,
     inut.amount_per_unit
