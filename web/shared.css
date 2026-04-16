@@ -132,6 +132,16 @@ header {
   border: 1px solid var(--border);
   border-radius: var(--rf);
   display: none;
+  text-decoration: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 200;
+}
+
+#userBadge:hover {
+  color: var(--ink);
+  border-color: var(--border-h);
+  background: var(--bg-m);
 }
 
 /* ── HEADER BUTTONS ── */

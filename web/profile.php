@@ -26,7 +26,7 @@ if (!isset($_SESSION['user_id'])) {
     </nav>
 
     <div class="h-right">
-      <span id="userBadge" onclick="location.href='profile.php'" style="cursor:pointer;"></span>
+      <a id="userBadge" href="profile.php"></a>
       <button class="btn-theme" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
       <button class="btn-signin" id="btnSignIn" onclick="location.href='login.php'">Sign In</button>
       <button class="btn-logout" id="btnLogout" onclick="doLogout()">Sign Out</button>
