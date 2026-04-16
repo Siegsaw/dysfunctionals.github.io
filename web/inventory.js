@@ -205,6 +205,18 @@ function sortInventoryByExpiry(items) {
   });
 }
 
+function applyInventorySort() {
+  const sortValue = document.getElementById('sortExpiry')?.value || 'default';
+
+  let itemsToRender = [...inventoryItems];
+
+  if (sortValue === 'expiry_asc') {
+    itemsToRender = sortInventoryByExpiry(itemsToRender);
+  }
+
+  renderInventory(itemsToRender);
+}
+
 function setDirect(idx, val) {
   const n = parseFloat(val);
   const inp = document.getElementById(`cur-${idx}`)?.querySelector('.cur-val-inp');
