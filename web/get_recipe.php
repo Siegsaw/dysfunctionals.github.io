@@ -15,6 +15,9 @@ $recipeQuery = $conn->prepare("
     r.title,
     r.description,
     r.calories,
+    r.protein,  
+    r.carbs,    
+    r.fat,
     COALESCE(SUM(rs.time_minutes), 0) AS total_time
   FROM recipes r
   LEFT JOIN recipe_steps rs ON r.recipe_id = rs.recipe_id
@@ -88,6 +91,9 @@ echo json_encode([
   'name' => $recipe['title'],
   'description' => $recipe['description'],
   'calories' => (float)$recipe['calories'],
+  'protein' => (float)$recipe['protein'], 
+  'carbs' => (float)$recipe['carbs'],     
+  'fat' => (float)$recipe['fat'],
   'total_time' => (int)$recipe['total_time'],
   'ingredients' => $ingredients,
   'steps' => $steps

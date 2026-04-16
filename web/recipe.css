@@ -188,6 +188,24 @@
   color: var(--muted);
 }
 
+.nutrition-box {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; 
+}
+
+.nutrition-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--bg-m);
+  border: 1px solid var(--border);
+  border-radius: var(--rs); 
+  transition: transform 0.1s;
+}
+
 @media (max-width: 900px) {
   .recipe-grid {
     grid-template-columns: 1fr;

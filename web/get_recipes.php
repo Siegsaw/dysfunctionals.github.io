@@ -8,6 +8,9 @@ $sql = "
     r.title,
     (COALESCE(rs.prep_time, 0) + COALESCE(rs.cook_time, 0)) AS total_time_minutes,
     r.calories,
+    r.protein,
+    r.carbs,
+    r.fat,
     i.name_ing,
     ri.quantity,
     ri.unit,
@@ -43,6 +46,9 @@ while ($row = $result->fetch_assoc()) {
       'prep_time' => isset($row['prep_time']) ? (int)$row['prep_time'] : 0,
       'cook_time' => isset($row['cook_time']) ? (int)$row['cook_time'] : 0,
       'calories' => isset($row['calories']) ? (float)$row['calories'] : null,
+      'protein' => isset($row['protein']) ? (float)$row['protein'] : 0,
+      'carbs' => isset($row['carbs']) ? (float)$row['carbs'] : 0,
+      'fat' => isset($row['fat']) ? (float)$row['fat'] : 0,
       'ingredients' => []
     ];
   }
