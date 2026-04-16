@@ -13,6 +13,7 @@ $errors = [];
 $cleanIngredients = [];
 $cleanSteps = [];
 
+/* ── BASIC VALIDATION ───────────────────────────────────── */
 if ($title === '') {
   $errors[] = 'Recipe title is required.';
 }
@@ -25,9 +26,9 @@ if (!is_array($steps) || count($steps) === 0) {
   $errors[] = 'At least one step is required.';
 }
 
-/* Validate ingredients against DB */
+/* ── INGREDIENT VALIDATION ──────────────────────────────── */
 $ingredientStmt = $conn->prepare("
-  SELECT ingredient_id, name_ing, default_unit
+  SELECT ingredient_id, name_ing, default_unit, density_g_per_ml
   FROM ingredients
   WHERE ingredient_id = ?
 ");
@@ -66,11 +67,12 @@ foreach ($ingredients as $index => $ing) {
     'ingredient_id' => (int)$row['ingredient_id'],
     'name' => $row['name_ing'],
     'amount' => round($amount, 3),
-    'unit' => $row['default_unit']
+    'unit' => $row['default_unit'],
+    'density_g_per_ml' => isset($row['density_g_per_ml']) ? (float)$row['density_g_per_ml'] : 0.0
   ];
 }
 
-/* Validate steps */
+/* ── STEP VALIDATION ────────────────────────────────────── */
 $seenStepNumbers = [];
 
 foreach ($steps as $index => $step) {
@@ -113,12 +115,10 @@ foreach ($steps as $index => $step) {
   ];
 }
 
-/* Sort steps */
-usort($cleanSteps, function($a, $b) {
+usort($cleanSteps, function ($a, $b) {
   return $a['step_number'] <=> $b['step_number'];
 });
 
-/* Optional strict sequential check */
 for ($i = 0; $i < count($cleanSteps); $i++) {
   $expected = $i + 1;
   if ($cleanSteps[$i]['step_number'] !== $expected) {
@@ -127,15 +127,104 @@ for ($i = 0; $i < count($cleanSteps); $i++) {
   }
 }
 
+/* ── TOTAL TIME ─────────────────────────────────────────── */
 $totalTime = 0;
 foreach ($cleanSteps as $step) {
   $totalTime += $step['time_minutes'];
 }
 
+/* ── NUTRITION CALCULATION ──────────────────────────────── */
+/*
+  Uses:
+  - nutrients.name
+  - ingredient_nutrition.amount_per_100g
+  - ingredient_nutrition.amount_per_unit
+
+  Assumed nutrient names:
+  - Calories
+  - Protein
+  - Fat
+  - Carbs
+
+  Matching is case-insensitive.
+*/
+$calories = 0.0;
+$protein  = 0.0;
+$fat      = 0.0;
+$carbs    = 0.0;
+
+$nutritionStmt = $conn->prepare("
+  SELECT
+    n.name AS nutrient_name,
+    n.unit AS nutrient_unit,
+    inut.amount_per_100g,
+    inut.amount_per_unit
+  FROM ingredient_nutrition inut
+  JOIN nutrients n ON inut.nutrient_id = n.nutrient_id
+  WHERE inut.ingredient_id = ?
+");
+
+foreach ($cleanIngredients as $ing) {
+  $ingredientId = (int)$ing['ingredient_id'];
+  $amount = (float)$ing['amount'];
+  $unit = $ing['unit'];
+  $density = (float)$ing['density_g_per_ml'];
+
+  $nutritionStmt->bind_param("i", $ingredientId);
+  $nutritionStmt->execute();
+  $nutritionRes = $nutritionStmt->get_result();
+
+  $foundAnyNutrition = false;
+
+  while ($nutRow = $nutritionRes->fetch_assoc()) {
+    $foundAnyNutrition = true;
+
+    $nutrientName = strtolower(trim($nutRow['nutrient_name']));
+    $amountPer100g = isset($nutRow['amount_per_100g']) ? (float)$nutRow['amount_per_100g'] : 0.0;
+    $amountPerUnit = isset($nutRow['amount_per_unit']) ? (float)$nutRow['amount_per_unit'] : 0.0;
+
+    $contribution = 0.0;
+
+    if ($unit === 'g') {
+      $contribution = ($amount / 100.0) * $amountPer100g;
+    } elseif ($unit === 'ml') {
+      if ($density <= 0) {
+        $errors[] = 'Ingredient "' . $ing['name'] . '" is missing density_g_per_ml, cannot convert ml to grams for nutrition calculation.';
+        continue;
+      }
+
+      $grams = $amount * $density;
+      $contribution = ($grams / 100.0) * $amountPer100g;
+    } elseif ($unit === 'pcs') {
+      $contribution = $amount * $amountPerUnit;
+    }
+
+    if ($nutrientName === 'calories') {
+      $calories += $contribution;
+    } elseif ($nutrientName === 'protein') {
+      $protein += $contribution;
+    } elseif ($nutrientName === 'fat') {
+      $fat += $contribution;
+    } elseif ($nutrientName === 'carbs') {
+      $carbs += $contribution;
+    }
+  }
+
+  if (!$foundAnyNutrition) {
+    $errors[] = 'Ingredient "' . $ing['name'] . '" has no rows in ingredient_nutrition.';
+  }
+}
+
+$calories = round($calories, 2);
+$protein  = round($protein, 2);
+$fat      = round($fat, 2);
+$carbs    = round($carbs, 2);
+
+/* ── CLEAN PAYLOAD FOR FINAL INSERT ─────────────────────── */
 $payload = [
   'title' => $title,
   'description' => $description,
-  'ingredients' => array_map(function($ing) {
+  'ingredients' => array_map(function ($ing) {
     return [
       'ingredient_id' => $ing['ingredient_id'],
       'amount' => $ing['amount'],
@@ -143,15 +232,31 @@ $payload = [
     ];
   }, $cleanIngredients),
   'steps' => $cleanSteps,
-  'total_time_minutes' => $totalTime
+  'total_time_minutes' => $totalTime,
+  'calories' => $calories,
+  'protein' => $protein,
+  'fat' => $fat,
+  'carbs' => $carbs
 ];
 
+/* ── PREVIEW RESPONSE ────────────────────────────────────── */
 $preview = [
   'title' => $title,
   'description' => $description,
-  'ingredients' => $cleanIngredients,
+  'ingredients' => array_map(function ($ing) {
+    return [
+      'ingredient_id' => $ing['ingredient_id'],
+      'name' => $ing['name'],
+      'amount' => $ing['amount'],
+      'unit' => $ing['unit']
+    ];
+  }, $cleanIngredients),
   'steps' => $cleanSteps,
-  'total_time_minutes' => $totalTime
+  'total_time_minutes' => $totalTime,
+  'calories' => $calories,
+  'protein' => $protein,
+  'fat' => $fat,
+  'carbs' => $carbs
 ];
 
 echo json_encode([
