@@ -14,7 +14,7 @@ echo "<div class='layout'>";
 
 /* SIDEBAR */
 echo "<aside class='sidebar'>";
-echo "<div class='logo'>PantryAdmin</div>";
+echo "<a class='logo' href='admin.php'>PantryAdmin</a>";
 echo "<a class='nav' href='admin.php'>Dashboard</a>";
 echo "<a class='nav active' href='add_recipe.php'>Add Recipe</a>";
 echo "</aside>";
