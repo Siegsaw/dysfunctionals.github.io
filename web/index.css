@@ -28,14 +28,16 @@
 }
 .exp-inp {
   height: 42px;
-  min-width: 160px;
-  border-radius: 12px;
+  min-width: 155px;
+  border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--bg-m);
   color: var(--ink);
   padding: 0 12px;
   font-size: 14px;
+  font-weight: 500;
   outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
 }
 
 .exp-inp:focus {
@@ -45,7 +47,16 @@
 
 .exp-inp::-webkit-calendar-picker-indicator {
   cursor: pointer;
-  opacity: 0.9;
+  opacity: 0.75;
+  filter: invert(85%);
+}
+
+.exp-inp::-webkit-datetime-edit,
+.exp-inp::-webkit-datetime-edit-text,
+.exp-inp::-webkit-datetime-edit-month-field,
+.exp-inp::-webkit-datetime-edit-day-field,
+.exp-inp::-webkit-datetime-edit-year-field {
+  color: var(--ink);
 }
 .input-row { display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; }
 
