@@ -29,10 +29,10 @@ echo "<div class='page-sub'>Manage recipes, ingredients and structure</div>";
 
 echo "<div class='grid'>";
 
-echo "<div class='card'>";
+echo "<a class='card' href='recipes.php'>";
 echo "<div class='card-title'>Recipes</div>";
 echo "<div class='card-sub'>Create and manage recipes</div>";
-echo "</div>";
+echo "</a>";
 
 echo "<div class='card'>";
 echo "<div class='card-title'>Ingredients</div>";
