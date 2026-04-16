@@ -1,0 +1,62 @@
+.admin-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 40px 80px;
+}
+
+.admin-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.admin-sub {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.admin-card {
+  background: var(--bg-s);
+  border: 1px solid var(--border);
+  border-radius: var(--rl2);
+  padding: 20px;
+  text-decoration: none;
+  color: var(--ink);
+  display: block;
+  transition: all .2s;
+}
+
+.admin-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sh-md);
+  border-color: var(--border-h);
+}
+
+.admin-card-ico {
+  font-size: 26px;
+  margin-bottom: 10px;
+}
+
+.admin-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.admin-card-desc {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.admin-card.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
