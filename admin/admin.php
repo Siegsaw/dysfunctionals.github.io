@@ -12,16 +12,12 @@ echo "<body>";
 
 echo "<div class='layout'>";
 
-/* SIDEBAR */
 echo "<aside class='sidebar'>";
 echo "<a class='logo' href='admin.php'>PantryAdmin</a>";
-
 echo "<a class='nav active' href='admin.php'>Dashboard</a>";
 echo "<a class='nav' href='add_recipe.php'>Add Recipe</a>";
-
 echo "</aside>";
 
-/* MAIN */
 echo "<main class='main'>";
 
 echo "<div class='page-title'>Dashboard</div>";
@@ -29,7 +25,7 @@ echo "<div class='page-sub'>Manage recipes, ingredients and structure</div>";
 
 echo "<div class='grid'>";
 
-echo "<a class='card' href='add_recipe.php'>";
+echo "<a class='card card-link' href='add_recipe.php'>";
 echo "<div class='card-title'>Recipes</div>";
 echo "<div class='card-sub'>Create and manage recipes</div>";
 echo "</a>";
