@@ -1,173 +1,139 @@
-
 body {
   margin: 0;
-  font-family: 'Inter', sans-serif;
-  background: var(--bg-m);
-  color: var(--ink);
+  font-family: Arial, sans-serif;
+  background: #0f1115;
+  color: #e7e7e7;
 }
 
-/* ── PAGE WRAPPER ──────────────────────────────────────────── */
-.admin-page {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 40px 24px 80px;
-}
-
-/* ── HEADER ────────────────────────────────────────────────── */
-.admin-header {
+/* ── LAYOUT ───────────────────────────── */
+.admin-wrapper {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+  height: 100vh;
 }
 
-.admin-title {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  color: var(--ink);
-}
-
-.admin-sub {
-  font-size: 13px;
-  color: var(--muted);
-  margin-top: 4px;
-}
-
-/* ── CARDS ─────────────────────────────────────────────────── */
-.admin-card {
-  background: var(--bg-s);
-  border: 1px solid var(--border);
-  border-radius: var(--rl2);
-  box-shadow: var(--sh-sm);
-  padding: 18px;
-  margin-bottom: 14px;
-}
-
-/* ── FORM LAYOUT ───────────────────────────────────────────── */
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-}
-
-.form-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.admin-input,
-.admin-textarea,
-.admin-select {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: var(--rs);
-  border: 1px solid var(--border);
-  background: var(--bg-m);
-  color: var(--ink);
-  font-size: 14px;
-  outline: none;
-  transition: border-color .15s, box-shadow .15s;
-}
-
-.admin-input:focus,
-.admin-textarea:focus,
-.admin-select:focus {
-  border-color: var(--green);
-  box-shadow: 0 0 0 3px rgba(34,197,94,.15);
-  background: var(--bg-s);
-}
-
-.admin-textarea {
-  min-height: 90px;
-  resize: vertical;
-}
-
-/* ── SECTION LABELS ────────────────────────────────────────── */
-.section-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--muted2);
-  margin: 10px 0 6px;
-}
-
-/* ── INGREDIENT ROW ────────────────────────────────────────── */
-.ing-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.ing-row input {
-  flex: 2;
-}
-
-.ing-row .qty {
-  flex: 1;
-  max-width: 120px;
-}
-
-.ing-row .unit {
-  flex: 1;
-  max-width: 120px;
-}
-
-/* ── STEPS ─────────────────────────────────────────────────── */
-.step-box {
+/* ── SIDEBAR ──────────────────────────── */
+.admin-sidebar {
+  width: 220px;
+  background: #151922;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  border-right: 1px solid #222;
 }
 
-.step-item {
-  display: grid;
-  grid-template-columns: 80px 100px 1fr auto;
-  gap: 8px;
-  align-items: center;
-}
-
-.step-item input,
-.step-item textarea,
-.step-item select {
-  width: 100%;
-}
-
-/* ── BUTTONS ───────────────────────────────────────────────── */
-.btn {
-  border: none;
-  border-radius: var(--rs);
-  padding: 10px 14px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: .15s;
-}
-
-.btn-primary {
-  background: var(--green);
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
   color: white;
 }
 
-.btn-primary:hover {
-  background: var(--gd);
+.nav-item {
+  padding: 10px;
+  border-radius: 6px;
+  color: #aaa;
+  text-decoration: none;
+  transition: 0.15s;
 }
 
-.btn-secondary {
-  background: var(--bg-m);
-  border: 1px solid var(--border);
-  color: var(--ink);
+.nav-item:hover {
+  background: #222836;
+  color: white;
 }
 
-.btn-danger {
-  background: var(--rl);
-  color: var(--red);
+.nav-item.active {
+  background: #2d7ef7;
+  color: white;
 }
 
-/* ── DARK MODE SAFETY ──────────────────────────────────────── */
-html.dark body {
-  background: var(--bg-m);
-  color: var(--ink);
+/* ── CONTENT ──────────────────────────── */
+.admin-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+h1 {
+  margin: 0 0 5px;
+}
+
+.muted {
+  color: #888;
+  margin-bottom: 20px;
+}
+
+/* ── CARD ─────────────────────────────── */
+.card {
+  background: #151922;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #222;
+  max-width: 900px;
+}
+
+/* ── INPUTS ───────────────────────────── */
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0 12px;
+  border-radius: 6px;
+  border: 1px solid #2a2f3a;
+  background: #0f1115;
+  color: #e7e7e7;
+  outline: none;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+input:focus, textarea:focus {
+  border-color: #2d7ef7;
+}
+
+/* ── BUTTONS ───────────────────────────── */
+.btn {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #2a2f3a;
+  color: white;
+  margin-top: 10px;
+}
+
+.btn:hover {
+  background: #3a4150;
+}
+
+.btn.primary {
+  background: #2d7ef7;
+}
+
+.btn.primary:hover {
+  background: #1f6be0;
+}
+
+/* ── SECTIONS ─────────────────────────── */
+.section-title {
+  margin-top: 20px;
+  font-weight: bold;
+  color: #bbb;
+}
+
+/* ── ROWS ─────────────────────────────── */
+.row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.row input {
+  flex: 1;
+}
+
+.row .small {
+  flex: 0.5;
 }
