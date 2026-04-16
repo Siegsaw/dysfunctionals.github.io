@@ -4,39 +4,49 @@ echo "<html lang='en'>";
 echo "<head>";
 echo "<meta charset='UTF-8'>";
 echo "<meta name='viewport' content='width=device-width, initial-scale=1.0'>";
-echo "<title>PantryChef Admin</title>";
-
+echo "<title>Admin Dashboard</title>";
 echo "<link rel='stylesheet' href='admin.css'>";
-echo "<script>if(localStorage.getItem('theme')==='dark')document.documentElement.classList.add('dark');</script>";
-
 echo "</head>";
+
 echo "<body>";
 
-echo "<div class='admin-wrap'>";
+echo "<div class='layout'>";
 
-echo "<div class='admin-header'>";
-echo "<h1>PantryChef Admin</h1>";
-echo "<p>Backend control panel</p>";
+/* SIDEBAR */
+echo "<aside class='sidebar'>";
+echo "<div class='logo'>PantryAdmin</div>";
+
+echo "<a class='nav active' href='admin.php'>Dashboard</a>";
+echo "<a class='nav' href='add_recipe.php'>Add Recipe</a>";
+
+echo "</aside>";
+
+/* MAIN */
+echo "<main class='main'>";
+
+echo "<div class='page-title'>Dashboard</div>";
+echo "<div class='page-sub'>Manage recipes, ingredients and structure</div>";
+
+echo "<div class='grid'>";
+
+echo "<div class='card'>";
+echo "<div class='card-title'>Recipes</div>";
+echo "<div class='card-sub'>Create and manage recipes</div>";
 echo "</div>";
 
-echo "<div class='admin-grid'>";
-
-echo "<a class='admin-card' href='recipe_add.php'>";
-echo "<h2>➕ Add Recipe</h2>";
-echo "<p>Create recipes with ingredients and steps</p>";
-echo "</a>";
-
-echo "<div class='admin-card disabled'>";
-echo "<h2>✏️ Edit Recipes</h2>";
-echo "<p>Coming soon</p>";
+echo "<div class='card'>";
+echo "<div class='card-title'>Ingredients</div>";
+echo "<div class='card-sub'>Controlled from DB</div>";
 echo "</div>";
 
-echo "<div class='admin-card disabled'>";
-echo "<h2>🥕 Ingredients</h2>";
-echo "<p>Coming soon</p>";
+echo "<div class='card'>";
+echo "<div class='card-title'>Nutrition</div>";
+echo "<div class='card-sub'>Ingredient nutrition mapping</div>";
 echo "</div>";
 
 echo "</div>";
+
+echo "</main>";
 
 echo "</div>";
 
