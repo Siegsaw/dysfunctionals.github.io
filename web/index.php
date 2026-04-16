@@ -19,7 +19,7 @@ echo "<button class=\"nav-btn active\">Home</button>";
 echo "<button class=\"nav-btn\" onclick=\"location.href='inventory.php'\">Inventory</button>";
 echo "</nav>";
 echo "<div class=\"h-right\">";
-echo "<a href=\"profile.php\" id=\"userBadge\"></a>";
+echo "<span id=\"userBadge\" onclick=\"location.href='profile.php'\" style=\"cursor:pointer;\"></span>";
 echo "<button class=\"btn-theme\" onclick=\"toggleTheme()\" title=\"Toggle dark mode\">🌙</button>";
 echo "<button class=\"btn-signin\" id=\"btnSignIn\" onclick=\"location.href='login.php'\">Sign In</button>";
 echo "<button class=\"btn-logout\" id=\"btnLogout\" onclick=\"doLogout()\">Sign Out</button>";
