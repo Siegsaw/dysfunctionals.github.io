@@ -304,6 +304,7 @@ async function addIng() {
   const ingredient = getIngredientObj(rawName);
   const qty = parseFloat(document.getElementById('ingQty').value);
   const unit = document.getElementById('ingUnit').value;
+  const expiration_date = document.getElementById('ingExpDate').value || null;
 
   if (!ingredient) {
     showToast('⚠️ Invalid ingredient');
