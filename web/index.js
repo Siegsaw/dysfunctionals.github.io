@@ -332,7 +332,7 @@ async function addIng() {
     const response = await fetch('add_inventory.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, amount: qty, unit })
+      body: JSON.stringify({ name, amount: qty, unit, expiration_date })
     });
 
     const data = await response.json();
@@ -383,6 +383,7 @@ function removeIng(idx) {
 function clearForm() {
   document.getElementById('ingName').value = '';
   document.getElementById('ingQty').value = '';
+  document.getElementById('ingExpDate').value = '';
   document.getElementById('suggestions').style.display = 'none';
   document.getElementById('ingName').classList.remove('field-err');
   document.getElementById('ingQty').classList.remove('field-err');
