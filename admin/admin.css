@@ -107,6 +107,19 @@ body {
   margin-bottom: 14px;
 }
 
+.card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: transform .15s, border-color .15s, background .15s;
+}
+
+.card-link:hover {
+  transform: translateY(-2px);
+  border-color: var(--green);
+  background: #181d28;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
