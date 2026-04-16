@@ -127,11 +127,49 @@ async function deleteProfileNow() {
   }
 }
 
+async function loadAllergens() {
+  try {
+    const res = await fetch('get_allergens.php', { cache: 'no-store' });
+    const data = await res.json();
+
+    if (!data.success) return;
+
+    const selected = new Set(data.selected || []);
+    document.querySelectorAll('#allergensForm input[name="allergens"]').forEach(cb => {
+      cb.checked = selected.has(cb.value);
+    });
+  } catch (err) {
+    console.error('Failed to load allergens', err);
+  }
+}
+
+async function saveAllergens(e) {
+  e.preventDefault();
+
+  const allergens = [...document.querySelectorAll('#allergensForm input[name="allergens"]:checked')]
+    .map(cb => cb.value);
+
+  try {
+    const res = await fetch('save_allergens.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ allergens })
+    });
+
+    const data = await res.json();
+    showToast(data.message || 'Allergens updated');
+  } catch (err) {
+    console.error(err);
+    showToast('Failed to save allergens');
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   await loadProfile();
 
   const profileForm = document.getElementById('profileForm');
   const passwordForm = document.getElementById('passwordForm');
+  const allergensForm = document.getElementById('allergensForm');
 
   if (profileForm) {
     profileForm.addEventListener('submit', saveProfileChanges);
@@ -140,4 +178,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (passwordForm) {
     passwordForm.addEventListener('submit', saveNewPassword);
   }
+  if (allergensForm) {
+  allergensForm.addEventListener('submit', saveAllergens);
+}
+  await loadAllergens();
 });
