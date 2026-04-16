@@ -44,6 +44,7 @@ echo "<option>g</option><option>kg</option><option>ml</option><option>L</option>
 echo "<option>cups</option><option>tbsp</option><option>tsp</option>";
 echo "<option selected>pcs</option>";
 echo "</select>";
+echo "<input id=\"ingExpDate\" class=\"exp-inp\" type=\"date\" title=\"Expiration date\">";
 echo "<button class=\"btn-add-ing\" id=\"btnAddIng\" onclick=\"addIng()\" title=\"Add\" disabled>+</button>";
 echo "<button class=\"btn-clear-ing\" onclick=\"clearForm()\" title=\"Clear\">✕</button>";
 echo "</div>";
