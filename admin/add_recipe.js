@@ -177,6 +177,10 @@ function renderPreview(data) {
           <div class="meta-pill">Ingredients: ${data.preview.ingredients.length}</div>
           <div class="meta-pill">Steps: ${data.preview.steps.length}</div>
           <div class="meta-pill">Total time: ${data.preview.total_time_minutes} min</div>
+          <div class="meta-pill">Calories: ${data.preview.calories} kcal</div>
+          <div class="meta-pill">Protein: ${data.preview.protein} g</div>
+          <div class="meta-pill">Fat: ${data.preview.fat} g</div>
+          <div class="meta-pill">Carbs: ${data.preview.carbs} g</div>
         </div>
       </div>
 
@@ -198,6 +202,22 @@ function renderPreview(data) {
           <div class="preview-row">
             <div class="preview-row-left">total_time_minutes</div>
             <div class="preview-row-right">${data.preview.total_time_minutes}</div>
+          </div>
+          <div class="preview-row">
+            <div class="preview-row-left">calories</div>
+            <div class="preview-row-right">${data.preview.calories} kcal</div>
+          </div>
+          <div class="preview-row">
+            <div class="preview-row-left">protein</div>
+            <div class="preview-row-right">${data.preview.protein} g</div>
+          </div>
+          <div class="preview-row">
+            <div class="preview-row-left">fat</div>
+            <div class="preview-row-right">${data.preview.fat} g</div>
+          </div>
+          <div class="preview-row">
+            <div class="preview-row-left">carbs</div>
+            <div class="preview-row-right">${data.preview.carbs} g</div>
           </div>
         </div>
       </div>
