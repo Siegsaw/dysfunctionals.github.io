@@ -13,7 +13,7 @@ echo "</head>";
 echo "<body>";
 echo "";
 echo "<header>";
-echo "<div class=\"logo\" onclick=\"location.href='index.php'\">PantryChef</div>";
+echo "<a id=\"userBadge\" href=\"profile.php\"></a>";
 echo "<nav class=\"h-nav\">";
 echo "<button class=\"nav-btn active\">Home</button>";
 echo "<button class=\"nav-btn\" onclick=\"location.href='inventory.php'\">Inventory</button>";
