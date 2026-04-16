@@ -15,7 +15,7 @@ $stmt = $conn->prepare('
         i.ingredient_id,
         i.name_ing AS name,
         ui.quantity AS amount,
-        ui.unit
+        ui.unit,
         ui.expiration_date
     FROM user_inventory ui
     JOIN ingredients i ON ui.ingredient_id = i.ingredient_id
