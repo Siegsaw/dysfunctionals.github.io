@@ -1,60 +1,164 @@
 body {
   margin: 0;
-  font-family: Inter, sans-serif;
+  font-family: 'Inter', sans-serif;
   background: var(--bg, #0f1115);
-  color: var(--ink, #e5e7eb);
+  color: var(--ink);
 }
 
+/* ── LAYOUT ── */
 .admin-wrap {
   max-width: 900px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 48px 40px;
+}
+
+/* ── HEADER ── */
+.admin-header {
+  margin-bottom: 26px;
 }
 
 .admin-header h1 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 28px;
-  margin-bottom: 4px;
+  font-weight: 800;
+  margin: 0 0 4px;
+  letter-spacing: -0.5px;
 }
 
 .admin-header p {
-  color: var(--muted, #9ca3af);
-  margin-bottom: 30px;
+  color: var(--muted);
+  font-size: 14px;
 }
 
+/* ── GRID ── */
 .admin-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  gap: 12px;
 }
 
+/* ── CARD (MATCH MAIN SITE STYLE) ── */
 .admin-card {
   display: block;
   padding: 18px;
-  border-radius: 12px;
-  background: var(--bg-s, #1a1d24);
-  border: 1px solid var(--border, #2a2f3a);
+  border-radius: var(--rl2);
+  background: var(--bg-s);
+  border: 1px solid var(--border);
+  box-shadow: var(--sh-sm);
   text-decoration: none;
-  color: inherit;
-  transition: 0.15s;
+  color: var(--ink);
+  transition: transform .15s, box-shadow .15s, border-color .15s;
 }
 
 .admin-card:hover {
   transform: translateY(-2px);
-  border-color: #22c55e;
+  box-shadow: var(--sh-md);
+  border-color: var(--border-h);
 }
 
 .admin-card h2 {
-  margin: 0 0 6px;
   font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 6px;
 }
 
 .admin-card p {
-  margin: 0;
   font-size: 13px;
-  color: var(--muted, #9ca3af);
+  color: var(--muted);
+  margin: 0;
 }
 
+/* ── DISABLED ── */
 .disabled {
   opacity: 0.5;
   pointer-events: none;
+}
+
+/* ── FORM STYLING (IMPORTANT) ── */
+.form-card {
+  background: var(--bg-s);
+  border: 1px solid var(--border);
+  border-radius: var(--rl2);
+  box-shadow: var(--sh-sm);
+  padding: 18px;
+  margin-top: 16px;
+}
+
+.form-card input,
+.form-card textarea,
+.form-card select {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--rs);
+  border: 1px solid var(--border);
+  background: var(--bg-m);
+  color: var(--ink);
+  font-size: 13.5px;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+.form-card textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-card input:focus,
+.form-card textarea:focus,
+.form-card select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(34,197,94,.15);
+}
+
+/* ── ROW INPUTS ── */
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.row input,
+.row select {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* ── LIST ITEMS ── */
+.row-item {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  background: var(--bg-m);
+  font-size: 13px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: .12s;
+}
+
+.row-item:hover {
+  border-color: var(--green);
+  background: var(--bg-s);
+}
+
+/* ── BUTTON ── */
+button {
+  padding: 9px 12px;
+  border-radius: var(--rs);
+  border: none;
+  background: var(--green);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .15s;
+}
+
+button:hover {
+  background: var(--gd);
+  transform: translateY(-1px);
+}
+
+.submit {
+  width: 100%;
+  margin-top: 14px;
 }
