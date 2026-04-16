@@ -22,7 +22,6 @@ if (!isset($_SESSION['user_id'])) {
     <nav class="h-nav">
       <button class="nav-btn" onclick="location.href='index.php'">Home</button>
       <button class="nav-btn" onclick="location.href='inventory.php'">Inventory</button>
-      <button class="nav-btn active" onclick="location.href='profile.php'">Profile</button>
     </nav>
 
     <div class="h-right">
