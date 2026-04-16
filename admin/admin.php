@@ -29,7 +29,7 @@ echo "<div class='page-sub'>Manage recipes, ingredients and structure</div>";
 
 echo "<div class='grid'>";
 
-echo "<a class='card' href='recipes.php'>";
+echo "<a class='card' href='add_recipe.php'>";
 echo "<div class='card-title'>Recipes</div>";
 echo "<div class='card-sub'>Create and manage recipes</div>";
 echo "</a>";
