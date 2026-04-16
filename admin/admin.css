@@ -30,6 +30,12 @@ body {
   color: var(--ink);
 }
 
+.logo {
+  display: block;
+  text-decoration: none;
+  color: var(--ink);
+}
+
 /* ── LAYOUT ───────────────────────── */
 .layout {
   display: flex;
