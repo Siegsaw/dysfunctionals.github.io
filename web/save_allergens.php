@@ -7,6 +7,7 @@ requireLogin();
 
 $userId = $_SESSION['user_id'];
 $data = json_decode(file_get_contents('php://input'), true);
+
 $selected = $data['allergens'] ?? [];
 
 if (!is_array($selected)) {
