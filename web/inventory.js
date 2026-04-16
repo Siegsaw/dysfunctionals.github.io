@@ -93,10 +93,14 @@ function save() { saveUserIng(sanitizeInventory(items)); }
 // ── RENDER ────────────────────────────────────────────────────
 function render() {
   const q    = document.getElementById('search').value.toLowerCase();
+  const sortValue = document.getElementById('sortExpiry')?.value || 'default';
   const list = document.getElementById('list');
   list.innerHTML = '';
 
-  const filtered = items.filter(i => i.name.toLowerCase().includes(q));
+  let filtered = items.filter(i => i.name.toLowerCase().includes(q));
+
+  if (sortValue === 'expiry_asc') {
+    filtered = sortInventoryByExpiry(filtered);
 
   if (!filtered.length) {
     list.innerHTML = `<div class="empty">
@@ -206,17 +210,9 @@ function sortInventoryByExpiry(items) {
 }
 
 function applyInventorySort() {
-  const sortValue = document.getElementById('sortExpiry')?.value || 'default';
-
-  let itemsToRender = [...inventoryItems];
-
-  if (sortValue === 'expiry_asc') {
-    itemsToRender = sortInventoryByExpiry(itemsToRender);
-  }
-
-  renderInventory(itemsToRender);
+  render();
 }
-
+  
 function setDirect(idx, val) {
   const n = parseFloat(val);
   const inp = document.getElementById(`cur-${idx}`)?.querySelector('.cur-val-inp');
@@ -269,10 +265,15 @@ function undoRemove() {
 
 document.addEventListener('DOMContentLoaded', async () => {
   items = await sanitizeInventory(await loadUserIng());
+
   document.getElementById('search').addEventListener('input', render);
+  document.getElementById('sortExpiry').addEventListener('change', render);
+
   document.getElementById('overlay').addEventListener('click', e => {
-    if (e.target === document.getElementById('overlay'))
+    if (e.target === document.getElementById('overlay')) {
       document.getElementById('overlay').classList.remove('show');
+    }
   });
+
   render();
 });
