@@ -132,14 +132,31 @@ async function loadAllergens() {
     const res = await fetch('get_allergens.php', { cache: 'no-store' });
     const data = await res.json();
 
-    if (!data.success) return;
+    if (!data.success) {
+      showToast(data.message || 'Failed to load allergens');
+      return;
+    }
+
+    const grid = document.getElementById('allergenGrid');
+    if (!grid) return;
 
     const selected = new Set(data.selected || []);
-    document.querySelectorAll('#allergensForm input[name="allergens"]').forEach(cb => {
-      cb.checked = selected.has(cb.value);
+    grid.innerHTML = '';
+
+    (data.allergens || []).forEach(allergen => {
+      const label = document.createElement('label');
+      label.className = 'allergen-tag';
+
+      label.innerHTML = `
+        <input type="checkbox" name="allergens" value="${allergen.name}" ${selected.has(allergen.name) ? 'checked' : ''}>
+        <span>${allergen.name}</span>
+      `;
+
+      grid.appendChild(label);
     });
   } catch (err) {
     console.error('Failed to load allergens', err);
+    showToast('Failed to load allergens');
   }
 }
 
@@ -157,7 +174,12 @@ async function saveAllergens(e) {
     });
 
     const data = await res.json();
-    showToast(data.message || 'Allergens updated');
+
+    if (data.success) {
+      showToast(data.message || 'Allergens updated');
+    } else {
+      showToast(data.message || 'Failed to save allergens');
+    }
   } catch (err) {
     console.error(err);
     showToast('Failed to save allergens');
