@@ -60,3 +60,43 @@
   opacity: 0.5;
   pointer-events: none;
 }
+.form-card {
+  background: var(--bg-s);
+  border: 1px solid var(--border);
+  border-radius: var(--rl2);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-input,
+.admin-textarea {
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  background: var(--bg-m);
+  color: var(--ink);
+}
+
+.admin-textarea {
+  min-height: 80px;
+}
+
+.row, .step {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-add {
+  margin-top: 6px;
+}
+
+.btn-save {
+  margin-top: 16px;
+  background: var(--green);
+  color: white;
+  padding: 10px;
+  border-radius: var(--rs);
+}
