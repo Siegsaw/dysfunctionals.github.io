@@ -1,4 +1,5 @@
 let ALL_ING = [];
+let lastValidatedPayload = null;
 
 async function loadIngredients() {
   try {
@@ -114,20 +115,20 @@ function addStepRow() {
   container.appendChild(row);
 }
 
-async function submitRecipe() {
+function buildRawPayload() {
   const title = document.getElementById("title").value.trim();
   const description = document.getElementById("description").value.trim();
 
   const ingredients = [...document.querySelectorAll("#ingredients .ingredient-row")].map(r => {
     const name = r.querySelector(".ing-name").value.trim();
-    const amount = parseFloat(r.querySelector(".ing-amount").value);
+    const amountRaw = r.querySelector(".ing-amount").value;
     const unit = r.querySelector(".ing-unit").value;
     const ingredient = findIngredientByName(name);
 
     return {
       ingredient_id: ingredient ? ingredient.id : null,
       name,
-      amount,
+      amount: parseFloat(amountRaw),
       unit
     };
   });
@@ -139,59 +140,150 @@ async function submitRecipe() {
     instructions: r.querySelector(".step-text").value.trim()
   }));
 
-  if (!title) {
-    alert("Recipe title is required.");
-    return;
+  return { title, description, ingredients, steps };
+}
+
+function renderPreview(data) {
+  const previewCard = document.getElementById('previewCard');
+  const previewContent = document.getElementById('previewContent');
+  const confirmBtn = document.getElementById('confirmSaveBtn');
+
+  previewCard.style.display = 'block';
+
+  let html = '';
+
+  if (data.errors && data.errors.length) {
+    html += `
+      <div class="preview-errors">
+        <h4>Validation errors</h4>
+        <ul>${data.errors.map(e => `<li>${e}</li>`).join('')}</ul>
+      </div>
+    `;
+    confirmBtn.disabled = true;
+    lastValidatedPayload = null;
+  } else {
+    html += `<div class="preview-ok">Data is valid. This is what will be inserted into the database.</div>`;
+    confirmBtn.disabled = false;
+    lastValidatedPayload = data.payload;
   }
 
-  if (!ingredients.length) {
-    alert("Add at least one ingredient.");
-    return;
+  if (data.preview) {
+    html += `
+      <div class="preview-block">
+        <div class="preview-title">${escapeHtml(data.preview.title)}</div>
+        <div class="preview-sub">${escapeHtml(data.preview.description || 'No description')}</div>
+
+        <div class="meta-grid">
+          <div class="meta-pill">Ingredients: ${data.preview.ingredients.length}</div>
+          <div class="meta-pill">Steps: ${data.preview.steps.length}</div>
+          <div class="meta-pill">Total time: ${data.preview.total_time_minutes} min</div>
+        </div>
+      </div>
+
+      <div class="preview-block">
+        <div class="section">Recipe row</div>
+        <div class="preview-list">
+          <div class="preview-row">
+            <div class="preview-row-left">title</div>
+            <div class="preview-row-right">${escapeHtml(data.preview.title)}</div>
+          </div>
+          <div class="preview-row">
+            <div class="preview-row-left">description</div>
+            <div class="preview-row-right">${escapeHtml(data.preview.description || '')}</div>
+          </div>
+          <div class="preview-row">
+            <div class="preview-row-left">created_at</div>
+            <div class="preview-row-right">AUTO (CURRENT_TIMESTAMP)</div>
+          </div>
+          <div class="preview-row">
+            <div class="preview-row-left">total_time_minutes</div>
+            <div class="preview-row-right">${data.preview.total_time_minutes}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="preview-block">
+        <div class="section">recipe_ingredients rows</div>
+        <div class="preview-list">
+          ${data.preview.ingredients.map(ing => `
+            <div class="preview-row">
+              <div class="preview-row-left">${escapeHtml(ing.name)} (ingredient_id: ${ing.ingredient_id})</div>
+              <div class="preview-row-right">${ing.amount} ${escapeHtml(ing.unit)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="preview-block">
+        <div class="section">recipe_steps rows</div>
+        <div class="preview-list">
+          ${data.preview.steps.map(step => `
+            <div class="preview-row">
+              <div class="preview-row-left">#${step.step_number} · ${escapeHtml(step.step_type)} · ${step.time_minutes} min</div>
+              <div class="preview-row-right">${escapeHtml(step.instructions)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
   }
 
-  for (const ing of ingredients) {
-    if (!ing.ingredient_id || !ing.amount || ing.amount <= 0 || !ing.unit) {
-      alert("Every ingredient must use a valid ingredient from the database and have a valid amount.");
-      return;
-    }
-  }
+  previewContent.innerHTML = html;
+}
 
-  if (!steps.length) {
-    alert("Add at least one step.");
-    return;
-  }
-
-  for (const step of steps) {
-    if (!step.step_number || step.step_number <= 0 || !step.instructions || isNaN(step.time_minutes)) {
-      alert("Each step must have a step number, time, and instructions.");
-      return;
-    }
-  }
-
-  const payload = {
-    title,
-    description,
-    ingredients: ingredients.map(i => ({
-      ingredient_id: i.ingredient_id,
-      amount: i.amount,
-      unit: i.unit
-    })),
-    steps
-  };
+async function previewRecipe() {
+  const payload = buildRawPayload();
 
   try {
-    const res = await fetch("add_recipe_handler.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const res = await fetch('preview_recipe.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
 
     const data = await res.json();
-    alert(data.success ? "Recipe added" : (data.message || "Error"));
+    renderPreview(data);
   } catch (err) {
     console.error(err);
-    alert("Request failed.");
+    alert('Preview request failed.');
   }
+}
+
+async function confirmSaveRecipe() {
+  if (!lastValidatedPayload) {
+    alert('Please run preview first and fix any validation issues.');
+    return;
+  }
+
+  try {
+    const res = await fetch('add_recipe_handler.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(lastValidatedPayload)
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert(`Recipe added successfully. New recipe_id: ${data.recipe_id}`);
+      window.location.reload();
+      return;
+    }
+
+    alert(data.message || 'Insert failed.');
+  } catch (err) {
+    console.error(err);
+    alert('Save request failed.');
+  }
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
