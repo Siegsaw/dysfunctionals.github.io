@@ -11,6 +11,8 @@ $sql = "
     r.protein,
     r.carbs,
     r.fat,
+    r.region_id,
+    reg.name AS region_name,
     i.name_ing,
     ri.quantity,
     ri.unit,
@@ -18,6 +20,7 @@ $sql = "
 FROM recipes r
 JOIN recipe_ingredients ri ON r.recipe_id = ri.recipe_id
 JOIN ingredients i ON ri.ingredient_id = i.ingredient_id
+LEFT JOIN regions reg ON r.region_id = reg.region_id
 LEFT JOIN recipe_flavors rf ON r.recipe_id = rf.recipe_id
 LEFT JOIN flavors f ON rf.flavor_id = f.flavor_id
 LEFT JOIN (
