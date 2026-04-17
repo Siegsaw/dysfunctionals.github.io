@@ -50,6 +50,7 @@ while ($row = $result->fetch_assoc()) {
       'cook_time' => isset($row['cook_time']) ? (int)$row['cook_time'] : 0,
       'calories' => isset($row['calories']) ? (float)$row['calories'] : null,
       "flavors" => [],
+      'region_name' => $row['region_name'],
       'protein' => isset($row['protein']) ? (float)$row['protein'] : 0,
       'carbs' => isset($row['carbs']) ? (float)$row['carbs'] : 0,
       'fat' => isset($row['fat']) ? (float)$row['fat'] : 0,
