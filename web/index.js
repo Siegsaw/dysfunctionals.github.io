@@ -567,7 +567,7 @@ function matchRecipes() {
     
       const recipeFlavors = Array.isArray(recipe.flavors)  ? recipe.flavors.map(f => f.toLowerCase()) : (recipe.flavors ? recipe.flavors.toLowerCase().split(',') : []);
       const flavorOk = selectedFlavors.length === 0 ||  selectedFlavors.some(f => recipeFlavors.includes(f.toLowerCase()));
-      const recipeCuisine = recipe.cuisine ? recipe.cuisine.toLowerCase() : "";
+      const recipeCuisine = recipe.region_name ? recipe.region_name.toLowerCase() : "";
       const cuisineOk = selectedCuisines.length === 0 ||  selectedCuisines.includes(recipeCuisine);
       
       return flavorOk && cuisineOk && timeOk && calOk;
@@ -683,11 +683,16 @@ function runSearch() {
     .map(f => `<span class="tag tag-flavor">${f}</span>`)
     .join('');
     
+    const cuisineTag = r.recipe.region_name 
+  ? `<span class="tag tag-cuisine">${r.recipe.region_name}</span>` 
+  : '';
+    
     const card = document.createElement('div');
     card.className = `recipe-card${complete ? ' complete' : ''}`;
     card.innerHTML = `
       <div class="card-top">
         <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
+        ${cuisineTag} </div>
         <span class="card-pct ${pc}">${r.pct}%</span>
       </div>
 
