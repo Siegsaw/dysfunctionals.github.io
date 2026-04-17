@@ -97,6 +97,68 @@
   opacity: 0.85;
 }
 
+.filter-row {
+  display: flex;       
+  gap: 20px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  border-top: 1px solid var(--border); 
+  padding-top: 15px;
+  flex-wrap: nowrap;   
+}
+
+.filter-group {
+  flex: 1;             
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;        
+}
+
+.filter-group label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--muted2);
+  letter-spacing: .05em;
+  white-space: nowrap;
+}
+
+/* Skonių mygtukai (Flavor) */
+.flavor-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.flavor-buttons button {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  background: var(--bg-m);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.flavor-buttons button.active {
+  background: var(--green);
+  color: #fff;
+  border-color: var(--green);
+}
+
+input[type="range"] {
+  width: 100%;
+  cursor: pointer;
+  accent-color: var(--green);
+  height: 6px;
+}
+
+#timeValue, #calValue {
+  color: var(--green);
+  font-weight: 700;
+}
+
 /* Autofill wrapper */
 .af-wrap { position: relative; flex: 2; min-width: 180px; }
 .af-wrap input {
@@ -162,122 +224,6 @@
   min-width: 80px;
 }
 .unit-sel:focus { border-color: var(--green); background: var(--bg-s); box-shadow: 0 0 0 3px rgba(34,197,94,.15); }
- 
-.search-filters {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border);
-  margin-top: 10px;
-}
-
-.filter-label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--muted2);
-  letter-spacing: .05em;
-  margin-bottom: 10px;
-  display: block;
-}
-
-.flavor-btn-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.flavor-btn-group button {
-  padding: 7px 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--rf);
-  background: var(--bg-m);
-  color: var(--ink2);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all .15s ease;
-}
-
-.flavor-btn-group button:hover {
-  background: var(--gl);
-  border-color: var(--gm);
-  color: var(--green);
-}
-
-.flavor-btn-group button.active {
-  background: var(--green);
-  color: #fff;
-  border-color: var(--green);
-}
-
-.sliders-row {
-  display: flex;
-  gap: 30px;
-  width: 100%;
-}
-
-.slider-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.slider-info {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--muted2);
-}
-
-.slider-info strong {
-  color: var(--green);
-  font-size: 13px;
-}
-
-input[type="range"] {
-  width: 100%;
-  cursor: pointer;
-  accent-color: var(--green);
-  height: 6px;
-}
-/*.filter-row {
-  display: flex;
-  gap: 20px;
-  margin-top: 16px;
-  margin-bottom: 8px;
-}
-
-.filter-group {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 140px;
-}
-
-.filter-group label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: var(--muted2);
-  letter-spacing: .05em;
-  white-space: nowrap;
-}
-
-.filter-group input[type="range"] {
-  width: 100%;
-  cursor: pointer;
-  accent-color: var(--green);
-  height: 6px;
-}
-
-#timeValue, #calValue {
-  color: var(--green);
-  font-weight: 700;
-}*/
 
 /* Add / Clear buttons */
 .btn-add-ing {
@@ -548,6 +494,7 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 .time-breakdown div {
   font-weight: 500;
 }
+
 .card-detail.open { display: block; }
 .detail-row {
   display: flex;
@@ -566,31 +513,7 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 .dot-missing  { background: var(--red); }
 .dot-partial  { background: var(--yellow); }
 
-/*.flavor-buttons {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
 
-.flavor-buttons button {
-  padding: 6px 10px;
-  border: 1px solid var(--border);
-  border-radius: var(--rs);
-  background: var(--bg-m);
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.flavor-buttons button:hover {
-  background: var(--gl);
-  color: var(--green);
-}
-
-.flavor-buttons button.active {
-  background: var(--green);
-  color: #fff;
-  border-color: var(--green);
-}*/
 
 @media (max-width: 768px) {
   .page { padding: 28px 16px 60px; }
