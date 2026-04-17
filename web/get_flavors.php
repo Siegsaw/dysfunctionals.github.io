@@ -1,5 +1,6 @@
 <?php
-require 'db.php';
+header('Content-Type: application/json');
+require '/var/www/private/db.php';
 
 $sql = "SELECT name FROM flavors ORDER BY name ASC";
 $result = $conn->query($sql);
