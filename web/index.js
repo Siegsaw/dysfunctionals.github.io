@@ -588,7 +588,11 @@ function runSearch() {
         </div>
       `;
     }).join('');
-
+    
+    const flavorTags = (r.recipe.flavors || [])
+    .map(f => `<span class="tag tag-flavor">${f}</span>`)
+    .join('');
+    
     const card = document.createElement('div');
     card.className = `recipe-card${complete ? ' complete' : ''}`;
     card.innerHTML = `
@@ -601,7 +605,7 @@ function runSearch() {
         <span class="recipe-calories">🔥 ${r.recipe.calories || '0'} kcal</span>
         <span class="recipe-time">⏱️ ${r.recipe.time || 0} min</span>
       </div>
-
+      ${flavorTags ? `<div class="tags flavor-tags-container">${flavorTags}</div>` : ''}
       <div class="prog-wrap"><div class="prog-bar ${bc}"></div></div>
       
       ${complete
