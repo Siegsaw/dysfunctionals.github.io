@@ -497,15 +497,20 @@ function matchRecipes() {
     .filter(recipe => {
       const timeOk = recipe.time == null || recipe.time <= maxTime;
       const calOk = recipe.calories == null || recipe.calories <= maxCalories;
-      const recipeFlavors = Array.isArray(recipe.flavors)  ? recipe.flavors.map(f => f.toLowerCase()) : (recipe.flavors ? recipe.flavors.toLowerCase().split(',') : []);
-      const flavorOk = selectedFlavors.length === 0 ||  selectedFlavors.some(f => recipeFlavors.includes(f.toLowerCase()));
-      return flavorOk && timeOk && calOk;
+    
+      const recipeFlavors = Array.isArray(recipe.flavors) 
+        ? recipe.flavors.map(f => f.toLowerCase()) 
+        : (recipe.flavors ? recipe.flavors.toLowerCase().split(',') : []);
+
+      const flavorOk = selectedFlavors.length === 0 || 
+                       selectedFlavors.some(f => recipeFlavors.includes(f.toLowerCase()));
       
+      return flavorOk && timeOk && calOk;
     })
     .map(recipe => {
       let score = 0;
-      
-     const uniqueIngredients = [];
+
+      const uniqueIngredients = [];
       const seenNames = new Set();
 
       recipe.ingredients.forEach(ri => {
@@ -516,31 +521,15 @@ function matchRecipes() {
         }
       });
 
-    /*  const details = recipe.ingredients.map(ri => {
+      const details = uniqueIngredients.map(ri => {
         const key = ri.name.toLowerCase();
         const have = userMap[key];
 
         if (!have) return { ...ri, status: 'missing' };
 
         const coverage = calculateCoverage(have.displayAmount, have.displayUnit, ri.amount, ri.unit);
-        score += coverage.ratio;
-
-        return {
-          ...ri,
-          status: coverage.status,
-          have: have.displayAmount,
-          haveUnit: have.displayUnit,
-          haveText: coverage.haveText
-        };
-      });*/
-     const details = uniqueIngredients.map(ri => {
-        const key = ri.name.toLowerCase();
-        const have = userMap[key];
-
-        if (!have) return { ...ri, status: 'missing' };
-
-        const coverage = calculateCoverage(have.displayAmount, have.displayUnit, ri.amount, ri.unit);
-        score += coverage.ratio;
+        
+        score += Math.min(1, coverage.ratio);
 
         return {
           ...ri,
@@ -550,9 +539,9 @@ function matchRecipes() {
           haveText: coverage.haveText
         };
       });
-      
+
       const pct = uniqueIngredients.length
-        ? Math.round((score / recipe.ingredients.length) * 100)
+        ? Math.round((score / uniqueIngredients.length) * 100)
         : 0;
 
       return {
