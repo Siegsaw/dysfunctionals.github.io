@@ -421,8 +421,13 @@ html.dark .pct-mid { color: #fde68a; }
 }
 
 .cuisine-row .tag-flavor {
-    border-style: dashed; 
-    opacity: 0.8;
+    background: var(--bg-m);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: inline-block;
 }
 
 .recipe-calories {
