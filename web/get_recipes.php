@@ -11,13 +11,13 @@ $sql = "
     i.name_ing,
     ri.quantity,
     ri.unit,
-    COALESCE(rs.prep_time, 0) AS prep_time,
-    COALESCE(rs.cook_time, 0) AS cook_time
-    
-  FROM recipes r
-  JOIN recipe_ingredients ri ON r.recipe_id = ri.recipe_id
-  JOIN ingredients i ON ri.ingredient_id = i.ingredient_id
-  LEFT JOIN (
+    f.name AS flavor
+FROM recipes r
+JOIN recipe_ingredients ri ON r.recipe_id = ri.recipe_id
+JOIN ingredients i ON ri.ingredient_id = i.ingredient_id
+LEFT JOIN recipe_flavors rf ON r.recipe_id = rf.recipe_id
+LEFT JOIN flavors f ON rf.flavor_id = f.flavor_id
+LEFT JOIN (
     SELECT 
         recipe_id,
         SUM(CASE WHEN step_type = 'prep' THEN time_minutes ELSE 0 END) AS prep_time,
@@ -43,6 +43,7 @@ while ($row = $result->fetch_assoc()) {
       'prep_time' => isset($row['prep_time']) ? (int)$row['prep_time'] : 0,
       'cook_time' => isset($row['cook_time']) ? (int)$row['cook_time'] : 0,
       'calories' => isset($row['calories']) ? (float)$row['calories'] : null,
+      "flavors" => [],
       'ingredients' => []
     ];
   }
@@ -52,6 +53,10 @@ while ($row = $result->fetch_assoc()) {
     'amount' => (float)$row['quantity'],
     'unit' => $row['unit']
   ];
+  
+  if ($row['flavor'] && !in_array($row['flavor'], $recipes[$id]['flavors'])) {
+    $recipes[$id]['flavors'][] = $row['flavor'];
+  }
 }
 
 echo json_encode(array_values($recipes));
