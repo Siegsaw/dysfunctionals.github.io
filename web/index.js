@@ -665,9 +665,16 @@ function runSearch() {
   lbl.textContent = `${results.length} Matching Recipe${results.length !== 1 ? 's' : ''}`;
 
   results.forEach(r => {
-    const hasAllergen = r.recipe.ingredients.some(ing => 
-      USER_ALLERGENS.includes(ing.name.toLowerCase())
-    );
+    const hasAllergen = r.recipe.ingredients.some(ing => {
+        const nameMatch = USER_ALLERGENS.includes(ing.name_ing.toLowerCase());
+        
+        let groupMatch = false;
+        if (ing.allergen_groups) {
+            const groups = ing.allergen_groups.toLowerCase().split(',');
+            groupMatch = groups.some(g => USER_ALLERGENS.includes(g.trim()));
+        }
+        return nameMatch || groupMatch;
+    });
     const complete = r.pct === 100;
     const pc = complete ? 'pct-high' : r.pct >= 40 ? 'pct-mid' : 'pct-low';
     const bc = complete ? 'prog-high' : r.pct >= 40 ? 'prog-mid' : 'prog-low';
