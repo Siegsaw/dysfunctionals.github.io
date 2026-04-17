@@ -14,8 +14,7 @@ $sql = "
     i.name_ing,
     ri.quantity,
     ri.unit,
-    GROUP_CONCAT(DISTINCT f.name SEPARATOR ',') AS flavors,
-    GROUP_CONCAT(DISTINCT CONCAT(i.name_ing, ':', ri.quantity, ':', ri.unit) SEPARATOR ';') AS ingredients_raw
+    f.name AS flavor
 FROM recipes r
 JOIN recipe_ingredients ri ON r.recipe_id = ri.recipe_id
 JOIN ingredients i ON ri.ingredient_id = i.ingredient_id
@@ -29,7 +28,6 @@ LEFT JOIN (
     FROM recipe_steps
     GROUP BY recipe_id
     ) rs ON r.recipe_id = rs.recipe_id
-  GROUP BY recipe_id
   ORDER BY r.recipe_id
 ";
 
