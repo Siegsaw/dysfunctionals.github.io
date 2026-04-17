@@ -21,6 +21,8 @@ let ALL_ING = [];
 let RECIPES = [];
 let selectedFlavors = [];
 let FLAVORS = [];
+let selectedCuisines = [];
+let CUISINES = [];
 
 // ── HELPERS ────────────────────────────────────────────────────
 function showToast(message) {
@@ -154,6 +156,7 @@ function sanitizeIngredientList(entries) {
 
   return cleaned;
 }
+
 function getInvMap() {
   return combineIngredientEntries([...serverInventory, ...searchIngs]);
 }
@@ -381,6 +384,16 @@ async function loadFlavors() {
   FLAVORS = await res.json();
 }
 
+async function loadCuisines() {
+    try {
+        const res = await fetch('get_cuisines.php');
+        CUISINES = await res.json();
+        buildCuisineButtons();
+    } catch (err) {
+        console.error("Error loading cuisines:", err);
+    }
+}
+
 function removeIng(idx) {
   searchIngs.splice(idx, 1);
   renderChips();
@@ -447,6 +460,65 @@ function updateFlavorUI() {
     });
 }
 
+async function loadCuisines() {
+    try {
+        const res = await fetch('get_cuisines.php');
+        CUISINES = await res.json();
+        buildCuisineButtons();
+    } catch (err) {
+        console.error("Error loading cuisines:", err);
+    }
+}
+
+function buildCuisineButtons() {
+    const container = document.getElementById('cuisineButtons');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const allBtn = document.createElement('button');
+    allBtn.textContent = 'All';
+    allBtn.type = 'button';
+    allBtn.onclick = () => setCuisine('', allBtn);
+    container.appendChild(allBtn);
+
+    CUISINES.forEach(cuisine => {
+        const btn = document.createElement('button');
+        btn.textContent = cuisine.name; 
+        btn.type = 'button';
+        btn.onclick = () => setCuisine(cuisine.name, btn);
+        container.appendChild(btn);
+    });
+    updateCuisineUI();
+}
+
+function setCuisine(cuisine, clickedBtn) {
+    if (cuisine === '') {
+        selectedCuisines = [];
+    } else {
+        const c = cuisine.toLowerCase();
+        const index = selectedCuisines.indexOf(c);
+        if (index > -1) {
+            selectedCuisines.splice(index, 1);
+        } else {
+            selectedCuisines.push(c);
+        }
+    }
+    updateCuisineUI();
+    runSearch(); 
+}
+
+function updateCuisineUI() {
+    const buttons = document.querySelectorAll('#cuisineButtons button');
+    buttons.forEach(btn => {
+        const text = btn.textContent.toLowerCase();
+        if (text === 'all') {
+            btn.classList.toggle('active', selectedCuisines.length === 0);
+        } else {
+            btn.classList.toggle('active', selectedCuisines.includes(text));
+        }
+    });
+}
+
 // ── CHIP RENDERING ─────────────────────────────────────────────
 function renderChips() {
   const sec  = document.getElementById('chipsSection');
@@ -498,14 +570,12 @@ function matchRecipes() {
       const timeOk = recipe.time == null || recipe.time <= maxTime;
       const calOk = recipe.calories == null || recipe.calories <= maxCalories;
     
-      const recipeFlavors = Array.isArray(recipe.flavors) 
-        ? recipe.flavors.map(f => f.toLowerCase()) 
-        : (recipe.flavors ? recipe.flavors.toLowerCase().split(',') : []);
-
-      const flavorOk = selectedFlavors.length === 0 || 
-                       selectedFlavors.some(f => recipeFlavors.includes(f.toLowerCase()));
+      const recipeFlavors = Array.isArray(recipe.flavors)  ? recipe.flavors.map(f => f.toLowerCase()) : (recipe.flavors ? recipe.flavors.toLowerCase().split(',') : []);
+      const flavorOk = selectedFlavors.length === 0 ||  selectedFlavors.some(f => recipeFlavors.includes(f.toLowerCase()));
+      const recipeCuisine = recipe.cuisine ? recipe.cuisine.toLowerCase() : "";
+      const cuisineOk = selectedCuisines.length === 0 ||  selectedCuisines.includes(recipeCuisine);
       
-      return flavorOk && timeOk && calOk;
+      return flavorOk && cuisineOk && timeOk && calOk;
     })
     .map(recipe => {
       let score = 0;
@@ -707,7 +777,6 @@ async function loadAndRenderInventory() {
 }
 
 // ── INIT ───────────────────────────────────────────────────────
-// ── INIT ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   initAutofill();
   refreshUnitOptions();
@@ -718,6 +787,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     await loadIngredients();
     await loadFlavors(); 
+    await loadCuisines();
     buildFlavorButtons();
     buildCommonGrid();
   } catch (err) {
