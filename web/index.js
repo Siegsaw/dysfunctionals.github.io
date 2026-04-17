@@ -569,6 +569,7 @@ function runSearch() {
   lbl.textContent = `${results.length} Matching Recipe${results.length !== 1 ? 's' : ''}`;
 
   results.forEach(r => {
+    r.details = Array.from(new Map(r.details.map(item => [item.name, item])).values());
     const complete = r.pct === 100;
     const pc = complete ? 'pct-high' : r.pct >= 40 ? 'pct-mid' : 'pct-low';
     const bc = complete ? 'prog-high' : r.pct >= 40 ? 'prog-mid' : 'prog-low';
