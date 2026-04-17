@@ -52,14 +52,8 @@ echo "";
 echo "<div class=\"filter-row\">";
 echo "<div class=\"filter-group\">";
 echo "<label>Flavor</label>";
-echo "<div class=\"flavor-buttons\">";
-echo "<button onclick=\"setFlavor('')\">All</button>";
-echo "<button onclick=\"setFlavor('sweet')\">Sweet</button>";
-echo "<button onclick=\"setFlavor('salty')\">Salty</button>";
-echo "<button onclick=\"setFlavor('spicy')\">Spicy</button>";
-echo "<button onclick=\"setFlavor('sour')\">Sour</button>";
-echo "</div>";
-echo "</div>";
+echo "<div class=\"flavor-buttons\" id=\"flavorButtons\"></div>";
+echo "</div>"
 echo "  <div class=\"filter-group\">";
 echo "    <label for=\"timeRange\">Max time: <span id=\"timeValue\">45</span> min</label>";
 echo "    <input type=\"range\" id=\"timeRange\" min=\"0\" max=\"180\" step=\"5\" value=\"45\" oninput=\"updateTimeValue()\">";
