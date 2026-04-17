@@ -470,6 +470,7 @@ function buildCuisineButtons() {
 
     const allBtn = document.createElement('button');
     allBtn.textContent = 'All';
+    allBtn.type = 'button';
     allBtn.onclick = () => setCuisine('', allBtn);
     container.appendChild(allBtn);
 
@@ -477,10 +478,12 @@ function buildCuisineButtons() {
         window.CUISINES.forEach(region => {
             const btn = document.createElement('button');
             btn.textContent = region.name;
+            btn.type = 'button';
             btn.onclick = () => setCuisine(region.name, btn);
             container.appendChild(btn);
         });
     }
+  updateCuisineUI()
 }
 
 function setCuisine(cuisine, clickedBtn) {
