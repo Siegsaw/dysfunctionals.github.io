@@ -406,12 +406,17 @@ function buildFlavorButtons() {
 
   const allBtn = document.createElement('button');
   allBtn.textContent = 'All';
+  allBtn.type = 'button'; // Svarbu, kad neperkrautų formos
+  if (selectedFlavor === '') allBtn.classList.add('active');
+  
   allBtn.onclick = () => setFlavor('');
   container.appendChild(allBtn);
-
+  
   FLAVORS.forEach(flavor => {
     const btn = document.createElement('button');
     btn.textContent = flavor;
+    btn.type = 'button';
+    if (selectedFlavor === flavor) btn.classList.add('active');
     btn.onclick = () => setFlavor(flavor);
     container.appendChild(btn);
   });
@@ -419,14 +424,11 @@ function buildFlavorButtons() {
 
 function setFlavor(flavor) {
   selectedFlavor = flavor;
-
-  document.querySelectorAll('#flavorButtons button')
-    .forEach(btn => {
-      btn.classList.toggle(
-        'active',
-        btn.textContent.toLowerCase() === flavor
-      );
-    });
+  const buttons = document.querySelectorAll('#flavorButtons button');
+  buttons.forEach(btn => btn.classList.remove('active'));
+  if (clickedBtn) {
+    clickedBtn.classList.add('active');
+  }
 
   runSearch();
 }
