@@ -97,22 +97,46 @@
   opacity: 0.85;
 }
 
-.filter-row {
-  display: flex;       
-  gap: 20px;
-  margin-top: 16px;
-  margin-bottom: 8px;
-  border-top: 1px solid var(--border); 
-  padding-top: 15px;
-  flex-wrap: nowrap;   
+.flavor-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.flavor-buttons button {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 20px;
+  background: var(--bg-m);
+  border: 1px solid var(--border);
+  color: var(--ink2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.flavor-buttons button.active {
+  background-color: var(--green) !important;
+  color: white !important;
+  border-color: var(--green) !important;
+  box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);
+}
+
+.filter-range-row {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  width: 100%;
+  margin-top: 10px; /* Nedidelis tarpas nuo skonių */
 }
 
 .filter-group {
-  flex: 1;             
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-width: 0;        
+  gap: 8px;
 }
 
 .filter-group label {
@@ -122,30 +146,6 @@
   color: var(--muted2);
   letter-spacing: .05em;
   white-space: nowrap;
-}
-
-/* Skonių mygtukai (Flavor) */
-.flavor-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.flavor-buttons button {
-  padding: 6px 10px;
-  border: 1px solid var(--border);
-  border-radius: var(--rs);
-  background: var(--bg-m);
-  font-size: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.flavor-buttons button.active {
-  background-color: var(--green) !important;
-  color: white !important;
-  border-color: var(--green) !important;
-  font-weight: 600;
 }
 
 input[type="range"] {
@@ -513,32 +513,6 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 .dot-have     { background: var(--green); }
 .dot-missing  { background: var(--red); }
 .dot-partial  { background: var(--yellow); }
-
-#flavorButtons button.active {
-    background-color: var(--green) !important;
-    color: white !important;
-    border-color: var(--green) !important;
-    box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
-}
-
-.flavor-tags-container {
-    margin-bottom: 12px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-}
-
-.tag-flavor {
-    background: var(--bg-m);
-    color: var(--muted);
-    border: 1px dashed var(--border); /* Brūkšninis rėmelis atskiria nuo ingredientų */
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 2px 8px;
-    border-radius: 4px;
-}
 
 @media (max-width: 768px) {
   .page { padding: 28px 16px 60px; }

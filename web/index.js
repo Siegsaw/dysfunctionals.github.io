@@ -19,7 +19,7 @@ let searchIngs = [];
 let serverInventory = [];
 let ALL_ING = [];
 let RECIPES = [];
-let selectedFlavor = '';
+let selectedFlavors = [];
 let FLAVORS = [];
 
 // ── HELPERS ────────────────────────────────────────────────────
@@ -399,45 +399,52 @@ function clearForm() {
 }
 
 function buildFlavorButtons() {
-  const container = document.getElementById('flavorButtons');
-  if (!container) return;
+ const container = document.getElementById('flavorButtons');
+    if (!container) return;
+    container.innerHTML = '';
 
-  container.innerHTML = '';
-  
-  const allBtn = document.createElement('button');
-  allBtn.textContent = 'All';
-  allBtn.type = 'button';
-  if (selectedFlavor === '') allBtn.classList.add('active');
-  
-  allBtn.onclick = (e) => setFlavor('', e.currentTarget);
-  container.appendChild(allBtn);
+    const allBtn = document.createElement('button');
+    allBtn.textContent = 'All';
+    allBtn.type = 'button';
+    allBtn.onclick = () => setFlavor('', allBtn);
+    container.appendChild(allBtn);
 
-  FLAVORS.forEach(flavor => {
-    const btn = document.createElement('button');
-    btn.textContent = flavor;
-    btn.type = 'button';
-    
-    if (selectedFlavor === flavor.toLowerCase()) btn.classList.add('active');
-    
-    btn.onclick = (e) => setFlavor(flavor, e.currentTarget);
-    container.appendChild(btn);
-  });
+    FLAVORS.forEach(flavor => {
+        const btn = document.createElement('button');
+        btn.textContent = flavor;
+        btn.type = 'button';
+        btn.onclick = () => setFlavor(flavor, btn);
+        container.appendChild(btn);
+    });
+    updateFlavorUI();
 }
 
 function setFlavor(flavor, clickedBtn) {
-  selectedFlavor = flavor.toLowerCase();
+  if (flavor === '') {
+        selectedFlavors = [];
+    } else {
+        const f = flavor.toLowerCase();
+        const index = selectedFlavors.indexOf(f);
 
-  const buttons = document.getElementById('flavorButtons').querySelectorAll('button');
-  buttons.forEach(btn => btn.classList.remove('active'));
+        if (index > -1) {
+            selectedFlavors.splice(index, 1);
+        } else {
+            selectedFlavors.push(f);
+        }
+    }
+    updateFlavorUI(); 
+    runSearch();
+}
 
-  if (clickedBtn) {
-    clickedBtn.classList.add('active');
-  } else {
-    // Jei kviečiama be mygtuko (pvz. iš kito kodo), pažymime "All"
-    buttons[0].classList.add('active');
-  }
-
-  runSearch();
+function updateFlavorUI() {
+    const buttons = document.querySelectorAll('#flavorButtons button');
+    buttons.forEach(btn => {
+        if (btn.textContent.toLowerCase() === 'all') {
+            btn.classList.toggle('active', selectedFlavors.length === 0);
+        } else {
+            btn.classList.toggle('active', selectedFlavors.includes(btn.textContent.toLowerCase()));
+        }
+    });
 }
 
 // ── CHIP RENDERING ─────────────────────────────────────────────
@@ -490,21 +497,39 @@ function matchRecipes() {
     .filter(recipe => {
       const timeOk = recipe.time == null || recipe.time <= maxTime;
       const calOk = recipe.calories == null || recipe.calories <= maxCalories;
-      const flavorOk = !selectedFlavor || (recipe.flavors && recipe.flavors.includes(selectedFlavor));
-      return flavorOk && timeOk && calOk;
+    
+      const recipeFlavors = Array.isArray(recipe.flavors) 
+        ? recipe.flavors.map(f => f.toLowerCase()) 
+        : (recipe.flavors ? recipe.flavors.toLowerCase().split(',') : []);
+
+      const flavorOk = selectedFlavors.length === 0 || 
+                       selectedFlavors.some(f => recipeFlavors.includes(f.toLowerCase()));
       
+      return flavorOk && timeOk && calOk;
     })
     .map(recipe => {
       let score = 0;
 
-      const details = recipe.ingredients.map(ri => {
+      const uniqueIngredients = [];
+      const seenNames = new Set();
+
+      recipe.ingredients.forEach(ri => {
+        const lowerName = ri.name.toLowerCase();
+        if (!seenNames.has(lowerName)) {
+          seenNames.add(lowerName);
+          uniqueIngredients.push(ri);
+        }
+      });
+
+      const details = uniqueIngredients.map(ri => {
         const key = ri.name.toLowerCase();
         const have = userMap[key];
 
         if (!have) return { ...ri, status: 'missing' };
 
         const coverage = calculateCoverage(have.displayAmount, have.displayUnit, ri.amount, ri.unit);
-        score += coverage.ratio;
+        
+        score += Math.min(1, coverage.ratio);
 
         return {
           ...ri,
@@ -515,8 +540,8 @@ function matchRecipes() {
         };
       });
 
-      const pct = recipe.ingredients.length
-        ? Math.round((score / recipe.ingredients.length) * 100)
+      const pct = uniqueIngredients.length
+        ? Math.round((score / uniqueIngredients.length) * 100)
         : 0;
 
       return {
