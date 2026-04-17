@@ -20,6 +20,7 @@ let serverInventory = [];
 let ALL_ING = [];
 let RECIPES = [];
 let selectedFlavor = '';
+let FLAVORS = [];
 
 // ── HELPERS ────────────────────────────────────────────────────
 function showToast(message) {
@@ -374,6 +375,11 @@ async function removeInventoryIng(ingredientId) {
   }
 }
 
+async function loadFlavors() {
+  const res = await fetch('get_flavors.php');
+  FLAVORS = await res.json();
+}
+
 function removeIng(idx) {
   searchIngs.splice(idx, 1);
   renderChips();
@@ -390,8 +396,36 @@ function clearForm() {
   validateForm();
 }
 
+function buildFlavorButtons() {
+  const container = document.getElementById('flavorButtons');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  const allBtn = document.createElement('button');
+  allBtn.textContent = 'All';
+  allBtn.onclick = () => setFlavor('');
+  container.appendChild(allBtn);
+
+  FLAVORS.forEach(flavor => {
+    const btn = document.createElement('button');
+    btn.textContent = flavor;
+    btn.onclick = () => setFlavor(flavor);
+    container.appendChild(btn);
+  });
+}
+
 function setFlavor(flavor) {
   selectedFlavor = flavor;
+
+  document.querySelectorAll('#flavorButtons button')
+    .forEach(btn => {
+      btn.classList.toggle(
+        'active',
+        btn.textContent.toLowerCase() === flavor
+      );
+    });
+
   runSearch();
 }
 
@@ -443,9 +477,9 @@ function matchRecipes() {
 
   return RECIPES
     .filter(recipe => {
-      const flavorOk = !selectedFlavor || recipe.flavor === selectedFlavor;
       const timeOk = recipe.time == null || recipe.time <= maxTime;
       const calOk = recipe.calories == null || recipe.calories <= maxCalories;
+      const flavorOk = !selectedFlavor || (recipe.flavors && recipe.flavors.includes(selectedFlavor));
       return flavorOk && timeOk && calOk;
       
     })
@@ -643,6 +677,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     await loadIngredients();
+    await loadFlavors(); 
+    buildFlavorButtons();
     buildCommonGrid();
   } catch (err) {
     console.error('Failed to load ingredients:', err);
