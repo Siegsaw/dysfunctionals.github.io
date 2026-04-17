@@ -384,15 +384,6 @@ async function loadFlavors() {
   FLAVORS = await res.json();
 }
 
-async function loadCuisines() {
-    try {
-        const res = await fetch('get_cuisines.php');
-        CUISINES = await res.json();
-        buildCuisineButtons();
-    } catch (err) {
-        console.error("Error loading cuisines:", err);
-    }
-}
 
 function removeIng(idx) {
   searchIngs.splice(idx, 1);
@@ -463,7 +454,8 @@ function updateFlavorUI() {
 async function loadCuisines() {
     try {
         const res = await fetch('get_cuisines.php');
-        CUISINES = await res.json();
+        const data = await res.json();
+        window.CUISINES = data;
         buildCuisineButtons();
     } catch (err) {
         console.error("Error loading cuisines:", err);
@@ -473,22 +465,22 @@ async function loadCuisines() {
 function buildCuisineButtons() {
     const container = document.getElementById('cuisineButtons');
     if (!container) return;
+
     container.innerHTML = '';
 
     const allBtn = document.createElement('button');
     allBtn.textContent = 'All';
-    allBtn.type = 'button';
     allBtn.onclick = () => setCuisine('', allBtn);
     container.appendChild(allBtn);
 
-    CUISINES.forEach(cuisine => {
-        const btn = document.createElement('button');
-        btn.textContent = cuisine.name; 
-        btn.type = 'button';
-        btn.onclick = () => setCuisine(cuisine.name, btn);
-        container.appendChild(btn);
-    });
-    updateCuisineUI();
+    if (window.CUISINES) {
+        window.CUISINES.forEach(region => {
+            const btn = document.createElement('button');
+            btn.textContent = region.name;
+            btn.onclick = () => setCuisine(region.name, btn);
+            container.appendChild(btn);
+        });
+    }
 }
 
 function setCuisine(cuisine, clickedBtn) {
