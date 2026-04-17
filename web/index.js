@@ -19,7 +19,7 @@ let searchIngs = [];
 let serverInventory = [];
 let ALL_ING = [];
 let RECIPES = [];
-let selectedFlavor = '';
+let selectedFlavor = [];
 let FLAVORS = [];
 
 // ── HELPERS ────────────────────────────────────────────────────
@@ -425,19 +425,31 @@ function buildFlavorButtons() {
 }
 
 function setFlavor(flavor, clickedBtn) {
-  selectedFlavor = flavor.toLowerCase();
+  if (flavor === '') {
+        selectedFlavors = [];
+    } else {
+        const f = flavor.toLowerCase();
+        const index = selectedFlavors.indexOf(f);
 
-  const buttons = document.getElementById('flavorButtons').querySelectorAll('button');
-  buttons.forEach(btn => btn.classList.remove('active'));
+        if (index > -1) {
+            selectedFlavors.splice(index, 1);
+        } else {
+            selectedFlavors.push(f);
+        }
+    }
+    updateFlavorUI(); 
+    runSearch();
+}
 
-  if (clickedBtn) {
-    clickedBtn.classList.add('active');
-  } else {
-    // Jei kviečiama be mygtuko (pvz. iš kito kodo), pažymime "All"
-    buttons[0].classList.add('active');
-  }
-
-  runSearch();
+function updateFlavorUI() {
+    const buttons = document.querySelectorAll('#flavorButtons button');
+    buttons.forEach(btn => {
+        if (btn.textContent.toLowerCase() === 'all') {
+            btn.classList.toggle('active', selectedFlavors.length === 0);
+        } else {
+            btn.classList.toggle('active', selectedFlavors.includes(btn.textContent.toLowerCase()));
+        }
+    });
 }
 
 // ── CHIP RENDERING ─────────────────────────────────────────────
