@@ -566,6 +566,26 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 .dot-missing  { background: var(--red); }
 .dot-partial  { background: var(--yellow); }
 
+.recipe-card.has-allergen {
+    opacity: 0.5;
+    filter: grayscale(1);
+    pointer-events: none; 
+    border-color: var(--border) !important;
+}
+
+.allergen-warning {
+    background: #fee2e2; 
+    color: #b91c1c;     
+    font-size: 11px;
+    font-weight: 800;
+    text-align: center;
+    padding: 5px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
 @media (max-width: 768px) {
   .page { padding: 28px 16px 60px; }
   .results-grid { grid-template-columns: 1fr; }
