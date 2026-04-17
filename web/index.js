@@ -497,14 +497,43 @@ function matchRecipes() {
     .filter(recipe => {
       const timeOk = recipe.time == null || recipe.time <= maxTime;
       const calOk = recipe.calories == null || recipe.calories <= maxCalories;
-      const flavorOk = selectedFlavors.length === 0 || (recipe.flavors && selectedFlavors.some(f => recipe.flavors.includes(f) ));
+      const recipeFlavors = Array.isArray(recipe.flavors)  ? recipe.flavors.map(f => f.toLowerCase()) : (recipe.flavors ? recipe.flavors.toLowerCase().split(',') : []);
+      const flavorOk = selectedFlavors.length === 0 ||  selectedFlavors.some(f => recipeFlavors.includes(f.toLowerCase()));
       return flavorOk && timeOk && calOk;
       
     })
     .map(recipe => {
       let score = 0;
+      
+     const uniqueIngredients = [];
+      const seenNames = new Set();
 
-      const details = recipe.ingredients.map(ri => {
+      recipe.ingredients.forEach(ri => {
+        const lowerName = ri.name.toLowerCase();
+        if (!seenNames.has(lowerName)) {
+          seenNames.add(lowerName);
+          uniqueIngredients.push(ri);
+        }
+      });
+
+    /*  const details = recipe.ingredients.map(ri => {
+        const key = ri.name.toLowerCase();
+        const have = userMap[key];
+
+        if (!have) return { ...ri, status: 'missing' };
+
+        const coverage = calculateCoverage(have.displayAmount, have.displayUnit, ri.amount, ri.unit);
+        score += coverage.ratio;
+
+        return {
+          ...ri,
+          status: coverage.status,
+          have: have.displayAmount,
+          haveUnit: have.displayUnit,
+          haveText: coverage.haveText
+        };
+      });*/
+     const details = uniqueIngredients.map(ri => {
         const key = ri.name.toLowerCase();
         const have = userMap[key];
 
@@ -521,8 +550,8 @@ function matchRecipes() {
           haveText: coverage.haveText
         };
       });
-
-      const pct = recipe.ingredients.length
+      
+      const pct = uniqueIngredients.length
         ? Math.round((score / recipe.ingredients.length) * 100)
         : 0;
 
@@ -569,7 +598,6 @@ function runSearch() {
   lbl.textContent = `${results.length} Matching Recipe${results.length !== 1 ? 's' : ''}`;
 
   results.forEach(r => {
-    r.details = Array.from(new Map(r.details.map(item => [item.name, item])).values());
     const complete = r.pct === 100;
     const pc = complete ? 'pct-high' : r.pct >= 40 ? 'pct-mid' : 'pct-low';
     const bc = complete ? 'prog-high' : r.pct >= 40 ? 'prog-mid' : 'prog-low';
