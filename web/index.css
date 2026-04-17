@@ -114,8 +114,6 @@
     letter-spacing: 0.08em;
     margin-bottom: 10px;
 }
-#flavorButtons::before { content: "FLAVOR"; }
-#cuisineButtons::before { content: "CUISINE"; }
 
 #flavorButtons button, #cuisineButtons button {
     padding: 6px 14px;
