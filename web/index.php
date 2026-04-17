@@ -59,6 +59,12 @@ echo "    <label class=\"filter-label\">FLAVOR</label>";
 echo "    <div id=\"flavorButtons\" class=\"flavor-buttons\"></div>";
 echo "  </div>";
 echo "</div>";
+echo "<div class=\"filter-row\">";
+echo "  <div class=\"filter-group\">";
+echo "    <label class=\"filter-label\">CUISINE</label>";
+echo "    <div id=\"cuisineButtons\" class=\"flavor-buttons\"></div>"; // Naudojame tą pačią klasę stiliui
+echo "  </div>";
+echo "</div>";
 echo "<div class=\"filter-range-row\">"; 
 echo "  <div class=\"filter-group\">";
 echo "    <label>MAX TIME: <span id=\"timeValue\">45</span> MIN</label>";
