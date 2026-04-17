@@ -540,6 +540,32 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
     border-radius: 4px;
 }
 
+#flavorButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px; /* Tarpas iki slankiklių */
+    justify-content: flex-start;
+}
+
+#flavorButtons button {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 20px; /* Užapvalinti kraštai atrodo moderniau */
+    background: var(--bg-m);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filters-row {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    padding-top: 15px;
+}
+
 @media (max-width: 768px) {
   .page { padding: 28px 16px 60px; }
   .results-grid { grid-template-columns: 1fr; }
