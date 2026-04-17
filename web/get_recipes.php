@@ -5,7 +5,7 @@ require '/var/www/private/db.php';
 $sql = "
   SELECT 
     r.recipe_id,
-    r.title AS name,,
+    r.title AS name,
     (COALESCE(rs.prep_time, 0) + COALESCE(rs.cook_time, 0)) AS total_time_minutes,
     r.calories,
     r.protein,
