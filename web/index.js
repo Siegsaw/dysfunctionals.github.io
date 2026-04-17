@@ -23,6 +23,7 @@ let selectedFlavors = [];
 let FLAVORS = [];
 let selectedCuisines = [];
 let CUISINES = [];
+let USER_ALLERGENS = []; 
 
 // ── HELPERS ────────────────────────────────────────────────────
 function showToast(message) {
@@ -160,6 +161,18 @@ function sanitizeIngredientList(entries) {
 function getInvMap() {
   return combineIngredientEntries([...serverInventory, ...searchIngs]);
 }
+
+async function loadUserAllergens() {
+    try {
+        const response = await fetch('get_user_allergens.php');
+        const data = await response.json();
+        // Saugome tik pavadinimus mažosiomis raidėmis patogiam palyginimui
+        USER_ALLERGENS = Array.isArray(data) ? data.map(a => a.name.toLowerCase()) : [];
+    } catch (err) {
+        console.error('Failed to load allergens:', err);
+    }
+}
+
 // ── DATA LOADING ───────────────────────────────────────────────
 async function loadIngredients() {
   const response = await fetch('get_ingredients.php', { cache: 'no-store' });
@@ -652,6 +665,9 @@ function runSearch() {
   lbl.textContent = `${results.length} Matching Recipe${results.length !== 1 ? 's' : ''}`;
 
   results.forEach(r => {
+    const hasAllergen = r.recipe.ingredients.some(ing => 
+      USER_ALLERGENS.includes(ing.name.toLowerCase())
+    );
     const complete = r.pct === 100;
     const pc = complete ? 'pct-high' : r.pct >= 40 ? 'pct-mid' : 'pct-low';
     const bc = complete ? 'prog-high' : r.pct >= 40 ? 'prog-mid' : 'prog-low';
@@ -688,8 +704,9 @@ function runSearch() {
     : '';
     
     const card = document.createElement('div');
-    card.className = `recipe-card${complete ? ' complete' : ''}`;
+    card.className = `recipe-card${complete ? ' complete' : ''}${hasAllergen ? ' has-allergen' : ''}`;
     card.innerHTML = `
+      ${hasAllergen ? '<div class="allergen-warning">⚠️ Contains Allergen</div>' : ''}
       <div class="card-top">
         <div class="card-name-wrapper">
             <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
@@ -782,6 +799,7 @@ async function loadAndRenderInventory() {
 
 // ── INIT ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
+  await loadUserAllergens();
   initAutofill();
   refreshUnitOptions();
   validateForm();
