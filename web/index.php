@@ -57,7 +57,7 @@ echo "<div class=\"filter-row\">";
 echo "<div class=\"filter-group\">";
 echo "<label>Flavor</label>";
 echo "<div class=\"flavor-buttons\" id=\"flavorButtons\"></div>";
-echo "</div>"
+echo "</div>";
 echo "  <div class=\"filter-group\">";
 echo "    <label for=\"timeRange\">Max time: <span id=\"timeValue\">45</span> min</label>";
 echo "    <input type=\"range\" id=\"timeRange\" min=\"0\" max=\"180\" step=\"5\" value=\"45\" oninput=\"updateTimeValue()\">";
