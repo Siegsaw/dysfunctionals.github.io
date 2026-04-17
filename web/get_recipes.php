@@ -21,10 +21,8 @@ $sql = "
 FROM recipes r
 JOIN recipe_ingredients ri ON r.recipe_id = ri.recipe_id
 JOIN ingredients i ON ri.ingredient_id = i.ingredient_id
--- RYŠYS PER TARPINĘ LENTELĘ:
 LEFT JOIN recipe_regions rr ON r.recipe_id = rr.recipe_id
 LEFT JOIN regions reg ON rr.region_id = reg.region_id 
--- RYŠYS SU SKONIAIS:
 LEFT JOIN recipe_flavors rf ON r.recipe_id = rf.recipe_id
 LEFT JOIN flavors f ON rf.flavor_id = f.flavor_id
 LEFT JOIN (
@@ -48,29 +46,34 @@ while ($row = $result->fetch_assoc()) {
   if (!isset($recipes[$id])) {
     $recipes[$id] = [
       'id' => $id,
-      'name' => $row['title'],
+      'name' => $row['name'],
       'time' => isset($row['total_time_minutes']) ? (int)$row['total_time_minutes'] : null,
       'prep_time' => isset($row['prep_time']) ? (int)$row['prep_time'] : 0,
       'cook_time' => isset($row['cook_time']) ? (int)$row['cook_time'] : 0,
       'calories' => isset($row['calories']) ? (float)$row['calories'] : null,
-      "flavors" => [],
+      'flavors' => [],
       'region_name' => $row['region_name'],
       'protein' => isset($row['protein']) ? (float)$row['protein'] : 0,
       'carbs' => isset($row['carbs']) ? (float)$row['carbs'] : 0,
       'fat' => isset($row['fat']) ? (float)$row['fat'] : 0,
       'ingredients' => []
     ];
+        $recipes[$id]['_seen_ingredients'] = [];
   }
-
-  $recipes[$id]['ingredients'][] = [
-    'name' => $row['name_ing'],
-    'amount' => (float)$row['quantity'],
-    'unit' => $row['unit']
-  ];
   
-  if (!empty($row['flavor']) && !in_array($row['flavor'], $recipes[$id]['flavors'])) {
-  $recipes[$id]['flavors'][] = $row['flavor'];
-  }
+  $ing_key = $row['name_ing'] . $row['quantity'] . $row['unit'];
+    if (!in_array($ing_key, $recipes[$id]['_seen_ingredients'])) {
+        $recipes[$id]['ingredients'][] = [
+            'name' => $row['name_ing'],
+            'amount' => (float)$row['quantity'],
+            'unit' => $row['unit']
+        ];
+        $recipes[$id]['_seen_ingredients'][] = $ing_key;
+    }
+    
+    if (!empty($row['flavor']) && !in_array($row['flavor'], $recipes[$id]['flavors'])) {
+        $recipes[$id]['flavors'][] = $row['flavor'];
+    }
 }
 
 echo json_encode(array_values($recipes));
