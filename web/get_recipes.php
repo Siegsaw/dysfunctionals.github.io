@@ -6,13 +6,14 @@ $sql = "
   SELECT 
     r.recipe_id,
     r.title AS name,
+    COALESCE(rs.prep_time, 0) AS prep_time,
+    COALESCE(rs.cook_time, 0) AS cook_time,
     (COALESCE(rs.prep_time, 0) + COALESCE(rs.cook_time, 0)) AS total_time_minutes,
     r.calories,
     r.protein,
     r.carbs,
     r.fat,
-    r.region_id,
-    reg.name AS region_name,
+    reg.name AS region_name, 
     i.name_ing,
     ri.quantity,
     ri.unit,
@@ -20,18 +21,21 @@ $sql = "
 FROM recipes r
 JOIN recipe_ingredients ri ON r.recipe_id = ri.recipe_id
 JOIN ingredients i ON ri.ingredient_id = i.ingredient_id
-LEFT JOIN regions reg ON r.region_id = reg.region_id
+-- RYŠYS PER TARPINĘ LENTELĘ:
+LEFT JOIN recipe_regions rr ON r.recipe_id = rr.recipe_id
+LEFT JOIN regions reg ON rr.region_id = reg.region_id 
+-- RYŠYS SU SKONIAIS:
 LEFT JOIN recipe_flavors rf ON r.recipe_id = rf.recipe_id
 LEFT JOIN flavors f ON rf.flavor_id = f.flavor_id
 LEFT JOIN (
     SELECT 
-        recipe_id,
+        recipe_id, 
         SUM(CASE WHEN step_type = 'prep' THEN time_minutes ELSE 0 END) AS prep_time,
         SUM(CASE WHEN step_type = 'cook' THEN time_minutes ELSE 0 END) AS cook_time
     FROM recipe_steps
     GROUP BY recipe_id
-    ) rs ON r.recipe_id = rs.recipe_id
-  ORDER BY r.recipe_id
+) rs ON r.recipe_id = rs.recipe_id
+ORDER BY r.recipe_id
 ";
 
 $result = $conn->query($sql);
