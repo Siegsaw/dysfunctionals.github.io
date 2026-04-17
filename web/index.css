@@ -420,14 +420,32 @@ html.dark .pct-mid { color: #fde68a; }
     margin: 4px 0 8px 0; /* Tarpas po pavadinimu ir prieš kalorijas */
 }
 
-.cuisine-row .tag-flavor {
-    background: var(--bg-m);
-    border: 1px solid var(--border);
-    color: var(--muted);
+.tag-cuisine {
+    background: var(--bg-m) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--muted) !important;
     font-size: 11px;
-    padding: 2px 8px;
+    padding: 2px 9px;
     border-radius: 12px;
     display: inline-block;
+    font-weight: 600;
+}
+
+.tag-flavor {
+    background: transparent !important;
+    color: var(--muted) !important;
+    border: 1px solid var(--border) !important;
+}
+
+.card-name-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cuisine-row {
+    display: flex;
+    margin-bottom: 4px;
 }
 
 .recipe-calories {
