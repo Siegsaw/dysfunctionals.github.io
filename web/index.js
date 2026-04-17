@@ -684,18 +684,19 @@ function runSearch() {
     .join('');
     
     const cuisineTag = r.recipe.region_name 
-    ? `<span class="tag tag-flavor">${r.recipe.region_name}</span>` 
+    ? `<span class="tag tag-cuisine">${r.recipe.region_name}</span>` 
     : '';
     
     const card = document.createElement('div');
     card.className = `recipe-card${complete ? ' complete' : ''}`;
     card.innerHTML = `
       <div class="card-top">
-        <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
+        <div class="card-name-wrapper">
+            <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
+            ${cuisineTag ? `<div class="cuisine-row">${cuisineTag}</div>` : ''}
+        </div>
         <span class="card-pct ${pc}">${r.pct}%</span>
       </div>
-      
-      ${cuisineTag ? `<div class="cuisine-row">${cuisineTag}</div>` : ''}
 
     <div class="card-info">
         <span class="recipe-calories">🔥 ${r.recipe.calories || '0'} kcal</span>
