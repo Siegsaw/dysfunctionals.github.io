@@ -567,9 +567,9 @@ function matchRecipes() {
     
       const recipeFlavors = Array.isArray(recipe.flavors)  ? recipe.flavors.map(f => f.toLowerCase()) : (recipe.flavors ? recipe.flavors.toLowerCase().split(',') : []);
       const flavorOk = selectedFlavors.length === 0 ||  selectedFlavors.some(f => recipeFlavors.includes(f.toLowerCase()));
-      const recipeCuisine = recipe.region_name ? recipe.region_name.toLowerCase() : "";
-      const cuisineOk = selectedCuisines.length === 0 ||  selectedCuisines.includes(recipeCuisine);
-      
+      const recipeCuisine = recipe.region_name ? recipe.region_name.toLowerCase().trim() : "";
+      const cuisineOk = selectedCuisines.length === 0 || selectedCuisines.some(c => c.toLowerCase().trim() === recipeCuisine);
+    
       return flavorOk && cuisineOk && timeOk && calOk;
     })
     .map(recipe => {
