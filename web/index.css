@@ -142,9 +142,10 @@
 }
 
 .flavor-buttons button.active {
-  background: var(--green);
-  color: #fff;
-  border-color: var(--green);
+  background-color: var(--green) !important;
+  color: white !important;
+  border-color: var(--green) !important;
+  font-weight: 600;
 }
 
 input[type="range"] {
