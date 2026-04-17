@@ -140,9 +140,9 @@
 }
 
 #cuisineButtons button.active {
-    background-color: #3b82f6 !important;
+    background-color: var(--green) !important;
     color: white !important;
-    border-color: #3b82f6 !important;
+    border-color: var(--green) !important;
     box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
