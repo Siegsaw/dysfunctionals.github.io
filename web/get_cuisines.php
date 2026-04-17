@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 require '/var/www/private/db.php';
 
-$sql = "SELECT name FROM cuisines ORDER BY name ASC";
+$sql = "SELECT region_id, name FROM regions ORDER BY name ASC";
 $result = $conn->query($sql);
 
 $cuisines = [];
