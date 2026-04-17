@@ -403,37 +403,40 @@ function buildFlavorButtons() {
   if (!container) return;
 
   container.innerHTML = '';
-
+  
   const allBtn = document.createElement('button');
   allBtn.textContent = 'All';
-  allBtn.type = 'button'; // Svarbu, kad neperkrautų formos
+  allBtn.type = 'button';
   if (selectedFlavor === '') allBtn.classList.add('active');
   
-  allBtn.onclick = () => setFlavor('');
+  allBtn.onclick = (e) => setFlavor('', e.currentTarget);
   container.appendChild(allBtn);
-  
+
   FLAVORS.forEach(flavor => {
     const btn = document.createElement('button');
     btn.textContent = flavor;
     btn.type = 'button';
-    if (selectedFlavor === flavor) btn.classList.add('active');
-    btn.onclick = () => setFlavor(flavor);
+    
+    if (selectedFlavor === flavor.toLowerCase()) btn.classList.add('active');
+    
+    btn.onclick = (e) => setFlavor(flavor, e.currentTarget);
     container.appendChild(btn);
   });
 }
 
-function setFlavor(flavor) {
-  selectedFlavor = flavor;
+function setFlavor(flavor, clickedBtn) {
+  selectedFlavor = flavor.toLowerCase();
+
   const buttons = document.getElementById('flavorButtons').querySelectorAll('button');
-  buttons.forEach(btn => {
-        btn.classList.remove('active');
-    });
-    if (clickedBtn) {
-        clickedBtn.classList.add('active');
-    } else {
-        // Jei paspaudėme "All" (per funkciją setFlavor('', null))
-        buttons[0].classList.add('active');
-    }
+  buttons.forEach(btn => btn.classList.remove('active'));
+
+  if (clickedBtn) {
+    clickedBtn.classList.add('active');
+  } else {
+    // Jei kviečiama be mygtuko (pvz. iš kito kodo), pažymime "All"
+    buttons[0].classList.add('active');
+  }
+
   runSearch();
 }
 
