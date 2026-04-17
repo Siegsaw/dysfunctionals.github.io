@@ -399,29 +399,24 @@ function clearForm() {
 }
 
 function buildFlavorButtons() {
-  const container = document.getElementById('flavorButtons');
-  if (!container) return;
+ const container = document.getElementById('flavorButtons');
+    if (!container) return;
+    container.innerHTML = '';
 
-  container.innerHTML = '';
-  
-  const allBtn = document.createElement('button');
-  allBtn.textContent = 'All';
-  allBtn.type = 'button';
-  if (selectedFlavor === '') allBtn.classList.add('active');
-  
-  allBtn.onclick = (e) => setFlavor('', e.currentTarget);
-  container.appendChild(allBtn);
+    const allBtn = document.createElement('button');
+    allBtn.textContent = 'All';
+    allBtn.type = 'button';
+    allBtn.onclick = () => setFlavor('', allBtn);
+    container.appendChild(allBtn);
 
-  FLAVORS.forEach(flavor => {
-    const btn = document.createElement('button');
-    btn.textContent = flavor;
-    btn.type = 'button';
-    
-    if (selectedFlavor === flavor.toLowerCase()) btn.classList.add('active');
-    
-    btn.onclick = (e) => setFlavor(flavor, e.currentTarget);
-    container.appendChild(btn);
-  });
+    FLAVORS.forEach(flavor => {
+        const btn = document.createElement('button');
+        btn.textContent = flavor;
+        btn.type = 'button';
+        btn.onclick = () => setFlavor(flavor, btn);
+        container.appendChild(btn);
+    });
+    updateFlavorUI();
 }
 
 function setFlavor(flavor, clickedBtn) {
