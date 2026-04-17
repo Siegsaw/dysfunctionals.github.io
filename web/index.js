@@ -19,7 +19,7 @@ let searchIngs = [];
 let serverInventory = [];
 let ALL_ING = [];
 let RECIPES = [];
-let selectedFlavor = [];
+let selectedFlavors = [];
 let FLAVORS = [];
 
 // ── HELPERS ────────────────────────────────────────────────────
@@ -497,7 +497,7 @@ function matchRecipes() {
     .filter(recipe => {
       const timeOk = recipe.time == null || recipe.time <= maxTime;
       const calOk = recipe.calories == null || recipe.calories <= maxCalories;
-      const flavorOk = !selectedFlavor || (recipe.flavors && recipe.flavors.includes(selectedFlavor));
+      const flavorOk = selectedFlavors.length === 0 || (recipe.flavors && selectedFlavors.some(f => recipe.flavors.includes(f) ));
       return flavorOk && timeOk && calOk;
       
     })
