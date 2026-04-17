@@ -424,12 +424,16 @@ function buildFlavorButtons() {
 
 function setFlavor(flavor) {
   selectedFlavor = flavor;
-  const buttons = document.querySelectorAll('#flavorButtons button');
-  buttons.forEach(btn => btn.classList.remove('active'));
-  if (clickedBtn) {
-    clickedBtn.classList.add('active');
-  }
-
+  const buttons = document.getElementById('flavorButtons').querySelectorAll('button');
+  buttons.forEach(btn => {
+        btn.classList.remove('active');
+    });
+    if (clickedBtn) {
+        clickedBtn.classList.add('active');
+    } else {
+        // Jei paspaudėme "All" (per funkciją setFlavor('', null))
+        buttons[0].classList.add('active');
+    }
   runSearch();
 }
 
