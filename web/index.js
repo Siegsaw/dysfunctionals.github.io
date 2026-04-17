@@ -19,6 +19,8 @@ let searchIngs = [];
 let serverInventory = [];
 let ALL_ING = [];
 let RECIPES = [];
+let selectedFlavor = '';
+let FLAVORS = [];
 
 // ── HELPERS ────────────────────────────────────────────────────
 function showToast(message) {
@@ -374,6 +376,11 @@ async function removeInventoryIng(ingredientId) {
   }
 }
 
+async function loadFlavors() {
+  const res = await fetch('get_flavors.php');
+  FLAVORS = await res.json();
+}
+
 function removeIng(idx) {
   searchIngs.splice(idx, 1);
   renderChips();
@@ -389,6 +396,48 @@ function clearForm() {
   document.getElementById('ingQty').classList.remove('field-err');
   refreshUnitOptions();
   validateForm();
+}
+
+function buildFlavorButtons() {
+  const container = document.getElementById('flavorButtons');
+  if (!container) return;
+
+  container.innerHTML = '';
+  
+  const allBtn = document.createElement('button');
+  allBtn.textContent = 'All';
+  allBtn.type = 'button';
+  if (selectedFlavor === '') allBtn.classList.add('active');
+  
+  allBtn.onclick = (e) => setFlavor('', e.currentTarget);
+  container.appendChild(allBtn);
+
+  FLAVORS.forEach(flavor => {
+    const btn = document.createElement('button');
+    btn.textContent = flavor;
+    btn.type = 'button';
+    
+    if (selectedFlavor === flavor.toLowerCase()) btn.classList.add('active');
+    
+    btn.onclick = (e) => setFlavor(flavor, e.currentTarget);
+    container.appendChild(btn);
+  });
+}
+
+function setFlavor(flavor, clickedBtn) {
+  selectedFlavor = flavor.toLowerCase();
+
+  const buttons = document.getElementById('flavorButtons').querySelectorAll('button');
+  buttons.forEach(btn => btn.classList.remove('active'));
+
+  if (clickedBtn) {
+    clickedBtn.classList.add('active');
+  } else {
+    // Jei kviečiama be mygtuko (pvz. iš kito kodo), pažymime "All"
+    buttons[0].classList.add('active');
+  }
+
+  runSearch();
 }
 
 // ── CHIP RENDERING ─────────────────────────────────────────────
@@ -441,7 +490,9 @@ function matchRecipes() {
     .filter(recipe => {
       const timeOk = recipe.time == null || recipe.time <= maxTime;
       const calOk = recipe.calories == null || recipe.calories <= maxCalories;
-      return timeOk && calOk;
+      const flavorOk = !selectedFlavor || (recipe.flavors && recipe.flavors.includes(selectedFlavor));
+      return flavorOk && timeOk && calOk;
+      
     })
     .map(recipe => {
       let score = 0;
@@ -537,7 +588,11 @@ function runSearch() {
         </div>
       `;
     }).join('');
-
+    
+    const flavorTags = (r.recipe.flavors || [])
+    .map(f => `<span class="tag tag-flavor">${f}</span>`)
+    .join('');
+    
     const card = document.createElement('div');
     card.className = `recipe-card${complete ? ' complete' : ''}`;
     card.innerHTML = `
@@ -550,7 +605,7 @@ function runSearch() {
         <span class="recipe-calories">🔥 ${r.recipe.calories || '0'} kcal</span>
         <span class="recipe-time">⏱️ ${r.recipe.time || 0} min</span>
       </div>
-
+      ${flavorTags ? `<div class="tags flavor-tags-container">${flavorTags}</div>` : ''}
       <div class="prog-wrap"><div class="prog-bar ${bc}"></div></div>
       
       ${complete
@@ -637,6 +692,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     await loadIngredients();
+    await loadFlavors(); 
+    buildFlavorButtons();
     buildCommonGrid();
   } catch (err) {
     console.error('Failed to load ingredients:', err);
