@@ -92,11 +92,16 @@ function save() { saveUserIng(sanitizeInventory(items)); }
 
 // ── RENDER ────────────────────────────────────────────────────
 function render() {
-  const q    = document.getElementById('search').value.toLowerCase();
+  const q = document.getElementById('search').value.toLowerCase();
+  const sortValue = document.getElementById('sortExpiry')?.value || 'default';
   const list = document.getElementById('list');
   list.innerHTML = '';
 
-  const filtered = items.filter(i => i.name.toLowerCase().includes(q));
+  let filtered = items.filter(i => i.name.toLowerCase().includes(q));
+
+  if (sortValue === 'expiry_asc') {
+    filtered = sortInventoryByExpiry(filtered);
+  }
 
   if (!filtered.length) {
     list.innerHTML = `<div class="empty">
@@ -110,10 +115,12 @@ function render() {
     const ri = items.indexOf(item);
     const d  = document.createElement('div');
     d.className = 'inv-item';
+
     d.innerHTML = `
       <div class="inv-info">
         <span class="inv-name">${item.name}</span>
         <span class="inv-unit">${item.unit}</span>
+        ${item.expiration_date ? `<span class="item-exp">Exp: ${item.expiration_date}</span>` : ''}
       </div>
 
       <div class="inv-ctrl">
@@ -125,37 +132,30 @@ function render() {
             value="${item.amount}"
             min="0"
             step="any"
-            title="Edit amount directly"
             onchange="setDirect(${ri}, this.value)"
             onblur="setDirect(${ri}, this.value)"
           >
         </div>
 
         <div class="inv-step">
-          <button class="btn-qty btn-minus" onclick="applyStep(${ri}, -1)" title="Subtract">−</button>
-          <input
-            class="step-inp"
-            id="step-${ri}"
-            type="number"
-            value="1"
-            min="1"
-            step="any"
-            title="Amount to add or subtract"
-          >
-          <button class="btn-qty btn-plus" onclick="applyStep(${ri}, 1)" title="Add">+</button>
+          <button class="btn-qty btn-minus" onclick="applyStep(${ri}, -1)">−</button>
+          <input class="step-inp" id="step-${ri}" type="number" value="1" min="1">
+          <button class="btn-qty btn-plus" onclick="applyStep(${ri}, 1)">+</button>
         </div>
       </div>
 
-      <button class="btn-rm" onclick="askRemove(${ri})" title="Remove">✕</button>`;
-    list.appendChild(d); // append first
+      <button class="btn-rm" onclick="askRemove(${ri})">✕</button>
+    `;
+
+    list.appendChild(d);
 
     const curInp = d.querySelector('.cur-val-inp');
     if (curInp) {
       const resize = (el) => {
         el.style.width = Math.max(2.5, el.value.length + 0.8) + 'ch';
       };
-      resize(curInp); // initial resize
-      curInp.addEventListener('input', () => resize(curInp)); // resize on input
+      resize(curInp);
+      curInp.addEventListener('input', () => resize(curInp));
     }
   });
 }
@@ -191,6 +191,23 @@ function applyStep(idx, direction) {
   }
 }
 
+function sortInventoryByExpiry(items) {
+  return [...items].sort((a, b) => {
+    const aDate = a.expiration_date ? new Date(a.expiration_date) : null;
+    const bDate = b.expiration_date ? new Date(b.expiration_date) : null;
+
+    if (!aDate && !bDate) return 0;
+    if (!aDate) return 1;
+    if (!bDate) return -1;
+
+    return aDate - bDate;
+  });
+}
+
+function applyInventorySort() {
+  render();
+}
+  
 function setDirect(idx, val) {
   const n = parseFloat(val);
   const inp = document.getElementById(`cur-${idx}`)?.querySelector('.cur-val-inp');
@@ -243,10 +260,15 @@ function undoRemove() {
 
 document.addEventListener('DOMContentLoaded', async () => {
   items = await sanitizeInventory(await loadUserIng());
+
   document.getElementById('search').addEventListener('input', render);
+  document.getElementById('sortExpiry').addEventListener('change', render);
+
   document.getElementById('overlay').addEventListener('click', e => {
-    if (e.target === document.getElementById('overlay'))
+    if (e.target === document.getElementById('overlay')) {
       document.getElementById('overlay').classList.remove('show');
+    }
   });
+
   render();
 });

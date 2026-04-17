@@ -188,6 +188,65 @@
   color: var(--muted);
 }
 
+.nutrition-box {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; 
+}
+
+.nutrition-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--bg-m);
+  border: 1px solid var(--border);
+  border-radius: var(--rs); 
+  transition: transform 0.1s;
+}
+.allergen-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.allergen-tag {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.allergen-tag input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.allergen-tag span {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: var(--bg-m);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.18s ease;
+}
+
+.allergen-tag input:checked + span {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+
+.allergen-tag span:hover {
+  border-color: var(--border-h);
+}
+
 @media (max-width: 900px) {
   .recipe-grid {
     grid-template-columns: 1fr;
