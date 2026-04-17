@@ -21,6 +21,8 @@ let ALL_ING = [];
 let RECIPES = [];
 let selectedFlavors = [];
 let FLAVORS = [];
+let selectedCuisines = [];
+let CUISINES = [];
 
 // ── HELPERS ────────────────────────────────────────────────────
 function showToast(message) {
@@ -154,6 +156,7 @@ function sanitizeIngredientList(entries) {
 
   return cleaned;
 }
+
 function getInvMap() {
   return combineIngredientEntries([...serverInventory, ...searchIngs]);
 }
@@ -381,6 +384,7 @@ async function loadFlavors() {
   FLAVORS = await res.json();
 }
 
+
 function removeIng(idx) {
   searchIngs.splice(idx, 1);
   renderChips();
@@ -447,6 +451,69 @@ function updateFlavorUI() {
     });
 }
 
+async function loadCuisines() {
+    try {
+        const res = await fetch('get_cuisines.php');
+        const data = await res.json();
+        window.CUISINES = data;
+        buildCuisineButtons();
+    } catch (err) {
+        console.error("Error loading cuisines:", err);
+    }
+}
+
+function buildCuisineButtons() {
+    const container = document.getElementById('cuisineButtons');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    const allBtn = document.createElement('button');
+    allBtn.textContent = 'All';
+    allBtn.type = 'button';
+    allBtn.onclick = () => setCuisine('', allBtn);
+    container.appendChild(allBtn);
+
+    if (window.CUISINES) {
+        window.CUISINES.forEach(region => {
+            const btn = document.createElement('button');
+            btn.textContent = region.name;
+            btn.type = 'button';
+            btn.onclick = () => setCuisine(region.name, btn);
+            container.appendChild(btn);
+        });
+    }
+  updateCuisineUI()
+}
+
+function setCuisine(cuisine, clickedBtn) {
+    if (cuisine === '') {
+        selectedCuisines = [];
+    } else {
+        const c = cuisine.toLowerCase();
+        const index = selectedCuisines.indexOf(c);
+        if (index > -1) {
+            selectedCuisines.splice(index, 1);
+        } else {
+            selectedCuisines.push(c);
+        }
+    }
+    updateCuisineUI();
+    runSearch(); 
+}
+
+function updateCuisineUI() {
+    const buttons = document.querySelectorAll('#cuisineButtons button');
+    buttons.forEach(btn => {
+        const text = btn.textContent.toLowerCase();
+        if (text === 'all') {
+            btn.classList.toggle('active', selectedCuisines.length === 0);
+        } else {
+            btn.classList.toggle('active', selectedCuisines.includes(text));
+        }
+    });
+}
+
 // ── CHIP RENDERING ─────────────────────────────────────────────
 function renderChips() {
   const sec  = document.getElementById('chipsSection');
@@ -498,14 +565,12 @@ function matchRecipes() {
       const timeOk = recipe.time == null || recipe.time <= maxTime;
       const calOk = recipe.calories == null || recipe.calories <= maxCalories;
     
-      const recipeFlavors = Array.isArray(recipe.flavors) 
-        ? recipe.flavors.map(f => f.toLowerCase()) 
-        : (recipe.flavors ? recipe.flavors.toLowerCase().split(',') : []);
-
-      const flavorOk = selectedFlavors.length === 0 || 
-                       selectedFlavors.some(f => recipeFlavors.includes(f.toLowerCase()));
-      
-      return flavorOk && timeOk && calOk;
+      const recipeFlavors = Array.isArray(recipe.flavors)  ? recipe.flavors.map(f => f.toLowerCase()) : (recipe.flavors ? recipe.flavors.toLowerCase().split(',') : []);
+      const flavorOk = selectedFlavors.length === 0 ||  selectedFlavors.some(f => recipeFlavors.includes(f.toLowerCase()));
+      const recipeCuisine = recipe.region_name ? recipe.region_name.toLowerCase().trim() : "";
+      const cuisineOk = selectedCuisines.length === 0 || selectedCuisines.some(c => c.toLowerCase().trim() === recipeCuisine);
+    
+      return flavorOk && cuisineOk && timeOk && calOk;
     })
     .map(recipe => {
       let score = 0;
@@ -618,20 +683,29 @@ function runSearch() {
     .map(f => `<span class="tag tag-flavor">${f}</span>`)
     .join('');
     
+    const cuisineTag = r.recipe.region_name 
+    ? `<span class="tag tag-cuisine">${r.recipe.region_name}</span>` 
+    : '';
+    
     const card = document.createElement('div');
     card.className = `recipe-card${complete ? ' complete' : ''}`;
     card.innerHTML = `
       <div class="card-top">
-        <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
+        <div class="card-name-wrapper">
+            <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
+            ${cuisineTag ? `<div class="cuisine-row">${cuisineTag}</div>` : ''}
+        </div>
         <span class="card-pct ${pc}">${r.pct}%</span>
       </div>
 
-      <div class="card-info">
+    <div class="card-info">
         <span class="recipe-calories">🔥 ${r.recipe.calories || '0'} kcal</span>
         <span class="recipe-time">⏱️ ${r.recipe.time || 0} min</span>
-      </div>
-      ${flavorTags ? `<div class="tags flavor-tags-container">${flavorTags}</div>` : ''}
-      <div class="prog-wrap"><div class="prog-bar ${bc}"></div></div>
+    </div>
+
+    ${flavorTags ? `<div class="tags flavor-tags-container">${flavorTags}</div>` : ''}
+
+    <div class="prog-wrap"><div class="prog-bar ${bc}"></div></div>
       
       ${complete
         ? `<div class="card-sec-lbl green">✓ You have everything!</div><div class="tags">${allHaveTags}</div>`
@@ -707,7 +781,6 @@ async function loadAndRenderInventory() {
 }
 
 // ── INIT ───────────────────────────────────────────────────────
-// ── INIT ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   initAutofill();
   refreshUnitOptions();
@@ -718,6 +791,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     await loadIngredients();
     await loadFlavors(); 
+    await loadCuisines();
     buildFlavorButtons();
     buildCommonGrid();
   } catch (err) {
