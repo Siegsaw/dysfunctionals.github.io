@@ -164,15 +164,20 @@ function getInvMap() {
 
 async function loadUserAllergens() {
     try {
-        const response = await fetch('get_allergens.php');
+        const response = await fetch('get_allergens.php'); 
         const data = await response.json();
         
+        console.log("Data received from the server:", data); 
+
         if (data.success && Array.isArray(data.selected)) {
             USER_ALLERGENS = data.selected.map(name => name.toLowerCase());
+        } else if (Array.isArray(data)) {
+            USER_ALLERGENS = data.map(name => name.toLowerCase());
         } else {
             USER_ALLERGENS = [];
         }
-        console.log("Loaded User Allergens:", USER_ALLERGENS);
+        
+        console.log("Process USER_ALLERGENS:", USER_ALLERGENS);
     } catch (err) {
         console.error('Failed to load allergens:', err);
     }
