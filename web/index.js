@@ -164,10 +164,15 @@ function getInvMap() {
 
 async function loadUserAllergens() {
     try {
-        const response = await fetch('get_user_allergens.php');
+        const response = await fetch('get_allergens.php');
         const data = await response.json();
-        // Saugome tik pavadinimus mažosiomis raidėmis patogiam palyginimui
-        USER_ALLERGENS = Array.isArray(data) ? data.map(a => a.name.toLowerCase()) : [];
+        
+        if (data.success && Array.isArray(data.selected)) {
+            USER_ALLERGENS = data.selected.map(name => name.toLowerCase());
+        } else {
+            USER_ALLERGENS = [];
+        }
+        console.log("Loaded User Allergens:", USER_ALLERGENS);
     } catch (err) {
         console.error('Failed to load allergens:', err);
     }
@@ -666,15 +671,17 @@ function runSearch() {
 
   results.forEach(r => {
     const hasAllergen = r.recipe.ingredients.some(ing => {
-        const nameMatch = USER_ALLERGENS.includes(ing.name_ing.toLowerCase());
+        const ingName = (ing.name || '').toLowerCase();
+        const nameMatch = USER_ALLERGENS.includes(ingName);
         
         let groupMatch = false;
         if (ing.allergen_groups) {
-            const groups = ing.allergen_groups.toLowerCase().split(',');
-            groupMatch = groups.some(g => USER_ALLERGENS.includes(g.trim()));
+            const groups = ing.allergen_groups.toLowerCase().split(',').map(g => g.trim());
+            groupMatch = groups.some(g => USER_ALLERGENS.includes(g));
         }
         return nameMatch || groupMatch;
     });
+
     const complete = r.pct === 100;
     const pc = complete ? 'pct-high' : r.pct >= 40 ? 'pct-mid' : 'pct-low';
     const bc = complete ? 'prog-high' : r.pct >= 40 ? 'prog-mid' : 'prog-low';
@@ -703,15 +710,17 @@ function runSearch() {
     }).join('');
     
     const flavorTags = (r.recipe.flavors || [])
-    .map(f => `<span class="tag tag-flavor">${f}</span>`)
-    .join('');
+      .map(f => `<span class="tag tag-flavor">${f}</span>`)
+      .join('');
     
     const cuisineTag = r.recipe.region_name 
-    ? `<span class="tag tag-cuisine">${r.recipe.region_name}</span>` 
-    : '';
+      ? `<span class="tag tag-cuisine">${r.recipe.region_name}</span>` 
+      : '';
     
+    // 4. Kortelės elementas
     const card = document.createElement('div');
     card.className = `recipe-card${complete ? ' complete' : ''}${hasAllergen ? ' has-allergen' : ''}`;
+    
     card.innerHTML = `
       ${hasAllergen ? '<div class="allergen-warning">⚠️ Contains Allergen</div>' : ''}
       <div class="card-top">
