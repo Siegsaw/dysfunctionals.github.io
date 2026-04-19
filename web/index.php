@@ -15,9 +15,10 @@ echo "";
 echo "<header>";
 echo "<div class=\"logo\" onclick=\"location.href='index.php'\">PantryChef</div>";
 echo "<nav class=\"h-nav\">";
-echo "<button class=\"nav-btn active\">Home</button>";
-echo "<button class=\"nav-btn\" onclick=\"location.href='inventory.php'\">Inventory</button>";
-echo "</nav>";
+echo  "<button class=\"nav-btn active\" onclick=\"location.href='index.php'\">Home</button>";
+echo  "<button class=\"nav-btn\" onclick=\"location.href='browse_recipes.php'\">Browse</button>";
+echo  "<button class=\"nav-btn\" onclick=\"location.href='inventory.php'\">Inventory</button>";
+echo "</nav>"
 echo "<div class=\"h-right\">";
 echo "<a id=\"userBadge\" href=\"profile.php\"></a>";
 echo "<button class=\"btn-theme\" onclick=\"toggleTheme()\" title=\"Toggle dark mode\">🌙</button>";
