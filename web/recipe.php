@@ -57,20 +57,31 @@ $recipeId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
       </div>
     </div>
 
-    <div class="cook-step-panel">
+    <div class="cook-step-panel" id="cookStepPanel">
       <div class="cook-step-meta">
         <span id="cookStepNumber" class="cook-step-badge">Step 1</span>
         <span id="cookStepType" class="cook-step-type">prep</span>
         <span id="cookStepTime" class="cook-step-time"></span>
       </div>
-
+    
       <div id="cookStepText" class="cook-step-text"></div>
+    </div>
+    
+    <div class="cook-complete-panel" id="cookCompletePanel" hidden>
+      <div class="cook-complete-icon">🍽️</div>
+      <div class="cook-complete-title">Recipe Complete!</div>
+      <div class="cook-complete-text">
+        You finished all the cooking steps. Confirm to deduct the used ingredients from your inventory.
+      </div>
     </div>
 
     <div class="cook-nav">
       <button id="cookPrevBtn" class="cook-nav-btn cook-secondary" type="button" onclick="previousCookStep()">Previous</button>
-      <button class="cook-nav-btn cook-secondary" type="button" onclick="closeCookMode()">Exit</button>
+      <button id="cookExitBtn" class="cook-nav-btn cook-secondary" type="button" onclick="closeCookMode()">Exit</button>
       <button id="cookNextBtn" class="cook-nav-btn cook-primary" type="button" onclick="nextCookStep()">Next</button>
+      <button id="cookConfirmBtn" class="cook-nav-btn cook-primary" type="button" onclick="confirmRecipeCompletion()" hidden>
+        Confirm and use ingredients
+      </button>
     </div>
   </div>
 </div>
