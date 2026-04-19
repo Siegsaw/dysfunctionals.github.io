@@ -72,7 +72,8 @@ while ($row = $result->fetch_assoc()) {
         $recipes[$id]['ingredients'][] = [
             'name' => $row['name_ing'],
             'amount' => (float)$row['quantity'],
-            'unit' => $row['unit']
+            'unit' => $row['unit'],
+            'allergen_groups' => $row['allergen_groups']
         ];
         $recipes[$id]['_seen_ingredients'][] = $ing_key;
     }
