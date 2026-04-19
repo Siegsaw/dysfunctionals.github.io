@@ -70,9 +70,11 @@ $recipeId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
     <div class="cook-complete-panel" id="cookCompletePanel" hidden>
       <div class="cook-complete-icon">🍽️</div>
       <div class="cook-complete-title">Recipe Complete!</div>
-      <div class="cook-complete-text">
+      <div class="cook-complete-text" id="cookCompleteText">
         You finished all the cooking steps. Confirm to deduct the used ingredients from your inventory.
       </div>
+    
+      <div class="cook-complete-status" id="cookCompleteStatus" hidden></div>
     </div>
 
     <div class="cook-nav">
@@ -124,7 +126,9 @@ function openCookMode() {
   const confirmBtn = document.getElementById('cookConfirmBtn');
   confirmBtn.disabled = false;
   confirmBtn.textContent = 'Confirm and use ingredients';
-
+  
+  clearCookCompletionStatus();
+  
   document.body.classList.add('cook-mode-open');
   document.getElementById('cookModeOverlay').classList.add('show');
   document.getElementById('cookModeOverlay').setAttribute('aria-hidden', 'false');
@@ -221,10 +225,29 @@ function previousCookStep() {
   }
 }
 
-async function confirmRecipeCompletion() {
+function clearCookCompletionStatus() {
+  const box = document.getElementById('cookCompleteStatus');
+  if (!box) return;
+
+  box.hidden = true;
+  box.className = 'cook-complete-status';
+  box.textContent = '';
+}
+
+function setCookCompletionStatus(message, type = 'error') {
+  const box = document.getElementById('cookCompleteStatus');
+  if (!box) return;
+
+  box.hidden = false;
+  box.className = `cook-complete-status ${type}`;
+  box.textContent = message;
+}
+  
+async function confirmRecipeCompletion() {async function confirmRecipeCompletion() {
   if (!currentRecipe || cookConfirmBusy) return;
 
   cookConfirmBusy = true;
+  clearCookCompletionStatus();
 
   const confirmBtn = document.getElementById('cookConfirmBtn');
   confirmBtn.disabled = true;
@@ -244,13 +267,16 @@ async function confirmRecipeCompletion() {
     const result = await response.json();
 
     if (!response.ok || !result.success) {
+      let message = result.message || 'Failed to update inventory.';
+
       if (response.status === 401) {
-        showToast('Please sign in to update your inventory.');
+        message = 'Please sign in to update your inventory.';
       } else if (Array.isArray(result.problems) && result.problems.length > 0) {
-        showToast(result.problems[0]);
-      } else {
-        showToast(result.message || 'Failed to update inventory.');
+        message = result.problems.join(', ');
       }
+
+      setCookCompletionStatus(message, 'error');
+      showToast(message);
 
       confirmBtn.disabled = false;
       confirmBtn.textContent = 'Confirm and use ingredients';
@@ -258,11 +284,21 @@ async function confirmRecipeCompletion() {
       return;
     }
 
+    setCookCompletionStatus('Ingredients were deducted from your inventory successfully.', 'success');
     showToast('Recipe complete! Ingredients deducted from inventory.');
-    closeCookMode();
+
+    confirmBtn.textContent = 'Done';
+    setTimeout(() => {
+      closeCookMode();
+    }, 900);
+
   } catch (error) {
     console.error(error);
-    showToast('Failed to update inventory.');
+
+    const message = 'Failed to update inventory.';
+    setCookCompletionStatus(message, 'error');
+    showToast(message);
+
     confirmBtn.disabled = false;
     confirmBtn.textContent = 'Confirm and use ingredients';
     cookConfirmBusy = false;
