@@ -463,6 +463,39 @@ body.cook-mode-open {
   transform: translateY(-1px);
 }
 
+.cook-complete-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  padding: 40px;
+  text-align: center;
+  background: var(--bg-s);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+}
+
+.cook-complete-icon {
+  font-size: 64px;
+  line-height: 1;
+}
+
+.cook-complete-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(30px, 4vw, 54px);
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.cook-complete-text {
+  max-width: 28ch;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
 /* ── RESPONSIVE ────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .recipe-grid {
@@ -511,4 +544,16 @@ body.cook-mode-open {
   .cook-nav-btn {
     width: 100%;
   }
+   .cook-complete-panel {
+  padding: 24px;
+  border-radius: 20px;
+   }
+
+.cook-complete-title {
+  font-size: clamp(24px, 8vw, 34px);
+}
+
+.cook-complete-text {
+  font-size: 16px;
+   }
 }
