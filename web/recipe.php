@@ -22,8 +22,8 @@ $recipeId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
   <nav class="h-nav">
     <button class="nav-btn" onclick="location.href='index.php'">Home</button>
-    <button class="nav-btn" onclick="location.href='browse_recipes.php'">Browse Recipes</button>
-    <button class="nav-btn" onclick="location.href='inventory.php'">User Ingredients</button>
+    <button class="nav-btn" onclick="location.href='browse_recipes.php'">Browse</button>
+    <button class="nav-btn" onclick="location.href='inventory.php'">Inventory</button>
   </nav>
 
   <div class="h-right">
@@ -63,10 +63,10 @@ $recipeId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
         <span id="cookStepType" class="cook-step-type">prep</span>
         <span id="cookStepTime" class="cook-step-time"></span>
       </div>
-    
+
       <div id="cookStepText" class="cook-step-text"></div>
     </div>
-    
+
     <div class="cook-complete-panel" id="cookCompletePanel" hidden>
       <div class="cook-complete-icon">🍽️</div>
       <div class="cook-complete-title">Recipe Complete!</div>
@@ -92,11 +92,10 @@ $recipeId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
 <script src="shared.js"></script>
 <script>
+let currentRecipe = null;
 let cookModeIndex = 0;
 let cookCompletionScreen = false;
 let cookConfirmBusy = false;
-let currentRecipe = null;
-let cookModeIndex = 0;
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -121,6 +120,10 @@ function openCookMode() {
   cookModeIndex = 0;
   cookCompletionScreen = false;
   cookConfirmBusy = false;
+
+  const confirmBtn = document.getElementById('cookConfirmBtn');
+  confirmBtn.disabled = false;
+  confirmBtn.textContent = 'Confirm and use ingredients';
 
   document.body.classList.add('cook-mode-open');
   document.getElementById('cookModeOverlay').classList.add('show');
@@ -191,7 +194,6 @@ function renderCookModeStep() {
 
 function nextCookStep() {
   if (!currentRecipe || !Array.isArray(currentRecipe.steps)) return;
-
   if (cookCompletionScreen) return;
 
   if (cookModeIndex < currentRecipe.steps.length - 1) {
@@ -204,6 +206,8 @@ function nextCookStep() {
 }
 
 function previousCookStep() {
+  if (!currentRecipe || !Array.isArray(currentRecipe.steps)) return;
+
   if (cookCompletionScreen) {
     cookCompletionScreen = false;
     cookModeIndex = Math.max(0, currentRecipe.steps.length - 1);
@@ -216,19 +220,6 @@ function previousCookStep() {
     renderCookModeStep();
   }
 }
-
-document.addEventListener('keydown', (event) => {
-  const overlay = document.getElementById('cookModeOverlay');
-  if (!overlay.classList.contains('show')) return;
-
-  if (event.key === 'Escape') {
-    closeCookMode();
-  } else if (event.key === 'ArrowRight' || event.key === 'Enter') {
-    nextCookStep();
-  } else if (event.key === 'ArrowLeft') {
-    previousCookStep();
-  }
-});
 
 async function confirmRecipeCompletion() {
   if (!currentRecipe || cookConfirmBusy) return;
@@ -277,7 +268,20 @@ async function confirmRecipeCompletion() {
     cookConfirmBusy = false;
   }
 }
-  
+
+document.addEventListener('keydown', (event) => {
+  const overlay = document.getElementById('cookModeOverlay');
+  if (!overlay.classList.contains('show')) return;
+
+  if (event.key === 'Escape') {
+    closeCookMode();
+  } else if (!cookCompletionScreen && (event.key === 'ArrowRight' || event.key === 'Enter')) {
+    nextCookStep();
+  } else if (event.key === 'ArrowLeft') {
+    previousCookStep();
+  }
+});
+
 async function loadRecipe() {
   try {
     const response = await fetch(`get_recipe.php?id=${RECIPE_ID}`, { cache: 'no-store' });
