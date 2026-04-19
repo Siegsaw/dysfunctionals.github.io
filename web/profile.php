@@ -21,7 +21,8 @@ if (!isset($_SESSION['user_id'])) {
 
     <nav class="h-nav">
       <button class="nav-btn" onclick="location.href='index.php'">Home</button>
-      <button class="nav-btn" onclick="location.href='inventory.php'">Inventory</button>
+      <button class="nav-btn" onclick="location.href='browse_recipes.php'">Browse Recipes</button>
+      <button class="nav-btn" onclick="location.href='inventory.php'">User Ingredients</button>
     </nav>
 
     <div class="h-right">
