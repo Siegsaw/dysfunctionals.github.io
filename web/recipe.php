@@ -92,6 +92,9 @@ $recipeId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
 <script src="shared.js"></script>
 <script>
+let cookModeIndex = 0;
+let cookCompletionScreen = false;
+let cookConfirmBusy = false;
 let currentRecipe = null;
 let cookModeIndex = 0;
 
@@ -116,9 +119,13 @@ function openCookMode() {
   }
 
   cookModeIndex = 0;
+  cookCompletionScreen = false;
+  cookConfirmBusy = false;
+
   document.body.classList.add('cook-mode-open');
   document.getElementById('cookModeOverlay').classList.add('show');
   document.getElementById('cookModeOverlay').setAttribute('aria-hidden', 'false');
+
   renderCookModeStep();
 }
 
@@ -131,11 +138,36 @@ function closeCookMode() {
 function renderCookModeStep() {
   if (!currentRecipe || !Array.isArray(currentRecipe.steps) || currentRecipe.steps.length === 0) return;
 
+  const stepPanel = document.getElementById('cookStepPanel');
+  const completePanel = document.getElementById('cookCompletePanel');
+  const prevBtn = document.getElementById('cookPrevBtn');
+  const nextBtn = document.getElementById('cookNextBtn');
+  const confirmBtn = document.getElementById('cookConfirmBtn');
+  const exitBtn = document.getElementById('cookExitBtn');
+
+  document.getElementById('cookModeRecipeTitle').textContent = currentRecipe.name || 'Recipe';
+
+  if (cookCompletionScreen) {
+    stepPanel.hidden = true;
+    completePanel.hidden = false;
+
+    document.getElementById('cookProgressText').textContent = `Finished • ${currentRecipe.steps.length} steps completed`;
+    document.getElementById('cookProgressBar').style.width = '100%';
+
+    prevBtn.hidden = true;
+    nextBtn.hidden = true;
+    confirmBtn.hidden = false;
+    exitBtn.textContent = 'Close';
+    return;
+  }
+
   const step = currentRecipe.steps[cookModeIndex];
   const total = currentRecipe.steps.length;
   const percent = ((cookModeIndex + 1) / total) * 100;
 
-  document.getElementById('cookModeRecipeTitle').textContent = currentRecipe.name || 'Recipe';
+  stepPanel.hidden = false;
+  completePanel.hidden = true;
+
   document.getElementById('cookProgressText').textContent = `Step ${cookModeIndex + 1} of ${total}`;
   document.getElementById('cookProgressBar').style.width = `${percent}%`;
 
@@ -148,23 +180,37 @@ function renderCookModeStep() {
   typeEl.textContent = stepType;
   typeEl.className = `cook-step-type ${stepType}`;
 
-  document.getElementById('cookPrevBtn').disabled = cookModeIndex === 0;
-  document.getElementById('cookNextBtn').textContent = cookModeIndex === total - 1 ? 'Finish' : 'Next';
+  prevBtn.hidden = false;
+  nextBtn.hidden = false;
+  confirmBtn.hidden = true;
+  exitBtn.textContent = 'Exit';
+
+  prevBtn.disabled = cookModeIndex === 0;
+  nextBtn.textContent = cookModeIndex === total - 1 ? 'Finish' : 'Next';
 }
 
 function nextCookStep() {
   if (!currentRecipe || !Array.isArray(currentRecipe.steps)) return;
 
+  if (cookCompletionScreen) return;
+
   if (cookModeIndex < currentRecipe.steps.length - 1) {
     cookModeIndex++;
     renderCookModeStep();
   } else {
-    closeCookMode();
-    showToast('Recipe completed. Nice work!');
+    cookCompletionScreen = true;
+    renderCookModeStep();
   }
 }
 
 function previousCookStep() {
+  if (cookCompletionScreen) {
+    cookCompletionScreen = false;
+    cookModeIndex = Math.max(0, currentRecipe.steps.length - 1);
+    renderCookModeStep();
+    return;
+  }
+
   if (cookModeIndex > 0) {
     cookModeIndex--;
     renderCookModeStep();
@@ -184,6 +230,54 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
+async function confirmRecipeCompletion() {
+  if (!currentRecipe || cookConfirmBusy) return;
+
+  cookConfirmBusy = true;
+
+  const confirmBtn = document.getElementById('cookConfirmBtn');
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = 'Updating inventory...';
+
+  try {
+    const response = await fetch('complete_recipe.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        recipe_id: currentRecipe.id
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      if (response.status === 401) {
+        showToast('Please sign in to update your inventory.');
+      } else if (Array.isArray(result.problems) && result.problems.length > 0) {
+        showToast(result.problems[0]);
+      } else {
+        showToast(result.message || 'Failed to update inventory.');
+      }
+
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = 'Confirm and use ingredients';
+      cookConfirmBusy = false;
+      return;
+    }
+
+    showToast('Recipe complete! Ingredients deducted from inventory.');
+    closeCookMode();
+  } catch (error) {
+    console.error(error);
+    showToast('Failed to update inventory.');
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = 'Confirm and use ingredients';
+    cookConfirmBusy = false;
+  }
+}
+  
 async function loadRecipe() {
   try {
     const response = await fetch(`get_recipe.php?id=${RECIPE_ID}`, { cache: 'no-store' });
