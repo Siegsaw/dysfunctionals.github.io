@@ -16,7 +16,7 @@ echo "  <div class=\"logo\" onclick=\"location.href='index.php'\">PantryChef</di
 echo "  <nav class=\"h-nav\">";
 echo "    <button class=\"nav-btn\" onclick=\"location.href='index.php'\">Home</button>";
 echo "    <button class=\"nav-btn active\">Browse Recipes</button>";
-echo "    <button class=\"nav-btn\" onclick=\"location.href='inventory.php'\">Inventory</button>";
+echo "    <button class=\"nav-btn\" onclick=\"location.href='inventory.php'\">User Ingredients</button>";
 echo "  </nav>";
 echo "  <div class=\"h-right\">";
 echo "    <a id=\"userBadge\" href=\"profile.php\"></a>";
