@@ -73,7 +73,6 @@ $recipeId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
       <div class="cook-complete-text" id="cookCompleteText">
         You finished all the cooking steps. Confirm to deduct the used ingredients from your inventory.
       </div>
-    
       <div class="cook-complete-status" id="cookCompleteStatus" hidden></div>
     </div>
 
@@ -113,6 +112,24 @@ function formatNumber(value) {
   return Number.isInteger(num) ? String(num) : num.toFixed(1);
 }
 
+function clearCookCompletionStatus() {
+  const box = document.getElementById('cookCompleteStatus');
+  if (!box) return;
+
+  box.hidden = true;
+  box.className = 'cook-complete-status';
+  box.textContent = '';
+}
+
+function setCookCompletionStatus(message, type = 'error') {
+  const box = document.getElementById('cookCompleteStatus');
+  if (!box) return;
+
+  box.hidden = false;
+  box.className = `cook-complete-status ${type}`;
+  box.textContent = message;
+}
+
 function openCookMode() {
   if (!currentRecipe || !Array.isArray(currentRecipe.steps) || currentRecipe.steps.length === 0) {
     showToast('This recipe has no steps yet.');
@@ -126,9 +143,9 @@ function openCookMode() {
   const confirmBtn = document.getElementById('cookConfirmBtn');
   confirmBtn.disabled = false;
   confirmBtn.textContent = 'Confirm and use ingredients';
-  
+
   clearCookCompletionStatus();
-  
+
   document.body.classList.add('cook-mode-open');
   document.getElementById('cookModeOverlay').classList.add('show');
   document.getElementById('cookModeOverlay').setAttribute('aria-hidden', 'false');
@@ -180,7 +197,7 @@ function renderCookModeStep() {
 
   document.getElementById('cookStepNumber').textContent = `Step ${step.step_number}`;
   document.getElementById('cookStepText').textContent = step.instructions || '';
-  document.getElementById('cookStepTime').textContent = step.time_minutes > 0 ? `⏱️ ${step.time_minutes} min` : '';
+  document.getElementById('cookStepTime').textContent = Number(step.time_minutes) > 0 ? `⏱️ ${formatNumber(step.time_minutes)} min` : '';
 
   const typeEl = document.getElementById('cookStepType');
   const stepType = (step.step_type || 'step').toLowerCase();
@@ -225,25 +242,7 @@ function previousCookStep() {
   }
 }
 
-function clearCookCompletionStatus() {
-  const box = document.getElementById('cookCompleteStatus');
-  if (!box) return;
-
-  box.hidden = true;
-  box.className = 'cook-complete-status';
-  box.textContent = '';
-  }
-
-function setCookCompletionStatus(message, type = 'error') {
-  const box = document.getElementById('cookCompleteStatus');
-  if (!box) return;
-
-  box.hidden = false;
-  box.className = `cook-complete-status ${type}`;
-  box.textContent = message;
-  }
-  
-async function confirmRecipeCompletion() {async function confirmRecipeCompletion() {
+async function confirmRecipeCompletion() {
   if (!currentRecipe || cookConfirmBusy) return;
 
   cookConfirmBusy = true;
@@ -288,6 +287,7 @@ async function confirmRecipeCompletion() {async function confirmRecipeCompletion
     showToast('Recipe complete! Ingredients deducted from inventory.');
 
     confirmBtn.textContent = 'Done';
+
     setTimeout(() => {
       closeCookMode();
     }, 900);
@@ -303,7 +303,6 @@ async function confirmRecipeCompletion() {async function confirmRecipeCompletion
     confirmBtn.textContent = 'Confirm and use ingredients';
     cookConfirmBusy = false;
   }
-}
 }
 
 document.addEventListener('keydown', (event) => {
