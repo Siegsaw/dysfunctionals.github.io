@@ -17,7 +17,13 @@ $sql = "
     i.name_ing,
     ri.quantity,
     ri.unit,
-    f.name AS flavor
+    f.name AS flavor,
+    (
+      SELECT GROUP_CONCAT(a.name) 
+      FROM ingredient_allergens ia
+      JOIN allergens a ON ia.allergen_id = a.allergen_id
+      WHERE ia.ingredient_id = i.ingredient_id
+    ) AS allergen_groups
 FROM recipes r
 JOIN recipe_ingredients ri ON r.recipe_id = ri.recipe_id
 JOIN ingredients i ON ri.ingredient_id = i.ingredient_id
