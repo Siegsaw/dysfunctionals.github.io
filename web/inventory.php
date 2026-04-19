@@ -15,6 +15,7 @@ echo "<header>";
 echo "<div class=\"logo\" onclick=\"location.href='index.php'\">PantryChef</div>";
 echo "<nav class=\"h-nav\">";
 echo "<button class=\"nav-btn\" onclick=\"location.href='index.php'\">Home</button>";
+echo  "<button class=\"nav-btn\" onclick=\"location.href='browse_recipes.php'\">Browse</button>";
 echo "<button class=\"nav-btn active\">Inventory</button>";
 echo "</nav>";
 echo "<div class=\"h-right\">";
