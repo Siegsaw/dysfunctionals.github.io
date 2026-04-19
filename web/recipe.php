@@ -304,6 +304,7 @@ async function confirmRecipeCompletion() {async function confirmRecipeCompletion
     cookConfirmBusy = false;
   }
 }
+}
 
 document.addEventListener('keydown', (event) => {
   const overlay = document.getElementById('cookModeOverlay');
