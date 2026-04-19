@@ -354,6 +354,11 @@ body.cook-mode-open {
   transition: width 0.25s ease;
 }
 
+.cook-step-panel[hidden],
+.cook-complete-panel[hidden] {
+  display: none !important;
+}
+
 .cook-step-panel {
   flex: 1;
   display: flex;
