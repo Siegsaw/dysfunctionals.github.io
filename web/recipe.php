@@ -232,7 +232,7 @@ function clearCookCompletionStatus() {
   box.hidden = true;
   box.className = 'cook-complete-status';
   box.textContent = '';
-}
+  }
 
 function setCookCompletionStatus(message, type = 'error') {
   const box = document.getElementById('cookCompleteStatus');
@@ -241,7 +241,7 @@ function setCookCompletionStatus(message, type = 'error') {
   box.hidden = false;
   box.className = `cook-complete-status ${type}`;
   box.textContent = message;
-}
+  }
   
 async function confirmRecipeCompletion() {async function confirmRecipeCompletion() {
   if (!currentRecipe || cookConfirmBusy) return;
