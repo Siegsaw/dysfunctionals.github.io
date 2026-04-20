@@ -640,33 +640,43 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgba(148, 163, 184, 0.30);
-  z-index: 1;
+
+  background: rgba(20, 25, 35, 0.65); /* dark overlay */
+  backdrop-filter: grayscale(1);      /* greyscale effect */
+
+  z-index: 2;
   pointer-events: none;
 }
+/* everything important sits above the overlay */
 .card-top,
 .card-info,
-.tags {
+.tags,
+.card-toggle,
+.card-detail,
+.btn-view-recipe,
+.btn-view-recipe-disabled {
   position: relative;
-  z-index: 2;
+  z-index: 3;
 }
 
 .tags-allergen-preview {
-  margin-top: 8px;
   position: relative;
-  z-index: 4;
+  z-index: 5;
 }
 
 .tag-allergen-preview {
   position: relative;
-  z-index: 5;
-  color: #ffd6d6;
-  border: 1px solid #ff2f2f;
-  background: rgba(255, 47, 47, 0.16);
+  z-index: 6;
+
+  color: #ffe5e5;
+  border: 1px solid #ff3b3b;
+  background: rgba(255, 59, 59, 0.18);
+
   box-shadow:
-    0 0 6px rgba(255, 47, 47, 0.55),
-    0 0 12px rgba(255, 47, 47, 0.38),
-    0 0 22px rgba(255, 47, 47, 0.24);
+    0 0 8px rgba(255, 59, 59, 0.8),
+    0 0 16px rgba(255, 59, 59, 0.6),
+    0 0 28px rgba(255, 59, 59, 0.35);
+
   font-weight: 700;
 }
 
