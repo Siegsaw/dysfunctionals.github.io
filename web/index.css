@@ -640,12 +640,10 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgba(120, 120, 120, 0.22);
-  backdrop-filter: grayscale(1);
+  background: rgba(148, 163, 184, 0.30);
   z-index: 1;
   pointer-events: none;
 }
-
 .card-top,
 .card-info,
 .tags {
