@@ -1,6 +1,9 @@
 <?php
+session_start();
 header('Content-Type: application/json');
 require '/var/www/private/db.php';
+
+$userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 
 $sql = "
   SELECT 
@@ -13,33 +16,57 @@ $sql = "
     r.protein,
     r.carbs,
     r.fat,
-    reg.name AS region_name, 
+    reg.name AS region_name,
+    i.ingredient_id,
     i.name_ing,
     ri.quantity,
     ri.unit,
     f.name AS flavor,
     (
-      SELECT GROUP_CONCAT(a.name) 
-      FROM ingredient_allergens ia
-      JOIN allergens a ON ia.allergen_id = a.allergen_id
-      WHERE ia.ingredient_id = i.ingredient_id
-    ) AS allergen_groups
-FROM recipes r
-JOIN recipe_ingredients ri ON r.recipe_id = ri.recipe_id
-JOIN ingredients i ON ri.ingredient_id = i.ingredient_id
-LEFT JOIN recipe_regions rr ON r.recipe_id = rr.recipe_id
-LEFT JOIN regions reg ON rr.region_id = reg.region_id 
-LEFT JOIN recipe_flavors rf ON r.recipe_id = rf.recipe_id
-LEFT JOIN flavors f ON rf.flavor_id = f.flavor_id
-LEFT JOIN (
+      SELECT GROUP_CONCAT(a.name)
+      FROM ingredient_allergens ia2
+      JOIN allergens a ON ia2.allergen_id = a.allergen_id
+      WHERE ia2.ingredient_id = i.ingredient_id
+    ) AS allergen_groups,
+    CASE
+      WHEN COUNT(ua.allergen_id) > 0 THEN 1
+      ELSE 0
+    END AS is_allergic
+  FROM recipes r
+  JOIN recipe_ingredients ri ON r.recipe_id = ri.recipe_id
+  JOIN ingredients i ON ri.ingredient_id = i.ingredient_id
+  LEFT JOIN ingredient_allergens ia ON i.ingredient_id = ia.ingredient_id
+  LEFT JOIN user_allergens ua
+    ON ia.allergen_id = ua.allergen_id
+    AND ua.user_id = $userId
+  LEFT JOIN recipe_regions rr ON r.recipe_id = rr.recipe_id
+  LEFT JOIN regions reg ON rr.region_id = reg.region_id
+  LEFT JOIN recipe_flavors rf ON r.recipe_id = rf.recipe_id
+  LEFT JOIN flavors f ON rf.flavor_id = f.flavor_id
+  LEFT JOIN (
     SELECT 
-        recipe_id, 
-        SUM(CASE WHEN step_type = 'prep' THEN time_minutes ELSE 0 END) AS prep_time,
-        SUM(CASE WHEN step_type = 'cook' THEN time_minutes ELSE 0 END) AS cook_time
+      recipe_id,
+      SUM(CASE WHEN step_type = 'prep' THEN time_minutes ELSE 0 END) AS prep_time,
+      SUM(CASE WHEN step_type = 'cook' THEN time_minutes ELSE 0 END) AS cook_time
     FROM recipe_steps
     GROUP BY recipe_id
-) rs ON r.recipe_id = rs.recipe_id
-ORDER BY r.recipe_id
+  ) rs ON r.recipe_id = rs.recipe_id
+  GROUP BY
+    r.recipe_id,
+    r.title,
+    rs.prep_time,
+    rs.cook_time,
+    r.calories,
+    r.protein,
+    r.carbs,
+    r.fat,
+    reg.name,
+    i.ingredient_id,
+    i.name_ing,
+    ri.quantity,
+    ri.unit,
+    f.name
+  ORDER BY r.recipe_id
 ";
 
 $result = $conn->query($sql);
@@ -64,23 +91,30 @@ while ($row = $result->fetch_assoc()) {
       'fat' => isset($row['fat']) ? (float)$row['fat'] : 0,
       'ingredients' => []
     ];
-        $recipes[$id]['_seen_ingredients'] = [];
+    $recipes[$id]['_seen_ingredients'] = [];
   }
-  
-  $ing_key = $row['name_ing'] . $row['quantity'] . $row['unit'];
-    if (!in_array($ing_key, $recipes[$id]['_seen_ingredients'])) {
-        $recipes[$id]['ingredients'][] = [
-            'name' => $row['name_ing'],
-            'amount' => (float)$row['quantity'],
-            'unit' => $row['unit'],
-            'allergen_groups' => $row['allergen_groups']
-        ];
-        $recipes[$id]['_seen_ingredients'][] = $ing_key;
-    }
-    
-    if (!empty($row['flavor']) && !in_array($row['flavor'], $recipes[$id]['flavors'])) {
-        $recipes[$id]['flavors'][] = $row['flavor'];
-    }
+
+  $ingKey = $row['ingredient_id'] . '|' . $row['quantity'] . '|' . $row['unit'];
+
+  if (!in_array($ingKey, $recipes[$id]['_seen_ingredients'])) {
+    $recipes[$id]['ingredients'][] = [
+      'id' => (int)$row['ingredient_id'],
+      'name' => $row['name_ing'],
+      'amount' => (float)$row['quantity'],
+      'unit' => $row['unit'],
+      'allergen_groups' => $row['allergen_groups'],
+      'is_allergic' => (bool)$row['is_allergic']
+    ];
+    $recipes[$id]['_seen_ingredients'][] = $ingKey;
+  }
+
+  if (!empty($row['flavor']) && !in_array($row['flavor'], $recipes[$id]['flavors'])) {
+    $recipes[$id]['flavors'][] = $row['flavor'];
+  }
+}
+
+foreach ($recipes as &$recipe) {
+  unset($recipe['_seen_ingredients']);
 }
 
 echo json_encode(array_values($recipes));
