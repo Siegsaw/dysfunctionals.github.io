@@ -505,8 +505,6 @@ html.dark .pct-mid { color: #fde68a; }
   cursor: not-allowed;
   pointer-events: none;
   text-decoration: none;
-  position: relative;
-  z-index: 3;
 }
 
 .btn-view-recipe:hover {
@@ -640,43 +638,27 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   position: absolute;
   inset: 0;
   border-radius: inherit;
-
-  background: rgba(20, 25, 35, 0.65); /* dark overlay */
-  backdrop-filter: grayscale(1);      /* greyscale effect */
-
-  z-index: 2;
+  background: rgba(20, 25, 35, 0.55);
+  backdrop-filter: grayscale(1);
+  z-index: 4;
   pointer-events: none;
-}
-/* everything important sits above the overlay */
-.card-top,
-.card-info,
-.tags,
-.card-toggle,
-.card-detail,
-.btn-view-recipe,
-.btn-view-recipe-disabled {
-  position: relative;
-  z-index: 3;
 }
 
 .tags-allergen-preview {
   position: relative;
-  z-index: 5;
+  z-index: 6;
 }
 
 .tag-allergen-preview {
   position: relative;
-  z-index: 6;
-
+  z-index: 7;
   color: #ffe5e5;
   border: 1px solid #ff3b3b;
   background: rgba(255, 59, 59, 0.18);
-
   box-shadow:
     0 0 8px rgba(255, 59, 59, 0.8),
     0 0 16px rgba(255, 59, 59, 0.6),
     0 0 28px rgba(255, 59, 59, 0.35);
-
   font-weight: 700;
 }
 
