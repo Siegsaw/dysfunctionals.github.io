@@ -70,36 +70,6 @@ function makeFlavorTags(flavors) {
   `;
 }
 
-let userAllergens = [];
-
-function normalizeValue(value) {
-  return String(value ?? '').trim().toLowerCase();
-}
-
-function isAllergicIngredient(name) {
-  const ingredientName = normalizeValue(name);
-  if (!ingredientName || !Array.isArray(userAllergens) || userAllergens.length === 0) {
-    return false;
-  }
-
-  return userAllergens.some(allergen => ingredientName.includes(normalizeValue(allergen)));
-}
-
-async function loadUserAllergens() {
-  try {
-    const response = await fetch('get_allergens.php', { cache: 'no-store' });
-    if (!response.ok) {
-      userAllergens = [];
-      return;
-    }
-
-    const data = await response.json();
-    userAllergens = Array.isArray(data.selected) ? data.selected : [];
-  } catch (error) {
-    console.error('Failed to load allergens', error);
-    userAllergens = [];
-  }
-}
   
 function makeIngredientRows(ingredients) {
   if (!Array.isArray(ingredients) || ingredients.length === 0) {
@@ -132,17 +102,17 @@ function recipeCard(recipe, index) {
   const detailId = `recipeDetail${index}`;
   const toggleId = `recipeToggle${index}`;
   const hasAllergen = Boolean(recipe.has_allergen);
-  const matchedAllergens = Array.isArray(recipe.matched_allergens) ? recipe.matched_allergens : [];
+const matchedAllergens = Array.isArray(recipe.matched_allergens) ? recipe.matched_allergens : [];
 
-  const allergenPreview = matchedAllergens.length > 0
-    ? `
-      <div class="tags tags-allergen-preview">
-        ${matchedAllergens.map(allergen => `
-          <span class="tag tag-allergen-preview">${escapeHtml(allergen)}</span>
-        `).join('')}
-      </div>
-    `
-    : '';
+const allergenPreview = matchedAllergens.length > 0
+  ? `
+    <div class="tags tags-allergen-preview">
+      ${matchedAllergens.map(allergen => `
+        <span class="tag tag-allergen-preview">⚠ ${escapeHtml(allergen)}</span>
+      `).join('')}
+    </div>
+  `
+  : '';
 
   return `
     <article class="recipe-card ${hasAllergen ? 'has-allergen' : ''}">
@@ -255,9 +225,8 @@ async function loadAllRecipes() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  await loadUserAllergens();
-  await loadAllRecipes();
+document.addEventListener('DOMContentLoaded', () => {
+  loadAllRecipes();
 });
 </script>
 
