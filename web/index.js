@@ -674,110 +674,117 @@ function runSearch() {
   sec.style.display = 'block';
   lbl.textContent = `${results.length} Matching Recipe${results.length !== 1 ? 's' : ''}`;
 
-  results.forEach(r => {
-    const hasAllergen = r.recipe.ingredients.some(ing => {
-        const ingName = (ing.name || '').toLowerCase();
-        const nameMatch = USER_ALLERGENS.includes(ingName);
-        
-        let groupMatch = false;
-        if (ing.allergen_groups) {
-            const groups = ing.allergen_groups.toLowerCase().split(',').map(g => g.trim());
-            groupMatch = groups.some(g => USER_ALLERGENS.includes(g));
-        }
-        return nameMatch || groupMatch;
-    });
+results.forEach(r => {
+  const hasAllergen = Boolean(r.recipe.has_allergen);
+  const matchedAllergens = Array.isArray(r.recipe.matched_allergens) ? r.recipe.matched_allergens : [];
 
-    const complete = r.pct === 100;
-    const pc = complete ? 'pct-high' : r.pct >= 40 ? 'pct-mid' : 'pct-low';
-    const bc = complete ? 'prog-high' : r.pct >= 40 ? 'prog-mid' : 'prog-low';
-    
-    const mTags = r.missing.map(m => `<span class="tag tag-missing">${m.name}</span>`).join('');
-    const pTags = r.partial.map(p => `<span class="tag tag-partial">${p.name} (${p.haveText}/${p.amount} ${p.unit})</span>`).join('');
-    const allHaveTags = r.details.filter(d => d.status === 'have').map(d => `<span class="tag tag-have">${d.name}</span>`).join('');
+  const complete = r.pct === 100;
+  const pc = complete ? 'pct-high' : r.pct >= 40 ? 'pct-mid' : 'pct-low';
+  const bc = complete ? 'prog-high' : r.pct >= 40 ? 'prog-mid' : 'prog-low';
+  
+  const mTags = r.missing.map(m => `<span class="tag tag-missing">${m.name}</span>`).join('');
+  const pTags = r.partial.map(p => `<span class="tag tag-partial">${p.name} (${p.haveText}/${p.amount} ${p.unit})</span>`).join('');
+  const allHaveTags = r.details.filter(d => d.status === 'have').map(d => `<span class="tag tag-have">${d.name}</span>`).join('');
 
-    const detailRows = r.details.map(d => {
-      const dc = d.status === 'have' ? 'dot-have' : d.status === 'partial' ? 'dot-partial' : 'dot-missing';
-      const qt = d.status === 'partial'
-        ? `${d.haveText}/${d.amount} ${d.unit}`
-        : d.status === 'have'
-          ? `${d.haveText}`
-          : `${d.amount} ${d.unit}`;
+  const detailRows = r.details.map(d => {
+    const dc = d.status === 'have' ? 'dot-have' : d.status === 'partial' ? 'dot-partial' : 'dot-missing';
+    const qt = d.status === 'partial'
+      ? `${d.haveText}/${d.amount} ${d.unit}`
+      : d.status === 'have'
+        ? `${d.haveText}`
+        : `${d.amount} ${d.unit}`;
 
-      return `
-        <div class="detail-row">
+    const matched = Array.isArray(d.matched_allergens) ? d.matched_allergens : [];
+    const allergenLabel = matched.length > 0 ? matched.join(', ') : 'ALLERGEN';
+
+    return `
+      <div class="detail-row ${d.is_allergic ? 'detail-row-allergic' : ''}">
+        <span class="detail-name-wrap">
           <span class="detail-name">${d.name}</span>
-          <span class="detail-right">
-            <span class="detail-qty">${qt}</span>
-            <span class="status-dot ${dc}"></span>
-          </span>
-        </div>
-      `;
-    }).join('');
-    
-    const flavorTags = (r.recipe.flavors || [])
-      .map(f => `<span class="tag tag-flavor">${f}</span>`)
-      .join('');
-    
-    const cuisineTag = r.recipe.region_name 
-      ? `<span class="tag tag-cuisine">${r.recipe.region_name}</span>` 
-      : '';
-    
-    // 4. Kortelės elementas
-    const card = document.createElement('div');
-    card.className = `recipe-card${complete ? ' complete' : ''}${hasAllergen ? ' has-allergen' : ''}`;
-    
-    card.innerHTML = `
-      ${hasAllergen ? '<div class="allergen-warning">⚠️ Contains Allergen</div>' : ''}
-      <div class="card-top">
-        <div class="card-name-wrapper">
-            <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
-            ${cuisineTag ? `<div class="cuisine-row">${cuisineTag}</div>` : ''}
-        </div>
-        <span class="card-pct ${pc}">${r.pct}%</span>
+          ${d.is_allergic ? `<span class="ingredient-allergen-pill">${allergenLabel}</span>` : ''}
+        </span>
+        <span class="detail-right">
+          <span class="detail-qty">${qt}</span>
+          <span class="status-dot ${dc}"></span>
+        </span>
       </div>
+    `;
+  }).join('');
+  
+  const flavorTags = (r.recipe.flavors || [])
+    .map(f => `<span class="tag tag-flavor">${f}</span>`)
+    .join('');
+  
+  const cuisineTag = r.recipe.region_name 
+    ? `<span class="tag tag-cuisine">${r.recipe.region_name}</span>` 
+    : '';
+
+  const allergenPreview = matchedAllergens.length > 0
+    ? `
+      <div class="tags tags-allergen-preview">
+        ${matchedAllergens.map(allergen => `
+          <span class="tag tag-allergen-preview">⚠ ${allergen}</span>
+        `).join('')}
+      </div>
+    `
+    : '';
+  
+  const card = document.createElement('div');
+  card.className = `recipe-card${complete ? ' complete' : ''}${hasAllergen ? ' has-allergen' : ''}`;
+  
+  card.innerHTML = `
+    <div class="card-top">
+      <div class="card-name-wrapper">
+          <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
+          ${cuisineTag ? `<div class="cuisine-row">${cuisineTag}</div>` : ''}
+      </div>
+      <span class="card-pct ${pc}">${r.pct}%</span>
+    </div>
 
     <div class="card-info">
-        <span class="recipe-calories">🔥 ${r.recipe.calories || '0'} kcal</span>
-        <span class="recipe-time">⏱️ ${r.recipe.time || 0} min</span>
+      <span class="recipe-calories">🔥 ${r.recipe.calories || '0'} kcal</span>
+      <span class="recipe-time">⏱️ ${r.recipe.time || 0} min</span>
     </div>
 
     ${flavorTags ? `<div class="tags flavor-tags-container">${flavorTags}</div>` : ''}
+    ${allergenPreview}
 
     <div class="prog-wrap"><div class="prog-bar ${bc}"></div></div>
-      
-      ${complete
-        ? `<div class="card-sec-lbl green">✓ You have everything!</div><div class="tags">${allHaveTags}</div>`
-        : `${r.missing.length ? `<div class="card-sec-lbl">Missing:</div><div class="tags">${mTags}</div>` : ''}
-           ${r.partial.length ? `<div class="card-sec-lbl">Partial:</div><div class="tags">${pTags}</div>` : ''}`
-      }
-      
-      <button class="card-toggle" id="ct-${r.recipe.id}" onclick="toggleDetail('${r.recipe.id}')">
-        <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 3l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
-        Show all ingredients
-      </button>
-      
-      <div class="card-detail" id="detail-${r.recipe.id}">
-        <div class="time-breakdown">
-          <div>Prep time: ${r.recipe.prep_time || 0} min</div>
-          <div>Cook time: ${r.recipe.cook_time || 0} min</div>
-        </div>
-        ${detailRows}
+    
+    ${complete
+      ? `<div class="card-sec-lbl green">✓ You have everything!</div><div class="tags">${allHaveTags}</div>`
+      : `${r.missing.length ? `<div class="card-sec-lbl">Missing:</div><div class="tags">${mTags}</div>` : ''}
+         ${r.partial.length ? `<div class="card-sec-lbl">Partial:</div><div class="tags">${pTags}</div>` : ''}`
+    }
+    
+    <button class="card-toggle" id="ct-${r.recipe.id}" onclick="toggleDetail('${r.recipe.id}')">
+      <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 3l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+      Show all ingredients
+    </button>
+    
+    <div class="card-detail" id="detail-${r.recipe.id}">
+      <div class="time-breakdown">
+        <div>Prep time: ${r.recipe.prep_time || 0} min</div>
+        <div>Cook time: ${r.recipe.cook_time || 0} min</div>
       </div>
-      <a class="btn-view-recipe" href="recipe.php?id=${r.recipe.id}">
-      Detailed Recipe
-    </a>
-    `;
+      ${detailRows}
+    </div>
 
-    grid.appendChild(card);
+    ${hasAllergen
+      ? `<span class="btn-view-recipe btn-view-recipe-disabled" aria-disabled="true">Blocked by allergen</span>`
+      : `<a class="btn-view-recipe" href="recipe.php?id=${r.recipe.id}">Detailed Recipe</a>`
+    }
+  `;
 
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        const bar = card.querySelector('.prog-bar');
-        if (bar) bar.style.width = r.pct + '%';
-      }, 60);
-    });
+  grid.appendChild(card);
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      const bar = card.querySelector('.prog-bar');
+      if (bar) bar.style.width = r.pct + '%';
+    }, 60);
   });
-}
+});
 
 function toggleDetail(id) {
   const d = document.getElementById(`detail-${id}`);
