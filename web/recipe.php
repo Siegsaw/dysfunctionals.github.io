@@ -371,14 +371,18 @@ async function loadRecipe() {
     const allergicCount = (recipe.ingredients || []).filter(ing => isAllergicIngredient(ing.name)).length;
 
     const ingredients = (recipe.ingredients || []).map(ing => {
-      const isAllergic = isAllergicIngredient(ing.name);
-      return `
-      <div class="recipe-ing ${isAllergic ? 'recipe-ing-allergic' : ''}">
-        <span class="recipe-ing-name">${escapeHtml(ing.name)}${isAllergic ? ' <span class="allergen-pill">Allergic</span>' : ''}</span>
-        <span class="recipe-ing-qty">${formatNumber(ing.amount)} ${escapeHtml(ing.unit)}</span>
-      </div>
-    `;
-    }).join('');
+  const isAllergic = isAllergicIngredient(ing.name);
+
+  return `
+    <div class="recipe-ing ${isAllergic ? 'recipe-ing-allergic' : ''}">
+      <span class="recipe-ing-name-wrap">
+        <span class="recipe-ing-name">${escapeHtml(ing.name)}</span>
+        ${isAllergic ? '<span class="allergen-pill">Allergic</span>' : ''}
+      </span>
+      <span class="recipe-ing-qty">${formatNumber(ing.amount)} ${escapeHtml(ing.unit)}</span>
+    </div>
+  `;
+}).join('');
 
     const steps = (recipe.steps || []).map(step => `
       <div class="step-card">
