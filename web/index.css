@@ -489,8 +489,6 @@ html.dark .pct-mid { color: #fde68a; }
   font-weight: 600;
   text-decoration: none;
   transition: background .15s, transform .15s;
-  position: relative;
-  z-index: 3;
 }
 
 .btn-view-recipe-disabled {
@@ -545,8 +543,6 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   display: flex; align-items: center; gap: 4px;
   transition: color .15s;
   margin-top: 2px;
-  position: relative;
-  z-index: 3;
 }
 .card-toggle:hover { color: var(--ink); }
 .card-toggle svg { transition: transform .2s; }
@@ -556,8 +552,6 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   margin-top: 12px; 
   border-top: 1px solid var(--border); 
   padding-top: 12px; 
-  position: relative;
-  z-index: 3;
 }
 .time-breakdown {
   display: flex;
@@ -677,8 +671,6 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
     0 0 0 1px rgba(239, 68, 68, 0.14),
     0 0 10px rgba(239, 68, 68, 0.18),
     0 0 18px rgba(239, 68, 68, 0.10);
-  position: relative;
-  z-index: 4;
 }
 
 .detail-row-allergic .detail-name {
