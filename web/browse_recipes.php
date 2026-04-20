@@ -106,17 +106,22 @@ function makeIngredientRows(ingredients) {
     return `<div class="detail-row"><span class="detail-name">No ingredients listed</span></div>`;
   }
 
-  return ingredients.map(ing => `
-    <div class="detail-row ${ing.is_allergic ? 'detail-row-allergic' : ''}">
-      <span class="detail-name-wrap">
-        <span class="detail-name">${escapeHtml(ing.name)}</span>
-        ${ing.is_allergic ? '<span class="ingredient-allergen-pill">Allergen</span>' : ''}
-      </span>
-      <div class="detail-right">
-        <span class="detail-qty">${formatNumber(ing.amount)} ${escapeHtml(ing.unit)}</span>
+  return ingredients.map(ing => {
+    const matched = Array.isArray(ing.matched_allergens) ? ing.matched_allergens : [];
+    const label = matched.length > 0 ? matched.join(', ') : 'ALLERGEN';
+
+    return `
+      <div class="detail-row ${ing.is_allergic ? 'detail-row-allergic' : ''}">
+        <span class="detail-name-wrap">
+          <span class="detail-name">${escapeHtml(ing.name)}</span>
+          ${ing.is_allergic ? `<span class="ingredient-allergen-pill">${escapeHtml(label)}</span>` : ''}
+        </span>
+        <div class="detail-right">
+          <span class="detail-qty">${formatNumber(ing.amount)} ${escapeHtml(ing.unit)}</span>
+        </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 function recipeCard(recipe, index) {
@@ -126,23 +131,21 @@ function recipeCard(recipe, index) {
 
   const detailId = `recipeDetail${index}`;
   const toggleId = `recipeToggle${index}`;
-  
-  const allergicIngredients = Array.isArray(recipe.ingredients)
-    ? recipe.ingredients.filter(ing => isAllergicIngredient(ing.name))
-    : [];
+  const hasAllergen = Boolean(recipe.has_allergen);
+  const matchedAllergens = Array.isArray(recipe.matched_allergens) ? recipe.matched_allergens : [];
 
-  const allergenSummary = allergicIngredients.length > 0
+  const allergenPreview = matchedAllergens.length > 0
     ? `
-      <div class="card-allergen-list">
-        ${allergicIngredients.map(ing => `
-          <span class="card-allergen-chip">${escapeHtml(ing.name)}</span>
+      <div class="tags tags-allergen-preview">
+        ${matchedAllergens.map(allergen => `
+          <span class="tag tag-allergen-preview">${escapeHtml(allergen)}</span>
         `).join('')}
       </div>
     `
     : '';
 
   return `
-    <article class="recipe-card">
+    <article class="recipe-card ${hasAllergen ? 'has-allergen' : ''}">
       <div class="card-top">
         <div class="card-name-wrapper">
           ${region}
@@ -157,7 +160,7 @@ function recipeCard(recipe, index) {
       </div>
 
       ${makeFlavorTags(recipe.flavors)}
-      ${allergenSummary}
+      ${allergenPreview}
 
       <button class="card-toggle" id="${toggleId}" onclick="toggleRecipeDetail('${detailId}', '${toggleId}')">
         <span>Show needed ingredients</span>
@@ -190,7 +193,10 @@ function recipeCard(recipe, index) {
         </div>
       </div>
 
-      <a class="btn-view-recipe" href="recipe.php?id=${encodeURIComponent(recipe.id)}">View recipe</a>
+      ${hasAllergen
+        ? `<span class="btn-view-recipe btn-view-recipe-disabled" aria-disabled="true">Blocked by allergen</span>`
+        : `<a class="btn-view-recipe" href="recipe.php?id=${encodeURIComponent(recipe.id)}">View recipe</a>`
+      }
     </article>
   `;
 }
