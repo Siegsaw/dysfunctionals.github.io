@@ -165,7 +165,7 @@ const allergenPreview = matchedAllergens.length > 0
 
       ${hasAllergen
         ? `<span class="btn-view-recipe btn-view-recipe-disabled" aria-disabled="true">Blocked by allergen</span>`
-        : `<a class="btn-view-recipe" href="recipe.php?id=${encodeURIComponent(recipe.id)}">View recipe</a>`
+        : `<a class="btn-view-recipe" href="recipe.php?id=${encodeURIComponent(recipe.id)}">Detailed recipe</a>`
       }
     </article>
   `;
