@@ -785,7 +785,7 @@ results.forEach(r => {
     }, 60);
   });
 });
-
+}
 function toggleDetail(id) {
   const d = document.getElementById(`detail-${id}`);
   const btn = document.getElementById(`ct-${id}`);
