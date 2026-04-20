@@ -183,7 +183,12 @@
   font-weight: 500;
   color: var(--muted);
 }
-
+.recipe-ing-name-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 
 .recipe-ing-allergic {
   border-color: #ef4444;
@@ -192,6 +197,11 @@
     0 0 0 1px rgba(239, 68, 68, 0.18),
     0 0 10px rgba(239, 68, 68, 0.18),
     0 0 18px rgba(239, 68, 68, 0.10);
+}
+
+.recipe-ing-allergic .recipe-ing-name {
+  color: #b91c1c;
+  font-weight: 700;
 }
 
 .allergen-summary {
@@ -208,21 +218,28 @@
 .allergen-pill {
   display: inline-flex;
   align-items: center;
-  margin-left: 8px;
   padding: 2px 8px;
   border-radius: 999px;
-  background: rgba(239, 68, 68, 0.14);
+  background: rgba(239, 68, 68, 0.18);
   color: #b91c1c;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  vertical-align: middle;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.18);
 }
 
 .dark .recipe-ing-allergic {
-  background: rgba(239, 68, 68, 0.14);
-  border-color: rgba(248, 113, 113, 0.55);
+  background: rgba(239, 68, 68, 0.16);
+  border-color: rgba(248, 113, 113, 0.7);
+  box-shadow:
+    0 0 0 1px rgba(248, 113, 113, 0.24),
+    0 0 12px rgba(248, 113, 113, 0.22),
+    0 0 24px rgba(248, 113, 113, 0.12);
+}
+
+.dark .recipe-ing-allergic .recipe-ing-name {
+  color: #fecaca;
 }
 
 .dark .allergen-summary,
