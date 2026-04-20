@@ -624,12 +624,16 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 }
 
 .tag-allergen-preview {
-  color: #ff9a9a;
-  border-color: rgba(239, 68, 68, 0.45);
-  background: rgba(239, 68, 68, 0.10);
+  color: #ffb4b4;
+  border: 1px solid rgba(239, 68, 68, 0.55);
+  background: rgba(239, 68, 68, 0.12);
+
   box-shadow:
-    0 0 6px rgba(239, 68, 68, 0.18),
-    0 0 12px rgba(239, 68, 68, 0.08);
+    0 0 6px rgba(239, 68, 68, 0.35),
+    0 0 12px rgba(239, 68, 68, 0.25),
+    0 0 20px rgba(239, 68, 68, 0.15);
+
+  font-weight: 700;
 }
 
 .detail-name-wrap {
