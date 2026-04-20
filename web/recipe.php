@@ -368,10 +368,10 @@ async function loadRecipe() {
 
     currentRecipe = recipe;
 
-    const allergicCount = (recipe.ingredients || []).filter(ing => isAllergicIngredient(ing.name)).length;
+    const allergicCount = (recipe.ingredients || []).filter(ing => ing.is_allergic).length;
 
     const ingredients = (recipe.ingredients || []).map(ing => {
-  const isAllergic = isAllergicIngredient(ing.name);
+  const isAllergic = Boolean(ing.is_allergic);
 
   return `
     <div class="recipe-ing ${isAllergic ? 'recipe-ing-allergic' : ''}">
