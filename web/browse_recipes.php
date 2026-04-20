@@ -106,14 +106,21 @@ function makeIngredientRows(ingredients) {
     return `<div class="detail-row"><span class="detail-name">No ingredients listed</span></div>`;
   }
 
-  return ingredients.map(ing => `
-    <div class="detail-row">
-      <span class="detail-name">${escapeHtml(ing.name)}</span>
-      <div class="detail-right">
-        <span class="detail-qty">${formatNumber(ing.amount)} ${escapeHtml(ing.unit)}</span>
+  return ingredients.map(ing => {
+    const isAllergic = isAllergicIngredient(ing.name);
+
+    return `
+      <div class="detail-row ${isAllergic ? 'detail-row-allergic' : ''}">
+        <span class="detail-name-wrap">
+          <span class="detail-name">${escapeHtml(ing.name)}</span>
+          ${isAllergic ? '<span class="ingredient-allergen-pill">Allergen</span>' : ''}
+        </span>
+        <div class="detail-right">
+          <span class="detail-qty">${formatNumber(ing.amount)} ${escapeHtml(ing.unit)}</span>
+        </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 function recipeCard(recipe, index) {
@@ -123,6 +130,20 @@ function recipeCard(recipe, index) {
 
   const detailId = `recipeDetail${index}`;
   const toggleId = `recipeToggle${index}`;
+  
+  const allergicIngredients = Array.isArray(recipe.ingredients)
+    ? recipe.ingredients.filter(ing => isAllergicIngredient(ing.name))
+    : [];
+
+  const allergenSummary = allergicIngredients.length > 0
+    ? `
+      <div class="card-allergen-list">
+        ${allergicIngredients.map(ing => `
+          <span class="card-allergen-chip">${escapeHtml(ing.name)}</span>
+        `).join('')}
+      </div>
+    `
+    : '';
 
   return `
     <article class="recipe-card">
@@ -140,6 +161,7 @@ function recipeCard(recipe, index) {
       </div>
 
       ${makeFlavorTags(recipe.flavors)}
+      ${allergenSummary}
 
       <button class="card-toggle" id="${toggleId}" onclick="toggleRecipeDetail('${detailId}', '${toggleId}')">
         <span>Show needed ingredients</span>
@@ -231,7 +253,10 @@ async function loadAllRecipes() {
   }
 }
 
-loadAllRecipes();
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadUserAllergens();
+  await loadAllRecipes();
+});
 </script>
 
 </body>
