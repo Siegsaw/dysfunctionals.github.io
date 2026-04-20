@@ -94,6 +94,7 @@ $recipeId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 <script src="shared.js"></script>
 <script>
 let currentRecipe = null;
+let userAllergens = [];
 let cookModeIndex = 0;
 let cookCompletionScreen = false;
 let cookConfirmBusy = false;
@@ -110,6 +111,36 @@ function escapeHtml(value) {
 function formatNumber(value) {
   const num = Number(value ?? 0);
   return Number.isInteger(num) ? String(num) : num.toFixed(1);
+}
+
+
+function normalizeValue(value) {
+  return String(value ?? '').trim().toLowerCase();
+}
+
+function isAllergicIngredient(name) {
+  const ingredientName = normalizeValue(name);
+  if (!ingredientName || !Array.isArray(userAllergens) || userAllergens.length === 0) {
+    return false;
+  }
+
+  return userAllergens.some(allergen => ingredientName.includes(normalizeValue(allergen)));
+}
+
+async function loadUserAllergens() {
+  try {
+    const response = await fetch('get_allergens.php', { cache: 'no-store' });
+    if (!response.ok) {
+      userAllergens = [];
+      return;
+    }
+
+    const data = await response.json();
+    userAllergens = Array.isArray(data.selected) ? data.selected : [];
+  } catch (error) {
+    console.error('Failed to load allergens', error);
+    userAllergens = [];
+  }
 }
 
 function clearCookCompletionStatus() {
@@ -337,12 +368,17 @@ async function loadRecipe() {
 
     currentRecipe = recipe;
 
-    const ingredients = (recipe.ingredients || []).map(ing => `
-      <div class="recipe-ing">
-        <span class="recipe-ing-name">${escapeHtml(ing.name)}</span>
+    const allergicCount = (recipe.ingredients || []).filter(ing => isAllergicIngredient(ing.name)).length;
+
+    const ingredients = (recipe.ingredients || []).map(ing => {
+      const isAllergic = isAllergicIngredient(ing.name);
+      return `
+      <div class="recipe-ing ${isAllergic ? 'recipe-ing-allergic' : ''}">
+        <span class="recipe-ing-name">${escapeHtml(ing.name)}${isAllergic ? ' <span class="allergen-pill">Allergic</span>' : ''}</span>
         <span class="recipe-ing-qty">${formatNumber(ing.amount)} ${escapeHtml(ing.unit)}</span>
       </div>
-    `).join('');
+    `;
+    }).join('');
 
     const steps = (recipe.steps || []).map(step => `
       <div class="step-card">
@@ -386,6 +422,11 @@ async function loadRecipe() {
       <div class="recipe-grid">
         <aside class="recipe-card-side">
           <div class="section-label">Ingredients</div>
+          ${allergicCount > 0 ? `
+            <div class="allergen-summary" role="status" aria-live="polite">
+              ${allergicCount} ingredient${allergicCount === 1 ? '' : 's'} match your saved allergens.
+            </div>
+          ` : ''}
           <div class="ingredients-list">
             ${ingredients || `<div class="recipe-ing"><span class="recipe-ing-name">No ingredients listed</span></div>`}
           </div>
@@ -434,7 +475,10 @@ async function loadRecipe() {
   }
 }
 
-loadRecipe();
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadUserAllergens();
+  await loadRecipe();
+});
 </script>
 </body>
 </html>
