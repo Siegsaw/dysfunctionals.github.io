@@ -1,8 +1,11 @@
 <?php
+session_start();
+
 header('Content-Type: application/json');
 require '/var/www/private/db.php';
 
 $recipeId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 
 if ($recipeId <= 0) {
   echo json_encode(['error' => 'Invalid recipe ID']);
@@ -15,14 +18,14 @@ $recipeQuery = $conn->prepare("
     r.title,
     r.description,
     r.calories,
-    r.protein,  
-    r.carbs,    
+    r.protein,
+    r.carbs,
     r.fat,
     COALESCE(SUM(rs.time_minutes), 0) AS total_time
   FROM recipes r
   LEFT JOIN recipe_steps rs ON r.recipe_id = rs.recipe_id
   WHERE r.recipe_id = ?
-  GROUP BY r.recipe_id
+  GROUP BY r.recipe_id, r.title, r.description, r.calories, r.protein, r.carbs, r.fat
 ");
 
 $recipeQuery->bind_param('i', $recipeId);
@@ -37,25 +40,39 @@ if (!$recipe) {
 
 $ingredientQuery = $conn->prepare("
   SELECT
+    i.ingredient_id,
     i.name_ing,
     ri.quantity,
-    ri.unit
+    ri.unit,
+    CASE
+      WHEN COUNT(ua.allergen_id) > 0 THEN 1
+      ELSE 0
+    END AS is_allergic
   FROM recipe_ingredients ri
-  JOIN ingredients i ON ri.ingredient_id = i.ingredient_id
+  JOIN ingredients i
+    ON ri.ingredient_id = i.ingredient_id
+  LEFT JOIN ingredient_allergens ia
+    ON i.ingredient_id = ia.ingredient_id
+  LEFT JOIN user_allergens ua
+    ON ia.allergen_id = ua.allergen_id
+    AND ua.user_id = ?
   WHERE ri.recipe_id = ?
+  GROUP BY i.ingredient_id, i.name_ing, ri.quantity, ri.unit
   ORDER BY i.name_ing
 ");
 
-$ingredientQuery->bind_param('i', $recipeId);
+$ingredientQuery->bind_param('ii', $userId, $recipeId);
 $ingredientQuery->execute();
 $ingredientResult = $ingredientQuery->get_result();
 
 $ingredients = [];
 while ($row = $ingredientResult->fetch_assoc()) {
   $ingredients[] = [
+    'id' => (int)$row['ingredient_id'],
     'name' => $row['name_ing'],
     'amount' => (float)$row['quantity'],
-    'unit' => $row['unit']
+    'unit' => $row['unit'],
+    'is_allergic' => (bool)$row['is_allergic']
   ];
 }
 
@@ -91,10 +108,11 @@ echo json_encode([
   'name' => $recipe['title'],
   'description' => $recipe['description'],
   'calories' => (float)$recipe['calories'],
-  'protein' => (float)$recipe['protein'], 
-  'carbs' => (float)$recipe['carbs'],     
+  'protein' => (float)$recipe['protein'],
+  'carbs' => (float)$recipe['carbs'],
   'fat' => (float)$recipe['fat'],
   'total_time' => (int)$recipe['total_time'],
   'ingredients' => $ingredients,
   'steps' => $steps
 ]);
+?>
