@@ -615,8 +615,7 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 }
 
 .recipe-card.has-allergen {
-  opacity: 0.55;
-  filter: grayscale(0.9);
+  position: relative;
 }
 
 .tags-allergen-preview {
@@ -624,16 +623,8 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 }
 
 .tag-allergen-preview {
-  color: #ffb4b4;
-  border: 1px solid rgba(239, 68, 68, 0.55);
-  background: rgba(239, 68, 68, 0.12);
-
-  box-shadow:
-    0 0 6px rgba(239, 68, 68, 0.35),
-    0 0 12px rgba(239, 68, 68, 0.25),
-    0 0 20px rgba(239, 68, 68, 0.15);
-
-  font-weight: 700;
+  position: relative;
+  z-index: 2; /* higher than overlay */
 }
 
 .detail-name-wrap {
