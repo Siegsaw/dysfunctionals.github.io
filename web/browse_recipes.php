@@ -106,21 +106,17 @@ function makeIngredientRows(ingredients) {
     return `<div class="detail-row"><span class="detail-name">No ingredients listed</span></div>`;
   }
 
-  return ingredients.map(ing => {
-    const isAllergic = isAllergicIngredient(ing.name);
-
-    return `
-      <div class="detail-row ${isAllergic ? 'detail-row-allergic' : ''}">
-        <span class="detail-name-wrap">
-          <span class="detail-name">${escapeHtml(ing.name)}</span>
-          ${isAllergic ? '<span class="ingredient-allergen-pill">Allergen</span>' : ''}
-        </span>
-        <div class="detail-right">
-          <span class="detail-qty">${formatNumber(ing.amount)} ${escapeHtml(ing.unit)}</span>
-        </div>
+  return ingredients.map(ing => `
+    <div class="detail-row ${ing.is_allergic ? 'detail-row-allergic' : ''}">
+      <span class="detail-name-wrap">
+        <span class="detail-name">${escapeHtml(ing.name)}</span>
+        ${ing.is_allergic ? '<span class="ingredient-allergen-pill">Allergen</span>' : ''}
+      </span>
+      <div class="detail-right">
+        <span class="detail-qty">${formatNumber(ing.amount)} ${escapeHtml(ing.unit)}</span>
       </div>
-    `;
-  }).join('');
+    </div>
+  `).join('');
 }
 
 function recipeCard(recipe, index) {
