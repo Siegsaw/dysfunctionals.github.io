@@ -70,6 +70,37 @@ function makeFlavorTags(flavors) {
   `;
 }
 
+let userAllergens = [];
+
+function normalizeValue(value) {
+  return String(value ?? '').trim().toLowerCase();
+}
+
+function isAllergicIngredient(name) {
+  const ingredientName = normalizeValue(name);
+  if (!ingredientName || !Array.isArray(userAllergens) || userAllergens.length === 0) {
+    return false;
+  }
+
+  return userAllergens.some(allergen => ingredientName.includes(normalizeValue(allergen)));
+}
+
+async function loadUserAllergens() {
+  try {
+    const response = await fetch('get_allergens.php', { cache: 'no-store' });
+    if (!response.ok) {
+      userAllergens = [];
+      return;
+    }
+
+    const data = await response.json();
+    userAllergens = Array.isArray(data.selected) ? data.selected : [];
+  } catch (error) {
+    console.error('Failed to load allergens', error);
+    userAllergens = [];
+  }
+}
+  
 function makeIngredientRows(ingredients) {
   if (!Array.isArray(ingredients) || ingredients.length === 0) {
     return `<div class="detail-row"><span class="detail-name">No ingredients listed</span></div>`;
