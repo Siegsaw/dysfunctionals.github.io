@@ -491,6 +491,17 @@ html.dark .pct-mid { color: #fde68a; }
   transition: background .15s, transform .15s;
 }
 
+.btn-view-recipe-disabled {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  background: #64748b;
+  color: #e2e8f0;
+  cursor: not-allowed;
+  pointer-events: none;
+  text-decoration: none;
+}
+
 .btn-view-recipe:hover {
   background: var(--gd);
   transform: translateY(-1px);
@@ -603,6 +614,24 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
     0 0 18px rgba(239, 68, 68, 0.08);
 }
 
+.recipe-card.has-allergen {
+  opacity: 0.55;
+  filter: grayscale(0.9);
+}
+
+.tags-allergen-preview {
+  margin-top: 8px;
+}
+
+.tag-allergen-preview {
+  color: #ff9a9a;
+  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(239, 68, 68, 0.10);
+  box-shadow:
+    0 0 6px rgba(239, 68, 68, 0.18),
+    0 0 12px rgba(239, 68, 68, 0.08);
+}
+
 .detail-name-wrap {
   display: inline-flex;
   align-items: center;
@@ -631,7 +660,7 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   padding: 2px 8px;
   border-radius: 999px;
   background: rgba(239, 68, 68, 0.16);
-  color: #ff9a9a;
+  color: #ffb4b4;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.04em;
