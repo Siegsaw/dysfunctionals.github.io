@@ -52,19 +52,19 @@ while ($fRow = $flavorResult->fetch_assoc()) {
     $flavors[] = $fRow['name'];
 }
 
-$cuisineQuery = $conn->prepare("
-    SELECT c.name
-    FROM cuisines c
-    JOIN recipe_cuisines rc ON c.cuisine_id = rc.cuisine_id
-    WHERE rc.recipe_id = ?
+$regionQuery = $conn->prepare("
+    SELECT r.name
+    FROM regions r
+    JOIN recipe_regions rr ON r.region_id = rr.region_id
+    WHERE rr.recipe_id = ?
 ");
-$cuisineQuery->bind_param('i', $recipeId);
-$cuisineQuery->execute();
-$cuisineResult = $cuisineQuery->get_result();
+$regionQuery->bind_param('i', $recipeId);
+$regionQuery->execute();
+$regionResult = $regionQuery->get_result();
 
-$cuisines = [];
-while ($row = $cuisineResult->fetch_assoc()) {
-    $cuisines[] = $row['name'];
+$regions = [];
+while ($row = $regionResult->fetch_assoc()) {
+    $regions[] = $row['name'];
 }
 
 $ingredientQuery = $conn->prepare("
@@ -142,7 +142,7 @@ echo json_encode([
   'fat' => (float)$recipe['fat'],
   'total_time' => (int)$recipe['total_time'],
   'flavors' => $flavors,
-  'cuisines' => $cuisines,
+  'cuisines' => $regions,
   'ingredients' => $ingredients,
   'steps' => $steps
 ]);
