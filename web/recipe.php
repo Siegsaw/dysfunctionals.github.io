@@ -402,6 +402,10 @@ async function loadRecipe() {
    const flavorsHtml = (recipe.flavors || []).map(f => `
       <span class="recipe-meta">${escapeHtml(f)}</span>
     `).join('');
+
+   const cuisinesHtml = (recipe.cuisines || []).map(c => `
+          <div class="recipe-meta">${escapeHtml(c)}</div>
+            `).join('');
     
     shell.innerHTML = `
       <div class="recipe-header-card">
@@ -411,9 +415,6 @@ async function loadRecipe() {
 
         <h1 class="recipe-title">${escapeHtml(recipe.name)}</h1>
 
-        const cuisinesHtml = (recipe.cuisines || []).map(c => `
-          <div class="recipe-meta">${escapeHtml(c)}</div>
-            `).join('');
         ${cuisinesHtml ? `<div class="recipe-meta-row">${cuisinesHtml}</div>` : ''}
         
         <div class="recipe-meta-row">
