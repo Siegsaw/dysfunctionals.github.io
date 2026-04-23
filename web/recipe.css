@@ -87,6 +87,39 @@
   color: var(--muted);
 }
 
+/* ── FLAVOR TAGS ───────────────────────────────────────────── */
+.recipe-flavors-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.flavor-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 12px;
+  background: var(--bg-m);
+  border: 1px solid var(--border);
+  border-radius: var(--rf); 
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+.dark .flavor-pill {
+  background-color: #374151;
+  color: #e5e7eb;
+  border-color: #4b5563;
+}
+
+.flavor-pill:hover {
+  border-color: var(--green);
+  color: var(--green);
+  cursor: default;
+}
+
 .recipe-description {
   font-size: 14px;
   line-height: 1.7;
