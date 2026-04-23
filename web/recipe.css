@@ -101,7 +101,7 @@
   padding: 5px 12px;
   background: var(--bg-m);
   border: 1px solid var(--border);
-  border-radius: var(--rf); 
+  border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
   color: var(--muted);
