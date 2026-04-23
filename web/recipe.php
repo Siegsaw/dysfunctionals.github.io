@@ -414,8 +414,6 @@ async function loadRecipe() {
         </div>
 
         <h1 class="recipe-title">${escapeHtml(recipe.name)}</h1>
-
-        ${cuisinesHtml ? `<div class="recipe-meta-row">${cuisinesHtml}</div>` : ''}
         
         <div class="recipe-meta-row">
           <div class="recipe-meta">🔥 ${formatNumber(recipe.calories)} kcal</div>
@@ -429,6 +427,8 @@ async function loadRecipe() {
         <p class="recipe-description">
           ${escapeHtml(recipe.description || 'No description available for this recipe.')}
         </p>
+
+        ${cuisinesHtml ? `<div class="recipe-meta-row">${cuisinesHtml}</div>` : ''}
 
         <div class="recipe-action-row">
           <button class="btn-cook-mode" type="button" onclick="openCookMode()">Start cooking mode</button>
