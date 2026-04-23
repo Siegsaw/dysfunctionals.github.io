@@ -400,7 +400,7 @@ async function loadRecipe() {
     `).join('');
 
    const flavorsHtml = (recipe.flavors || []).map(f => `
-      <span class="flavor-pill">${escapeHtml(f)}</span>
+      <span class="recipe-meta">${escapeHtml(f)}</span>
     `).join('');
     
     shell.innerHTML = `
@@ -418,7 +418,7 @@ async function loadRecipe() {
           <div class="recipe-meta">📝 ${(recipe.steps || []).length} steps</div>
         </div>
 
-        ${flavorsHtml ? `<div class="recipe-flavors-row">${flavorsHtml}</div>` : ''}
+        ${flavorsHtml ? `<div class="recipe-meta-row">${flavorsHtml}</div>` : ''}
 
         <p class="recipe-description">
           ${escapeHtml(recipe.description || 'No description available for this recipe.')}
