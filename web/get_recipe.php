@@ -38,6 +38,20 @@ if (!$recipe) {
   exit;
 }
 
+$flavorQuery = $conn->prepare("
+    SELECT f.name 
+    FROM flavors f
+    JOIN recipe_flavors rf ON f.flavor_id = rf.flavor_id
+    WHERE rf.recipe_id = ?
+");
+$flavorQuery->bind_param('i', $recipeId);
+$flavorQuery->execute();
+$flavorResult = $flavorQuery->get_result();
+$flavors = [];
+while ($fRow = $flavorResult->fetch_assoc()) {
+    $flavors[] = $fRow['name'];
+}
+
 $ingredientQuery = $conn->prepare("
   SELECT
     i.ingredient_id,
@@ -112,6 +126,7 @@ echo json_encode([
   'carbs' => (float)$recipe['carbs'],
   'fat' => (float)$recipe['fat'],
   'total_time' => (int)$recipe['total_time'],
+  'flavors' => $flavors,
   'ingredients' => $ingredients,
   'steps' => $steps
 ]);
