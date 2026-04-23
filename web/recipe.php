@@ -411,6 +411,11 @@ async function loadRecipe() {
 
         <h1 class="recipe-title">${escapeHtml(recipe.name)}</h1>
 
+        const cuisinesHtml = (recipe.cuisines || []).map(c => `
+          <div class="recipe-meta">${escapeHtml(c)}</div>
+            `).join('');
+        ${cuisinesHtml ? `<div class="recipe-meta-row">${cuisinesHtml}</div>` : ''}
+        
         <div class="recipe-meta-row">
           <div class="recipe-meta">🔥 ${formatNumber(recipe.calories)} kcal</div>
           <div class="recipe-meta">⏱️ ${formatNumber(recipe.total_time)} min</div>
