@@ -2,7 +2,7 @@
  
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-require '/var/www/private/db.php';
+require __DIR__ . '/../private/db.php';
  
 if (!isset($_GET['ingredient_id']) || !is_numeric($_GET['ingredient_id'])) {
     http_response_code(400);
