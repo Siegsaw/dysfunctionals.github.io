@@ -728,6 +728,21 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
     0 0 28px rgba(255, 90, 90, 0.26);
 }
 
+.card-info {
+    display: flex;
+    gap: 12px; 
+    margin: 10px 0;
+    font-size: 13px;
+    color: var(--muted, #666);
+    flex-wrap: wrap; 
+}
+
+.card-info span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
 @media (max-width: 768px) {
   .page { padding: 28px 16px 60px; }
   .results-grid { grid-template-columns: 1fr; }
