@@ -377,6 +377,130 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
+function renderRecipeContent() {
+  const recipe = currentRecipe;
+  const shell = document.getElementById('recipeShell');
+  if (!recipe || !shell) return;
+
+  const allergicCount = (recipe.ingredients || []).filter(ing => ing.is_allergic).length;
+
+  const ingredients = (recipe.ingredients || []).map(ing => {
+    const isAllergic = Boolean(ing.is_allergic);
+
+    return `
+      <div class="recipe-ing ${isAllergic ? 'recipe-ing-allergic' : ''}">
+        <span class="recipe-ing-name-wrap">
+          <span class="recipe-ing-name">${escapeHtml(ing.name)}</span>
+          ${isAllergic ? '<span class="allergen-pill">Allergic</span>' : ''}
+        </span>
+        <span class="recipe-ing-qty">${formatNumber(scaleAmount(ing.amount))} ${escapeHtml(ing.unit)}</span>
+      </div>
+    `;
+  }).join('');
+
+  const steps = (recipe.steps || []).map(step => `
+    <div class="step-card">
+      <div class="step-top">
+        <div class="step-number">Step ${escapeHtml(step.step_number)}</div>
+        <div class="step-meta">
+          <span class="step-type ${escapeHtml((step.step_type || '').toLowerCase())}">
+            ${escapeHtml(step.step_type || 'step')}
+          </span>
+          ${Number(step.time_minutes) > 0 ? `<span class="step-time">⏱️ ${formatNumber(step.time_minutes)} min</span>` : ''}
+        </div>
+      </div>
+      <div class="step-text">${escapeHtml(step.instructions)}</div>
+    </div>
+  `).join('');
+
+  shell.innerHTML = `
+    <div class="recipe-header-card">
+      <div class="recipe-breadcrumb">
+        <a href="browse_recipes.php">← Back to recipes</a>
+      </div>
+
+      <h1 class="recipe-title">${escapeHtml(recipe.name)}</h1>
+
+      <div class="recipe-meta-row">
+        <div class="recipe-meta">🔥 ${formatNumber(recipe.calories)} kcal</div>
+        <div class="recipe-meta">⏱️ ${formatNumber(recipe.total_time)} min</div>
+        <div class="recipe-meta">🍽️ ${currentServings} servings</div>
+        <div class="recipe-meta">🥣 ${(recipe.ingredients || []).length} ingredients</div>
+        <div class="recipe-meta">📝 ${(recipe.steps || []).length} steps</div>
+      </div>
+
+      <p class="recipe-description">
+        ${escapeHtml(recipe.description || 'No description available for this recipe.')}
+      </p>
+
+      <div class="recipe-action-row">
+        <button class="btn-cook-mode" type="button" onclick="openCookMode()">Start cooking mode</button>
+      </div>
+    </div>
+
+    <div class="recipe-grid">
+      <aside class="recipe-card-side">
+        <div class="section-label">Ingredients</div>
+
+        <div class="servings-control">
+          <button type="button" class="servings-btn" onclick="changeServings(-1)">−</button>
+          <input
+            id="servingsInput"
+            class="servings-input"
+            type="text"
+            inputmode="numeric"
+            value="${currentServings}"
+            oninput="sanitizeServingsInput(this)"
+            onblur="setServings(this.value)"
+          >
+          <button type="button" class="servings-btn" onclick="changeServings(1)">+</button>
+        </div>
+
+        ${allergicCount > 0 ? `
+          <div class="allergen-summary" role="status" aria-live="polite">
+            ${allergicCount} ingredient${allergicCount === 1 ? '' : 's'} match your saved allergens.
+          </div>
+        ` : ''}
+
+        <div class="ingredients-list">
+          ${ingredients || `<div class="recipe-ing"><span class="recipe-ing-name">No ingredients listed</span></div>`}
+        </div>
+
+        <div class="section-label section-gap">Nutrition</div>
+        <div class="nutrition-box">
+          <div class="nutrition-row">
+            <span class="recipe-ing-name">Calories</span>
+            <span class="recipe-ing-qty">${formatNumber(recipe.calories)} kcal</span>
+          </div>
+          <div class="nutrition-row">
+            <span class="recipe-ing-name">Protein</span>
+            <span class="recipe-ing-qty">${formatNumber(recipe.protein)} g</span>
+          </div>
+          <div class="nutrition-row">
+            <span class="recipe-ing-name">Carbs</span>
+            <span class="recipe-ing-qty">${formatNumber(recipe.carbs)} g</span>
+          </div>
+          <div class="nutrition-row">
+            <span class="recipe-ing-name">Fat</span>
+            <span class="recipe-ing-qty">${formatNumber(recipe.fat)} g</span>
+          </div>
+        </div>
+      </aside>
+
+      <section class="recipe-card-main">
+        <div class="instructions-head">
+          <div class="section-label section-label-no-margin">Instructions</div>
+          <button class="btn-cook-inline" type="button" onclick="openCookMode()">Open cooking mode</button>
+        </div>
+
+        <div class="steps-list">
+          ${steps || `<div class="recipe-error">No steps available for this recipe.</div>`}
+        </div>
+      </section>
+    </div>
+  `;
+}
+  
 async function loadRecipe() {
   try {
     const response = await fetch(`get_recipe.php?id=${RECIPE_ID}`, { cache: 'no-store' });
@@ -395,108 +519,9 @@ async function loadRecipe() {
     }
 
     currentRecipe = recipe;
-
-    const allergicCount = (recipe.ingredients || []).filter(ing => ing.is_allergic).length;
-
-    const ingredients = (recipe.ingredients || []).map(ing => {
-  const isAllergic = Boolean(ing.is_allergic);
-
-  return `
-    <div class="recipe-ing ${isAllergic ? 'recipe-ing-allergic' : ''}">
-      <span class="recipe-ing-name-wrap">
-        <span class="recipe-ing-name">${escapeHtml(ing.name)}</span>
-        ${isAllergic ? '<span class="allergen-pill">Allergic</span>' : ''}
-      </span>
-      <span class="recipe-ing-qty">${formatNumber(ing.amount)} ${escapeHtml(ing.unit)}</span>
-    </div>
-  `;
-}).join('');
-
-    const steps = (recipe.steps || []).map(step => `
-      <div class="step-card">
-        <div class="step-top">
-          <div class="step-number">Step ${escapeHtml(step.step_number)}</div>
-          <div class="step-meta">
-            <span class="step-type ${escapeHtml((step.step_type || '').toLowerCase())}">
-              ${escapeHtml(step.step_type || 'step')}
-            </span>
-            ${Number(step.time_minutes) > 0 ? `<span class="step-time">⏱️ ${formatNumber(step.time_minutes)} min</span>` : ''}
-          </div>
-        </div>
-        <div class="step-text">${escapeHtml(step.instructions)}</div>
-      </div>
-    `).join('');
-
-    shell.innerHTML = `
-      <div class="recipe-header-card">
-        <div class="recipe-breadcrumb">
-          <a href="browse_recipes.php">← Back to recipes</a>
-        </div>
-
-        <h1 class="recipe-title">${escapeHtml(recipe.name)}</h1>
-
-        <div class="recipe-meta-row">
-          <div class="recipe-meta">🔥 ${formatNumber(recipe.calories)} kcal</div>
-          <div class="recipe-meta">⏱️ ${formatNumber(recipe.total_time)} min</div>
-          <div class="recipe-meta">🍽️ ${recipe.servings || 0} servings</div> 
-          <div class="recipe-meta">🥣 ${(recipe.ingredients || []).length} ingredients</div>
-          <div class="recipe-meta">📝 ${(recipe.steps || []).length} steps</div>
-        </div>
-
-        <p class="recipe-description">
-          ${escapeHtml(recipe.description || 'No description available for this recipe.')}
-        </p>
-
-        <div class="recipe-action-row">
-          <button class="btn-cook-mode" type="button" onclick="openCookMode()">Start cooking mode</button>
-        </div>
-      </div>
-
-      <div class="recipe-grid">
-        <aside class="recipe-card-side">
-          <div class="section-label">Ingredients</div>
-          ${allergicCount > 0 ? `
-            <div class="allergen-summary" role="status" aria-live="polite">
-              ${allergicCount} ingredient${allergicCount === 1 ? '' : 's'} match your saved allergens.
-            </div>
-          ` : ''}
-          <div class="ingredients-list">
-            ${ingredients || `<div class="recipe-ing"><span class="recipe-ing-name">No ingredients listed</span></div>`}
-          </div>
-
-          <div class="section-label section-gap">Nutrition</div>
-          <div class="nutrition-box">
-            <div class="nutrition-row">
-              <span class="recipe-ing-name">Calories</span>
-              <span class="recipe-ing-qty">${formatNumber(recipe.calories)} kcal</span>
-            </div>
-            <div class="nutrition-row">
-              <span class="recipe-ing-name">Protein</span>
-              <span class="recipe-ing-qty">${formatNumber(recipe.protein)} g</span>
-            </div>
-            <div class="nutrition-row">
-              <span class="recipe-ing-name">Carbs</span>
-              <span class="recipe-ing-qty">${formatNumber(recipe.carbs)} g</span>
-            </div>
-            <div class="nutrition-row">
-              <span class="recipe-ing-name">Fat</span>
-              <span class="recipe-ing-qty">${formatNumber(recipe.fat)} g</span>
-            </div>
-          </div>
-        </aside>
-
-        <section class="recipe-card-main">
-          <div class="instructions-head">
-            <div class="section-label section-label-no-margin">Instructions</div>
-            <button class="btn-cook-inline" type="button" onclick="openCookMode()">Open cooking mode</button>
-          </div>
-
-          <div class="steps-list">
-            ${steps || `<div class="recipe-error">No steps available for this recipe.</div>`}
-          </div>
-        </section>
-      </div>
-    `;
+    originalServings = Number(recipe.servings) || 1;
+    currentServings = originalServings;
+    renderRecipeContent();
   } catch (error) {
     console.error(error);
     document.getElementById('recipeShell').innerHTML = `
