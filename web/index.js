@@ -643,7 +643,26 @@ function matchRecipes() {
     .filter(r => r.pct > 0)
     .sort((a, b) => b.pct - a.pct);
 }
+let recipeView = localStorage.getItem('recipeView') || 'card';
 
+function setRecipeView(view) {
+  recipeView = view;
+  localStorage.setItem('recipeView', view);
+  applyRecipeView();
+}
+
+function applyRecipeView() {
+  const grid = document.getElementById('resultsGrid');
+  const cardBtn = document.getElementById('cardViewBtn');
+  const listBtn = document.getElementById('listViewBtn');
+
+  if (!grid) return;
+
+  grid.classList.toggle('list-view', recipeView === 'list');
+
+  cardBtn?.classList.toggle('active', recipeView === 'card');
+  listBtn?.classList.toggle('active', recipeView === 'list');
+}
 // ── RESULTS ────────────────────────────────────────────────────
 function runSearch() {
   const results = matchRecipes();
