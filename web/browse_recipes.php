@@ -161,7 +161,25 @@ const allergenPreview = matchedAllergens.length > 0
     </div>
   `
   : '';
+if (recipeView === 'list') {
+  return `
+    <article class="recipe-card ${hasAllergen ? 'has-allergen' : ''}">
+      <div class="card-name">${escapeHtml(recipe.name)}</div>
 
+      <span class="card-pct pct-high">
+        ${Array.isArray(recipe.ingredients) ? recipe.ingredients.length : 0} ingredients
+      </span>
+
+      <span class="recipe-calories">🔥 ${formatNumber(scaleBrowseAmount(recipe.calories, recipe))} kcal</span>
+      <span class="recipe-time">⏱️ ${formatNumber(recipe.time)} min</span>
+
+      ${hasAllergen
+        ? `<span class="btn-view-recipe btn-view-recipe-disabled" aria-disabled="true">Blocked by allergen</span>`
+        : `<a class="btn-view-recipe" href="recipe.php?id=${encodeURIComponent(recipe.id)}">Detailed recipe</a>`
+      }
+    </article>
+  `;
+}
   return `
     <article class="recipe-card ${hasAllergen ? 'has-allergen' : ''}">
       <div class="card-top">
@@ -267,7 +285,7 @@ let recipeView = localStorage.getItem('recipeView') || 'card';
 function setRecipeView(view) {
   recipeView = view;
   localStorage.setItem('recipeView', view);
-  applyRecipeView();
+  renderBrowseRecipes();
 }
 
 function applyRecipeView() {
