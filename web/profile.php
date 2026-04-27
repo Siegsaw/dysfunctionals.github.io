@@ -89,28 +89,6 @@ if (!isset($_SESSION['user_id'])) {
      
       <aside class="profile-side">
         <div class="profile-card">
-          <h2>Quick overview</h2>
-          <p class="card-desc">Helpful placeholders for future account features.</p>
-
-          <div class="info-list">
-            <div class="info-item">
-              <span>Preferred language</span>
-              <strong>Placeholder</strong>
-            </div>
-
-            <div class="info-item">
-              <span>Notification settings</span>
-              <strong>Placeholder</strong>
-            </div>
-
-            <div class="info-item">
-              <span>Saved recipes</span>
-              <strong>Placeholder</strong>
-            </div>
-          </div>
-        </div>
-
-        <div class="profile-card">
           <h2>Security & account removal</h2>
           <p class="card-desc">Use these actions carefully.</p>
 
