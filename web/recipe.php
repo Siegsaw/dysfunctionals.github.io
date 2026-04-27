@@ -492,9 +492,9 @@ function renderRecipeContent() {
 
   const allergicCount = (recipe.ingredients || []).filter(ing => ing.is_allergic).length;
 
+  // 1. Ingredientų generavimas (su Find Substitute mygtuku)
   const ingredients = (recipe.ingredients || []).map(ing => {
     const isAllergic = Boolean(ing.is_allergic);
-
     return `
       <div class="recipe-ing ${isAllergic ? 'recipe-ing-allergic' : ''}">
         <span class="recipe-ing-name-wrap">
@@ -504,50 +504,56 @@ function renderRecipeContent() {
         <div class="recipe-ing-controls">
           <span class="recipe-ing-qty" id="ing-qty-${ing.id}">${formatNumber(scaleAmount(ing.amount))} ${escapeHtml(ing.unit)}</span>
           <button class="sub-btn" type="button" onclick="openSubModal(${ing.id}, '${escapeHtml(ing.name)}', ${ing.amount}); return false;">
-    🔍Find Substitute
-      </button>
+            🔍Find Substitute
+          </button>
         </div>
-      </div>
-    `).join('');
+      </div>`;
+  }).join('');
 
-   const flavorsHtml = (recipe.flavors || []).map(f => `
-      <span class="recipe-meta">${escapeHtml(f)}</span>
-    `).join('');
+  // 2. Skonių tagai
+  const flavorsHtml = (recipe.flavors || []).map(f => `
+    <span class="recipe-meta" style="background:rgba(0,0,0,0.05); padding:2px 8px; border-radius:4px; margin-right:5px;">${escapeHtml(f)}</span>
+  `).join('');
 
-   const cuisinesHtml = (recipe.cuisines || []).map(c => `
-          <div class="recipe-meta">${escapeHtml(c)}</div>
-            `).join('');
-    
-    shell.innerHTML = `
-      <div class="recipe-header-card">
-        <div class="recipe-breadcrumb">
-          <a href="browse_recipes.php">← Back to recipes</a>
-        </div>
-      </div>
+  // 3. Regionų/Cuisines tagai
+  const cuisinesHtml = (recipe.cuisines || []).map(c => `
+    <div class="recipe-meta">🌍 ${escapeHtml(c)}</div>
+  `).join('');
+
+  // 4. Instrukcijų žingsnių generavimas
+  const stepsHtml = (recipe.steps || []).map(step => `
+    <div class="recipe-step" style="margin-bottom:15px;">
+      <div class="step-num" style="font-weight:bold;">Step ${step.step_number}</div>
       <div class="step-text">${escapeHtml(step.instructions)}</div>
     </div>
   `).join('');
 
-        <h1 class="recipe-title">${escapeHtml(recipe.name)}</h1>
-        
-        <div class="recipe-meta-row">
-          <div class="recipe-meta">🔥 ${formatNumber(recipe.calories)} kcal</div>
-          <div class="recipe-meta">⏱️ ${formatNumber(recipe.total_time)} min</div>
-          <div class="recipe-meta">🥣 ${(recipe.ingredients || []).length} ingredients</div>
-          <div class="recipe-meta">📝 ${(recipe.steps || []).length} steps</div>
-        </div>
+  // 5. Pagrindinis HTML surinkimas (Visi tavo elementai išsaugoti)
+  shell.innerHTML = `
+    <div class="recipe-header-card">
+      <div class="recipe-breadcrumb">
+        <a href="browse_recipes.php">← Back to recipes</a>
+      </div>
+      
+      <h1 class="recipe-title">${escapeHtml(recipe.name)}</h1>
+      
+      <div class="recipe-meta-row">
+        <div class="recipe-meta">🔥 ${formatNumber(recipe.calories)} kcal</div>
+        <div class="recipe-meta">⏱️ ${formatNumber(recipe.total_time)} min</div>
+        <div class="recipe-meta">🥣 ${(recipe.ingredients || []).length} ingredients</div>
+        <div class="recipe-meta">📝 ${(recipe.steps || []).length} steps</div>
+      </div>
 
-        ${flavorsHtml ? `<div class="recipe-meta-row">${flavorsHtml}</div>` : ''}
+      ${flavorsHtml ? `<div class="recipe-meta-row">${flavorsHtml}</div>` : ''}
 
-        <p class="recipe-description">
-          ${escapeHtml(recipe.description || 'No description available for this recipe.')}
-        </p>
+      <p class="recipe-description">
+        ${escapeHtml(recipe.description || 'No description available for this recipe.')}
+      </p>
 
-        ${cuisinesHtml ? `<div class="recipe-meta-row">${cuisinesHtml}</div>` : ''}
+      ${cuisinesHtml ? `<div class="recipe-meta-row">${cuisinesHtml}</div>` : ''}
 
-        <div class="recipe-action-row">
-          <button class="btn-cook-mode" type="button" onclick="openCookMode()">Start cooking mode</button>
-        </div>
+      <div class="recipe-action-row">
+        <button class="btn-cook-mode" type="button" onclick="openCookMode()">Start cooking mode</button>
       </div>
     </div>
 
@@ -557,7 +563,6 @@ function renderRecipeContent() {
 
         <div class="servings-row">
           <span class="servings-label">Servings</span>
-
           <div class="servings-control">
             <button type="button" class="servings-btn" onclick="changeServings(-1)">−</button>
             <input
@@ -571,7 +576,7 @@ function renderRecipeContent() {
             >
             <button type="button" class="servings-btn" onclick="changeServings(1)">+</button>
           </div>
-</div>
+        </div>
 
         ${allergicCount > 0 ? `
           <div class="allergen-summary" role="status" aria-live="polite">
@@ -611,7 +616,7 @@ function renderRecipeContent() {
         </div>
 
         <div class="steps-list">
-          ${steps || `<div class="recipe-error">No steps available for this recipe.</div>`}
+          ${stepsHtml || `<div class="recipe-error">No steps available for this recipe.</div>`}
         </div>
       </section>
     </div>
