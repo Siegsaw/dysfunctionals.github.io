@@ -86,7 +86,30 @@ $recipeId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
     </div>
   </div>
 </div>
-
+  
+<div id="subModalOverlay" class="sub-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="subModalTitle" aria-hidden="true">
+  <div class="sub-modal">
+    <div class="sub-modal-header">
+      <div>
+        <div class="sub-modal-label">Find substitute</div>
+        <h2 id="subModalTitle" class="sub-modal-title"></h2>
+      </div>
+      <button class="cook-close-btn" type="button" onclick="closeSubModal()" aria-label="Close">✕</button>
+    </div>
+ 
+    <div class="sub-modal-body" id="subModalBody">
+      <div class="sub-loading">Loading alternatives…</div>
+    </div>
+ 
+    <div class="sub-modal-footer">
+      <button class="cook-nav-btn cook-secondary" type="button" onclick="closeSubModal()">Cancel</button>
+      <button class="cook-nav-btn cook-primary" id="subConfirmBtn" type="button" onclick="confirmSubstitute()" disabled>
+        Use this substitute
+      </button>
+    </div>
+  </div>
+</div>
+  
 <script>
   const RECIPE_ID = <?php echo $recipeId; ?>;
 </script>
@@ -94,6 +117,8 @@ $recipeId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 <script src="shared.js"></script>
 <script>
 let currentRecipe = null;
+let currentServings = 1;
+let originalServings = 1;
 let userAllergens = [];
 let cookModeIndex = 0;
 let cookCompletionScreen = false;
@@ -110,9 +135,45 @@ function escapeHtml(value) {
 
 function formatNumber(value) {
   const num = Number(value ?? 0);
-  return Number.isInteger(num) ? String(num) : num.toFixed(1);
+
+  if (Number.isInteger(num)) return String(num);
+
+  const rounded = Math.round(num * 100) / 100;
+
+  // convert common fractions
+  if (rounded === 0.5) return "0.5";
+  if (rounded === 0.25) return "0.25";
+  if (rounded === 0.75) return "0.75";
+
+  return rounded.toString();
 }
 
+function scaleAmount(amount) {
+  const base = Number(amount || 0);
+  return base * (currentServings / originalServings);
+}
+
+function changeServings(delta) {
+  setServings(currentServings + delta);
+}
+
+function setServings(value) {
+  const parsed = parseInt(value, 10);
+  currentServings = Number.isInteger(parsed) && parsed >= 1 ? parsed : 1;
+
+  const input = document.getElementById('servingsInput');
+  if (input) input.value = currentServings;
+
+  renderRecipeContent();
+}
+
+function sanitizeServingsInput(input) {
+  input.value = input.value.replace(/[^0-9]/g, '');
+
+  if (input.value === '') return;
+
+  setServings(input.value);
+}
 
 function normalizeValue(value) {
   return String(value ?? '').trim().toLowerCase();
@@ -349,53 +410,103 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-async function loadRecipe() {
-  try {
-    const response = await fetch(`get_recipe.php?id=${RECIPE_ID}`, { cache: 'no-store' });
-    const recipe = await response.json();
+  let selectedSub = null;
+let targetIngId = null;
+let originalQty = 0;
 
-    const shell = document.getElementById('recipeShell');
+async function openSubModal(ingId, ingName, amount) {
+    targetIngId = ingId;
+    originalQty = amount;
+    
+    const modal = document.getElementById('subModalOverlay');
+    const title = document.getElementById('subModalTitle');
+    const body = document.getElementById('subModalBody');
+    const confirmBtn = document.getElementById('subConfirmBtn');
 
-    if (!recipe || recipe.error) {
-      shell.innerHTML = `
-        <div class="recipe-error">
-          <h2>Recipe not found</h2>
-          <p>The recipe you are looking for does not exist.</p>
-        </div>
-      `;
-      return;
+    title.textContent = `Substitutes for ${ingName}`;
+    body.innerHTML = '<div class="sub-loading">Searching alternatives...</div>';
+    confirmBtn.disabled = true;
+    selectedSub = null; 
+    
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+
+    try {
+        const response = await fetch(`get_substitutes.php?ingredient_id=${ingId}`);
+        const data = await response.json();
+
+        if (!data.substitutes || data.substitutes.length === 0) {
+            body.innerHTML = '<p style="padding: 20px; text-align: center;">No substitutes found for this ingredient.</p>';
+            return;
+        }
+
+        body.innerHTML = data.substitutes.map(s => `
+            <div class="sub-item" onclick="selectSubstitute(this, ${s.substitute_id}, '${escapeHtml(s.substitute_name)}', ${s.ratio}, '${escapeHtml(s.substitute_unit)}')">
+                <div class="sub-item-info">
+                    <strong>${escapeHtml(s.substitute_name)}</strong>
+                    <small>${s.note ? escapeHtml(s.note) : ''}</small>
+                </div>
+                <div class="sub-item-ratio">${s.ratio}x amount</div>
+            </div>
+        `).join('');
+    } catch (e) {
+        body.innerHTML = '<p class="recipe-error">Error loading substitutes.</p>';
     }
+}
 
-    currentRecipe = recipe;
+function selectSubstitute(el, id, name, ratio, unit) {
+    document.querySelectorAll('.sub-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+    
+    selectedSub = { id, name, ratio, unit };
+    document.getElementById('subConfirmBtn').disabled = false;
+}
 
-    const allergicCount = (recipe.ingredients || []).filter(ing => ing.is_allergic).length;
+function confirmSubstitute() {
+    if (!selectedSub || !targetIngId) return;
 
-    const ingredients = (recipe.ingredients || []).map(ing => {
-  const isAllergic = Boolean(ing.is_allergic);
+    const nameEl = document.getElementById(`ing-name-${targetIngId}`);
+    const qtyEl = document.getElementById(`ing-qty-${targetIngId}`);
+    
+    if (nameEl && qtyEl) {
+        const baseSubstituteQty = originalQty * selectedSub.ratio; 
+        const finalScaledQty = baseSubstituteQty * (currentServings / originalServings);
 
-  return `
-    <div class="recipe-ing ${isAllergic ? 'recipe-ing-allergic' : ''}">
-      <span class="recipe-ing-name-wrap">
-        <span class="recipe-ing-name">${escapeHtml(ing.name)}</span>
-        ${isAllergic ? '<span class="allergen-pill">Allergic</span>' : ''}
-      </span>
-      <span class="recipe-ing-qty">${formatNumber(ing.amount)} ${escapeHtml(ing.unit)}</span>
-    </div>
-  `;
-}).join('');
+        nameEl.innerHTML = `${selectedSub.name} <span class="sub-badge">Used instead</span>`;
+        qtyEl.textContent = `${formatNumber(finalScaledQty)} ${selectedSub.unit}`;
+        
+        closeSubModal();
+        showToast(`Ingredient updated to ${selectedSub.name}`);
+    }
+}
 
-    const steps = (recipe.steps || []).map(step => `
-      <div class="step-card">
-        <div class="step-top">
-          <div class="step-number">Step ${escapeHtml(step.step_number)}</div>
-          <div class="step-meta">
-            <span class="step-type ${escapeHtml((step.step_type || '').toLowerCase())}">
-              ${escapeHtml(step.step_type || 'step')}
-            </span>
-            ${Number(step.time_minutes) > 0 ? `<span class="step-time">⏱️ ${formatNumber(step.time_minutes)} min</span>` : ''}
-          </div>
+function closeSubModal() {
+    document.getElementById('subModalOverlay').classList.remove('show');
+    document.getElementById('subModalOverlay').setAttribute('aria-hidden', 'true');
+}
+  
+function renderRecipeContent() {
+  const recipe = currentRecipe;
+  const shell = document.getElementById('recipeShell');
+  if (!recipe || !shell) return;
+
+  const allergicCount = (recipe.ingredients || []).filter(ing => ing.is_allergic).length;
+
+  const ingredients = (recipe.ingredients || []).map(ing => {
+    const isAllergic = Boolean(ing.is_allergic);
+
+    return `
+      <div class="recipe-ing ${isAllergic ? 'recipe-ing-allergic' : ''}">
+        <span class="recipe-ing-name-wrap">
+          <span class="recipe-ing-name" id="ing-name-${ing.id}">${escapeHtml(ing.name)}</span>
+          ${isAllergic ? '<span class="allergen-pill">Allergic</span>' : ''}
+        </span>
+        <div class="recipe-ing-controls">
+          <span class="recipe-ing-qty" id="ing-qty-${ing.id}">${formatNumber(scaleAmount(ing.amount))} ${escapeHtml(ing.unit)}</span>
+          <button class="sub-btn" type="button" onclick="openSubModal(${ing.id}, '${escapeHtml(ing.name)}', ${ing.amount}); return false;">
+    🔍Find Substitute
+      </button>
         </div>
-        <div class="step-text">${escapeHtml(step.instructions)}</div>
       </div>
     `).join('');
 
@@ -412,6 +523,10 @@ async function loadRecipe() {
         <div class="recipe-breadcrumb">
           <a href="browse_recipes.php">← Back to recipes</a>
         </div>
+      </div>
+      <div class="step-text">${escapeHtml(step.instructions)}</div>
+    </div>
+  `).join('');
 
         <h1 class="recipe-title">${escapeHtml(recipe.name)}</h1>
         
@@ -434,52 +549,96 @@ async function loadRecipe() {
           <button class="btn-cook-mode" type="button" onclick="openCookMode()">Start cooking mode</button>
         </div>
       </div>
+    </div>
 
-      <div class="recipe-grid">
-        <aside class="recipe-card-side">
-          <div class="section-label">Ingredients</div>
-          ${allergicCount > 0 ? `
-            <div class="allergen-summary" role="status" aria-live="polite">
-              ${allergicCount} ingredient${allergicCount === 1 ? '' : 's'} match your saved allergens.
-            </div>
-          ` : ''}
-          <div class="ingredients-list">
-            ${ingredients || `<div class="recipe-ing"><span class="recipe-ing-name">No ingredients listed</span></div>`}
-          </div>
+    <div class="recipe-grid">
+      <aside class="recipe-card-side">
+        <div class="section-label">Ingredients</div>
 
-          <div class="section-label section-gap">Nutrition</div>
-          <div class="nutrition-box">
-            <div class="nutrition-row">
-              <span class="recipe-ing-name">Calories</span>
-              <span class="recipe-ing-qty">${formatNumber(recipe.calories)} kcal</span>
-            </div>
-            <div class="nutrition-row">
-              <span class="recipe-ing-name">Protein</span>
-              <span class="recipe-ing-qty">${formatNumber(recipe.protein)} g</span>
-            </div>
-            <div class="nutrition-row">
-              <span class="recipe-ing-name">Carbs</span>
-              <span class="recipe-ing-qty">${formatNumber(recipe.carbs)} g</span>
-            </div>
-            <div class="nutrition-row">
-              <span class="recipe-ing-name">Fat</span>
-              <span class="recipe-ing-qty">${formatNumber(recipe.fat)} g</span>
-            </div>
-          </div>
-        </aside>
+        <div class="servings-row">
+          <span class="servings-label">Servings</span>
 
-        <section class="recipe-card-main">
-          <div class="instructions-head">
-            <div class="section-label section-label-no-margin">Instructions</div>
-            <button class="btn-cook-inline" type="button" onclick="openCookMode()">Open cooking mode</button>
+          <div class="servings-control">
+            <button type="button" class="servings-btn" onclick="changeServings(-1)">−</button>
+            <input
+              id="servingsInput"
+              class="servings-input"
+              type="text"
+              inputmode="numeric"
+              value="${currentServings}"
+              oninput="sanitizeServingsInput(this)"
+              onblur="setServings(this.value)"
+            >
+            <button type="button" class="servings-btn" onclick="changeServings(1)">+</button>
           </div>
+</div>
 
-          <div class="steps-list">
-            ${steps || `<div class="recipe-error">No steps available for this recipe.</div>`}
+        ${allergicCount > 0 ? `
+          <div class="allergen-summary" role="status" aria-live="polite">
+            ${allergicCount} ingredient${allergicCount === 1 ? '' : 's'} match your saved allergens.
           </div>
-        </section>
-      </div>
-    `;
+        ` : ''}
+
+        <div class="ingredients-list">
+          ${ingredients || `<div class="recipe-ing"><span class="recipe-ing-name">No ingredients listed</span></div>`}
+        </div>
+
+        <div class="section-label section-gap">Nutrition</div>
+        <div class="nutrition-box">
+          <div class="nutrition-row">
+            <span class="recipe-ing-name">Calories</span>
+            <span class="recipe-ing-qty">${formatNumber(scaleAmount(recipe.calories))} kcal</span>
+          </div>
+          <div class="nutrition-row">
+            <span class="recipe-ing-name">Protein</span>
+            <span class="recipe-ing-qty">${formatNumber(scaleAmount(recipe.protein))} g</span>
+          </div>
+          <div class="nutrition-row">
+            <span class="recipe-ing-name">Carbs</span>
+            <span class="recipe-ing-qty">${formatNumber(scaleAmount(recipe.carbs))} g</span>
+          </div>
+          <div class="nutrition-row">
+            <span class="recipe-ing-name">Fat</span>
+            <span class="recipe-ing-qty">${formatNumber(scaleAmount(recipe.fat))} g</span>
+          </div>
+        </div>
+      </aside>
+
+      <section class="recipe-card-main">
+        <div class="instructions-head">
+          <div class="section-label section-label-no-margin">Instructions</div>
+          <button class="btn-cook-inline" type="button" onclick="openCookMode()">Open cooking mode</button>
+        </div>
+
+        <div class="steps-list">
+          ${steps || `<div class="recipe-error">No steps available for this recipe.</div>`}
+        </div>
+      </section>
+    </div>
+  `;
+}
+  
+async function loadRecipe() {
+  try {
+    const response = await fetch(`get_recipe.php?id=${RECIPE_ID}`, { cache: 'no-store' });
+    const recipe = await response.json();
+
+    const shell = document.getElementById('recipeShell');
+
+    if (!recipe || recipe.error) {
+      shell.innerHTML = `
+        <div class="recipe-error">
+          <h2>Recipe not found</h2>
+          <p>The recipe you are looking for does not exist.</p>
+        </div>
+      `;
+      return;
+    }
+
+    currentRecipe = recipe;
+    originalServings = Number(recipe.servings) || 1;
+    currentServings = originalServings;
+    renderRecipeContent();
   } catch (error) {
     console.error(error);
     document.getElementById('recipeShell').innerHTML = `

@@ -33,7 +33,13 @@ echo "  <div class=\"page-title\">Recipe Browser</div>";
 echo "  <div class=\"page-sub\">Browse all recipes in the database for inspiration, even without adding ingredients.</div>";
 
 echo "  <div class=\"results-section\" id=\"resultsSection\" style=\"display:block\">";
-echo "    <div class=\"results-label\" id=\"resultsLabel\">All recipes</div>";
+echo "    <div class=\"results-head\">";
+echo "      <div class=\"results-label\" id=\"resultsLabel\">All recipes</div>";
+echo "      <div class=\"view-toggle\">";
+echo "        <button id=\"cardViewBtn\" class=\"view-btn active\" onclick=\"setRecipeView('card')\">Cards</button>";
+echo "        <button id=\"listViewBtn\" class=\"view-btn\" onclick=\"setRecipeView('list')\">List</button>";
+echo "      </div>";
+echo "    </div>";
 echo "    <div class=\"results-grid\" id=\"resultsGrid\"></div>";
 echo "  </div>";
 
@@ -58,7 +64,8 @@ function escapeHtml(value) {
 
 function formatNumber(value) {
   const num = Number(value ?? 0);
-  return Number.isInteger(num) ? String(num) : num.toFixed(1);
+  if (Number.isInteger(num)) return String(num);
+  return String(Math.round(num * 100) / 100);
 }
 
 function makeFlavorTags(flavors) {
@@ -70,8 +77,47 @@ function makeFlavorTags(flavors) {
   `;
 }
 
+let BROWSE_RECIPES = [];
+const browseServings = {};
+const openBrowseDetails = new Set();
+
+function getBrowseServings(recipe) {
+  const original = Number(recipe.servings) || 1;
+
+  if (!browseServings[recipe.id]) {
+    browseServings[recipe.id] = original;
+  }
+
+  return browseServings[recipe.id];
+}
+
+function scaleBrowseAmount(amount, recipe) {
+  const original = Number(recipe.servings) || 1;
+  const current = getBrowseServings(recipe);
+  return Number(amount || 0) * (current / original);
+}
+
+function setBrowseServings(recipeId, value) {
+  const parsed = parseInt(value, 10);
+  browseServings[recipeId] = Number.isInteger(parsed) && parsed >= 1 ? parsed : 1;
+  renderBrowseRecipes();
+}
+
+function changeBrowseServings(recipeId, delta) {
+  const recipe = BROWSE_RECIPES.find(r => Number(r.id) === Number(recipeId));
+  if (!recipe) return;
+
+  const current = getBrowseServings(recipe);
+  setBrowseServings(recipeId, current + delta);
+}
+
+function sanitizeBrowseServingsInput(input, recipeId) {
+  input.value = input.value.replace(/[^0-9]/g, '');
+  if (input.value === '') return;
+  setBrowseServings(recipeId, input.value);
+}
   
-function makeIngredientRows(ingredients) {
+function makeIngredientRows(ingredients, recipe) {
   if (!Array.isArray(ingredients) || ingredients.length === 0) {
     return `<div class="detail-row"><span class="detail-name">No ingredients listed</span></div>`;
   }
@@ -87,7 +133,7 @@ function makeIngredientRows(ingredients) {
           ${ing.is_allergic ? `<span class="ingredient-allergen-pill">${escapeHtml(label)}</span>` : ''}
         </span>
         <div class="detail-right">
-          <span class="detail-qty">${formatNumber(ing.amount)} ${escapeHtml(ing.unit)}</span>
+          <span class="detail-qty">${formatNumber(scaleBrowseAmount(ing.amount, recipe))} ${escapeHtml(ing.unit)}</span>
         </div>
       </div>
     `;
@@ -99,9 +145,11 @@ function recipeCard(recipe, index) {
     ? `<div class="cuisine-row"><span class="tag-cuisine">${escapeHtml(recipe.region_name)}</span></div>`
     : '';
 
-  const detailId = `recipeDetail${index}`;
-  const toggleId = `recipeToggle${index}`;
+  const detailId = `recipeDetail${recipe.id}`;
+  const toggleId = `recipeToggle${recipe.id}`;
+  const isDetailOpen = openBrowseDetails.has(String(recipe.id));
   const hasAllergen = Boolean(recipe.has_allergen);
+  const currentServings = getBrowseServings(recipe);
 const matchedAllergens = Array.isArray(recipe.matched_allergens) ? recipe.matched_allergens : [];
 
 const allergenPreview = matchedAllergens.length > 0
@@ -125,41 +173,57 @@ const allergenPreview = matchedAllergens.length > 0
       </div>
 
       <div class="card-info">
-        <div class="recipe-calories">🔥 ${formatNumber(recipe.calories)} kcal</div>
+        <div class="recipe-calories">🔥 ${formatNumber(scaleBrowseAmount(recipe.calories, recipe))} kcal</div>
         <div class="recipe-time">⏱️ ${formatNumber(recipe.time)} min</div>
+        <div class="recipe-time">🍽️ ${currentServings} servings</div>
       </div>
 
       ${makeFlavorTags(recipe.flavors)}
       ${allergenPreview}
 
       <button class="card-toggle" id="${toggleId}" onclick="toggleRecipeDetail('${detailId}', '${toggleId}')">
-        <span>Show needed ingredients</span>
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+  <span>${isDetailOpen ? 'Hide needed ingredients' : 'Show needed ingredients'}</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="${isDetailOpen ? 'transform: rotate(180deg);' : ''}">
           <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </button>
 
-      <div class="card-detail" id="${detailId}">
+      <div class="card-detail ${isDetailOpen ? 'open' : ''}" id="${detailId}">
         <div class="time-breakdown">
           <div>Prep: ${formatNumber(recipe.prep_time)} min</div>
           <div>Cook: ${formatNumber(recipe.cook_time)} min</div>
         </div>
 
+        <div class="servings-row browse-servings-row">
+          <span class="servings-label">Servings</span>
+          <div class="servings-control">
+            <button type="button" class="servings-btn" onclick="changeBrowseServings(${recipe.id}, -1)">−</button>
+            <input
+              class="servings-input"
+              type="text"
+              inputmode="numeric"
+              value="${currentServings}"
+              oninput="sanitizeBrowseServingsInput(this, ${recipe.id})"
+              onblur="setBrowseServings(${recipe.id}, this.value)"
+            >
+            <button type="button" class="servings-btn" onclick="changeBrowseServings(${recipe.id}, 1)">+</button>
+         </div>
+</div>
         <div class="card-sec-lbl">Needed ingredients</div>
-        ${makeIngredientRows(recipe.ingredients)}
+        ${makeIngredientRows(recipe.ingredients, recipe)}
 
         <div class="card-sec-lbl green" style="margin-top:12px;">Nutrition</div>
         <div class="detail-row">
           <span class="detail-name">Protein</span>
-          <div class="detail-right"><span class="detail-qty">${formatNumber(recipe.protein)} g</span></div>
+          <div class="detail-right"><span class="detail-qty">${formatNumber(scaleBrowseAmount(recipe.protein, recipe))} g</span></div>
         </div>
         <div class="detail-row">
           <span class="detail-name">Carbs</span>
-          <div class="detail-right"><span class="detail-qty">${formatNumber(recipe.carbs)} g</span></div>
+          <div class="detail-right"><span class="detail-qty">${formatNumber(scaleBrowseAmount(recipe.carbs, recipe))} g</span></div>
         </div>
         <div class="detail-row">
           <span class="detail-name">Fat</span>
-          <div class="detail-right"><span class="detail-qty">${formatNumber(recipe.fat)} g</span></div>
+          <div class="detail-right"><span class="detail-qty">${formatNumber(scaleBrowseAmount(recipe.fat, recipe))} g</span></div>
         </div>
       </div>
 
@@ -177,6 +241,13 @@ function toggleRecipeDetail(detailId, toggleId) {
   if (!detail || !toggle) return;
 
   const isOpen = detail.classList.toggle('open');
+  const recipeId = detailId.replace('recipeDetail', '');
+
+  if (isOpen) {
+    openBrowseDetails.add(recipeId);
+  } else {
+    openBrowseDetails.delete(recipeId);
+  }
   toggle.innerHTML = isOpen
     ? `
       <span>Hide needed ingredients</span>
@@ -231,8 +302,8 @@ async function loadAllRecipes() {
 
     label.textContent = `All recipes (${recipes.length})`;
     empty.style.display = 'none';
-    grid.innerHTML = recipes.map((recipe, index) => recipeCard(recipe, index)).join('');
-    applyRecipeView();
+    BROWSE_RECIPES = recipes;
+    renderBrowseRecipes();
   } catch (error) {
     console.error(error);
     label.textContent = 'All recipes';
@@ -243,6 +314,16 @@ async function loadAllRecipes() {
       </div>
     `;
   }
+}
+function renderBrowseRecipes() {
+  const grid = document.getElementById('resultsGrid');
+  if (!grid) return;
+
+  grid.innerHTML = BROWSE_RECIPES
+    .map((recipe, index) => recipeCard(recipe, index))
+    .join('');
+
+  applyRecipeView();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
