@@ -382,6 +382,47 @@ input[type="range"] {
 .results-empty p { font-size: 14px; }
 .results-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 
+.results-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.results-head .results-label {
+  margin-bottom: 0;
+}
+
+.view-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-s);
+  padding: 3px;
+  gap: 3px;
+}
+
+.view-btn {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.view-btn.active {
+  background: var(--green);
+  color: white;
+}
+
+.view-btn:hover {
+  background: var(--bg-m);
+  color: var(--ink);
+}
+
 /* ── RECIPE CARDS ── */
 .recipe-card {
   background: var(--bg-s);
