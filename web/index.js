@@ -869,11 +869,5 @@ function toggleFilterMenu(id) {
   const el = document.getElementById(id);
   if (!el) return;
 
-  if (el.classList.contains("open")) {
-    el.style.maxHeight = null;
-    el.classList.remove("open");
-  } else {
-    el.classList.add("open");
-    el.style.maxHeight = el.scrollHeight + "px";
-  }
+  el.classList.toggle("open");
 }
