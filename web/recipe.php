@@ -508,9 +508,9 @@ function renderRecipeContent() {
         </span>
         <div class="recipe-ing-controls">
           <span class="recipe-ing-qty" id="ing-qty-${ing.id}">${formatNumber(scaleAmount(ing.amount))} ${escapeHtml(ing.unit)}</span>
-          <button class="sub-btn" type="button" onclick="openSubModal(${ing.id}, '${escapeHtml(ing.name)}', ${ing.amount})" title="Find substitute">
-            🔍
-          </button>
+          <button class="sub-btn" type="button" onclick="openSubModal(${ing.id}, '${escapeHtml(ing.name)}', ${ing.amount}); return false;">
+    🔍Find Substitute
+      </button>
         </div>
       </div>
     `;
