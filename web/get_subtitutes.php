@@ -14,18 +14,17 @@ $ingredient_id = (int) $_GET['ingredient_id'];
  
 try {
     $stmt = $pdo->prepare("
-        SELECT
-            s.id            AS substitute_id,
-            i.name          AS substitute_name,
-            i.unit          AS substitute_unit,
-            sub.ratio       AS ratio,
-            sub.note        AS note
-        FROM ingredient_substitutes sub
-        JOIN ingredients i ON i.id = sub.substitute_id
-        JOIN ingredients s ON s.id = sub.substitute_id
-        WHERE sub.ingredient_id = :ingredient_id
-        ORDER BY i.name ASC
-    ");
+    SELECT 
+        i.id      AS substitute_id, 
+        i.name    AS substitute_name, 
+        i.unit    AS substitute_unit, 
+        sub.ratio AS ratio, 
+        sub.note  AS note
+    FROM ingredient_substitutes sub
+    JOIN ingredients i ON i.id = sub.substitute_id
+    WHERE sub.ingredient_id = :ingredient_id
+    ORDER BY i.name ASC
+");
     $stmt->execute([':ingredient_id' => $ingredient_id]);
     $substitutes = $stmt->fetchAll(PDO::FETCH_ASSOC);
  
