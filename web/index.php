@@ -54,16 +54,21 @@ echo "<button class=\"btn-clear-ing\" onclick=\"clearForm()\" title=\"Clear\">�
 echo "</div>";
 echo "";
 echo "";
-echo "<div class=\"filter-row\">";
-echo "  <div class=\"filter-group\">";
-echo "    <label class=\"filter-label\">FLAVOR</label>";
-echo "    <div id=\"flavorButtons\" class=\"flavor-buttons\"></div>";
+echo "<div class='filter-collapsible'>";
+echo "  <button type='button' class='collapsible-trigger' onclick='toggleFilterMenu(\"flavor-content\")'>";
+echo "    FILTER BY FLAVOR <span class='arrow'>▼</span>";
+echo "  </button>";
+echo "  <div id='flavor-content' class='collapsible-content'>";
+echo "    <div id='flavorButtons' class='flavor-buttons'></div>";
 echo "  </div>";
 echo "</div>";
-echo "<div class=\"filter-row\">";
-echo "  <div class=\"filter-group\">";
-echo "    <label class=\"filter-label\">CUISINE</label>";
-echo "    <div id=\"cuisineButtons\" class=\"flavor-buttons\"></div>"; // Naudojame tą pačią klasę stiliui
+
+echo "<div class='filter-collapsible'>";
+echo "  <button type='button' class='collapsible-trigger' onclick='toggleFilterMenu(\"cuisine-content\")'>";
+echo "    FILTER BY CUISINE <span class='arrow'>▼</span>";
+echo "  </button>";
+echo "  <div id='cuisine-content' class='collapsible-content'>";
+echo "    <div id='cuisineButtons' class='flavor-buttons'></div>";
 echo "  </div>";
 echo "</div>";
 echo "<div class=\"filter-range-row\">"; 
