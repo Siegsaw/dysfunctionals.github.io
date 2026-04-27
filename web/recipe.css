@@ -757,6 +757,24 @@ body.cook-mode-open {
   z-index: 9999;
 }
 
+.sub-modal {
+  background: #1e1e1e; 
+  color: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  animation: fadeIn 0.2s ease;
+}
+
+.sub-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
 .dark .sub-btn {
     background: #2d2d2d; 
     border-color: #444;    
