@@ -789,31 +789,14 @@ function runSearch() {
 
     if (recipeView === 'list') {
      card.innerHTML = `
-  <div class="card-top">
-    <div class="card-name-wrapper">
-      ${cuisineTag ? `<div class="cuisine-row">${cuisineTag}</div>` : ''}
-      <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
-    </div>
-
-    <div class="card-pct ${pc}">${r.pct}%</div>
-  </div>
-
-  <div class="card-info">
-    <div class="recipe-calories">🔥 ${r.recipe.calories || 0} kcal</div>
-    <div class="recipe-time">⏱️ ${r.recipe.time || 0} min</div>
-    <div class="recipe-time">🍽️ ${r.recipe.servings || 1} servings</div>
-  </div>
-
-  ${flavorTags ? `<div class="tags">${flavorTags}</div>` : ''}
-  ${allergenPreview}
-
-  <div class="prog-wrap">
-    <div class="prog-bar ${bc}"></div>
-  </div>
+  <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
+  <span class="card-pct ${pc}">${r.pct}%</span>
+  <span class="recipe-calories">🔥 ${r.recipe.calories || 0} kcal</span>
+  <span class="recipe-time">⏱️ ${r.recipe.time || 0} min</span>
 
   ${hasAllergen
-    ? `<span class="btn-view-recipe btn-view-recipe-disabled">Blocked by allergen</span>`
-    : `<a class="btn-view-recipe" href="recipe.php?id=${r.recipe.id}">Detailed recipe</a>`
+    ? `<span class="btn-view-recipe btn-view-recipe-disabled" aria-disabled="true">Blocked by allergen</span>`
+    : `<a class="btn-view-recipe" href="recipe.php?id=${r.recipe.id}">Detailed Recipe</a>`
   }
 `;
     } else {
