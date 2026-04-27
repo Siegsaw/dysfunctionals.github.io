@@ -435,6 +435,62 @@ input[type="range"] {
   font-size: 12px;
 }
 
+.servings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0 12px;
+}
+
+.servings-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted2);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.servings-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.servings-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-m);
+  color: var(--ink);
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.servings-btn:hover {
+  background: var(--green);
+  color: white;
+  border-color: var(--green);
+}
+
+.servings-input {
+  width: 56px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-s);
+  color: var(--ink);
+  text-align: center;
+  font-weight: 700;
+}
+
+.servings-input:focus {
+  outline: none;
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(34,197,94,.15);
+}
 
 .view-toggle {
   display: inline-flex;
