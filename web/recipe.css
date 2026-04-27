@@ -595,6 +595,30 @@ body.cook-mode-open {
   display: none !important;
 }
 
+.recipe-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.recipe-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface-light, #f0f2f5);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-main, #333);
+}
+
+.dark .recipe-meta {
+    background: var(--surface-dark, #2d2d2d);
+    color: var(--text-dark, #eee);
+}
+
 /* ── RESPONSIVE ────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .recipe-grid {

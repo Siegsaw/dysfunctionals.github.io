@@ -9,6 +9,7 @@ $sql = "
   SELECT 
     r.recipe_id,
     r.title AS name,
+    r.servings,
     COALESCE(rs.prep_time, 0) AS prep_time,
     COALESCE(rs.cook_time, 0) AS cook_time,
     (COALESCE(rs.prep_time, 0) + COALESCE(rs.cook_time, 0)) AS total_time_minutes,
@@ -63,6 +64,7 @@ $sql = "
   GROUP BY
     r.recipe_id,
     r.title,
+    r.servings,
     rs.prep_time,
     rs.cook_time,
     r.calories,
@@ -89,6 +91,7 @@ while ($row = $result->fetch_assoc()) {
     $recipes[$id] = [
       'id' => $id,
       'name' => $row['name'],
+      'servings' => isset($row['servings']) ? (int)$row['servings'] : 0,
       'time' => isset($row['total_time_minutes']) ? (int)$row['total_time_minutes'] : null,
       'prep_time' => isset($row['prep_time']) ? (int)$row['prep_time'] : 0,
       'cook_time' => isset($row['cook_time']) ? (int)$row['cook_time'] : 0,

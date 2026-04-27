@@ -410,6 +410,7 @@ async function loadRecipe() {
         <div class="recipe-meta-row">
           <div class="recipe-meta">🔥 ${formatNumber(recipe.calories)} kcal</div>
           <div class="recipe-meta">⏱️ ${formatNumber(recipe.total_time)} min</div>
+          <div class="recipe-meta">🍽️ ${recipe.servings || 0} servings</div>
           <div class="recipe-meta">🥣 ${(recipe.ingredients || []).length} ingredients</div>
           <div class="recipe-meta">📝 ${(recipe.steps || []).length} steps</div>
         </div>
