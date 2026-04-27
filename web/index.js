@@ -183,6 +183,27 @@ async function loadUserAllergens() {
     }
 }
 
+function updateExpirationField() {
+  const name = document.getElementById('ingName')?.value.trim();
+  const expInput = document.getElementById('ingExpDate');
+
+  if (!expInput) return;
+
+  const ing = getIngredientObj(name);
+
+  if (!ing) {
+    expInput.disabled = false;
+    return;
+  }
+
+  if (Number(ing.has_expiration) === 0) {
+    expInput.value = '';
+    expInput.disabled = true;
+  } else {
+    expInput.disabled = false;
+  }
+}
+
 // ── DATA LOADING ───────────────────────────────────────────────
 async function loadIngredients() {
   const response = await fetch('get_ingredients.php', { cache: 'no-store' });
