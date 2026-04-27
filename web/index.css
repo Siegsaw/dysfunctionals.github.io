@@ -973,6 +973,28 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   display: block;
 }
 
+.results-grid.list-view .recipe-card {
+  grid-template-columns: 1fr auto auto auto auto;
+}
+
+.results-grid.list-view .btn-view-recipe,
+.results-grid.list-view .btn-view-recipe-disabled {
+  width: auto;
+  min-width: max-content;
+  justify-self: end;
+  margin-top: 0;
+  padding: 8px 14px;
+}
+
+.results-grid.list-view .card-info {
+  display: contents;
+}
+
+.results-grid.list-view .recipe-calories,
+.results-grid.list-view .recipe-time {
+  white-space: nowrap;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
   .page { padding: 28px 16px 60px; }
