@@ -3,7 +3,7 @@
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
-require '/var/www/private/db.php'; // naudoja $conn (MySQLi)
+require '/var/www/private/db.php';
 
 if (!isset($_GET['ingredient_id']) || !is_numeric($_GET['ingredient_id'])) {
     http_response_code(400);
@@ -19,7 +19,6 @@ try {
         SELECT 
             i.ingredient_id AS substitute_id,
             i.name_ing AS substitute_name,
-            i.unit AS substitute_unit,
             s.ratio,
             s.note
         FROM ingredient_substitutes s
@@ -44,7 +43,6 @@ try {
         $substitutes[] = [
             'substitute_id'   => (int)$row['substitute_id'],
             'substitute_name' => $row['substitute_name'],
-            'substitute_unit' => $row['substitute_unit'],
             'ratio'           => (float)$row['ratio'],
             'note'            => $row['note']
         ];
@@ -59,6 +57,6 @@ try {
     http_response_code(500);
     echo json_encode([
         'error' => 'Database error',
-        'debug' => $e->getMessage() // gali vėliau išimti
+        'debug' => $e->getMessage()
     ]);
 }
