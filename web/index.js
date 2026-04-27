@@ -183,6 +183,27 @@ async function loadUserAllergens() {
     }
 }
 
+function updateExpirationField() {
+  const name = document.getElementById('ingName')?.value.trim();
+  const expInput = document.getElementById('ingExpDate');
+
+  if (!expInput) return;
+
+  const ing = getIngredientObj(name);
+
+  if (!ing) {
+    expInput.disabled = false;
+    return;
+  }
+
+  if (Number(ing.has_expiration) === 0) {
+    expInput.value = '';
+    expInput.disabled = true;
+  } else {
+    expInput.disabled = false;
+  }
+}
+
 // ── DATA LOADING ───────────────────────────────────────────────
 async function loadIngredients() {
   const response = await fetch('get_ingredients.php', { cache: 'no-store' });
@@ -215,6 +236,7 @@ function buildCommonGrid() {
       document.getElementById('ingName').value = c.name;
       refreshUnitOptions();
       validateForm();
+      updateExpirationField();
       document.getElementById('ingQty').focus();
     };
     grid.appendChild(b);
@@ -235,6 +257,7 @@ function initAutofill() {
   input.addEventListener('input', function () {
     validateForm();
     refreshUnitOptions();
+    updateExpirationField();
 
     const val = this.value.trim();
     box.innerHTML = '';
@@ -263,6 +286,7 @@ function initAutofill() {
         input.value = h.name;
         refreshUnitOptions();
         validateForm();
+        updateExpirationField();
         box.style.display = 'none';
         document.getElementById('ingQty').focus();
       });
@@ -272,6 +296,7 @@ function initAutofill() {
           input.value = h.name;
           refreshUnitOptions();
           validateForm();
+          updateExpirationField();
           box.style.display = 'none';
         }
         if (e.key === 'ArrowDown' && box.children[idx + 1]) box.children[idx + 1].focus();
@@ -332,7 +357,6 @@ async function addIng() {
   const ingredient = getIngredientObj(rawName);
   const qty = parseFloat(document.getElementById('ingQty').value);
   const unit = document.getElementById('ingUnit').value;
-  const expiration_date = document.getElementById('ingExpDate').value || null;
 
   if (!ingredient) {
     showToast('⚠️ Invalid ingredient');
@@ -340,6 +364,15 @@ async function addIng() {
     return;
   }
 
+  const expiration_date = Number(ingredient.has_expiration) === 0
+    ? null
+    : (document.getElementById('ingExpDate').value || null);
+
+  if (Number(ingredient.has_expiration) === 1 && !expiration_date) {
+    showToast('⚠️ Expiration date required for this ingredient');
+    return;
+  }
+  
   const name = ingredient.name;
 
   if (isNaN(qty) || qty <= 0) {
@@ -418,6 +451,7 @@ function clearForm() {
   document.getElementById('ingName').value = '';
   document.getElementById('ingQty').value = '';
   document.getElementById('ingExpDate').value = '';
+  document.getElementById('ingExpDate').disabled = false;
   document.getElementById('suggestions').style.display = 'none';
   document.getElementById('ingName').classList.remove('field-err');
   document.getElementById('ingQty').classList.remove('field-err');
@@ -643,7 +677,26 @@ function matchRecipes() {
     .filter(r => r.pct > 0)
     .sort((a, b) => b.pct - a.pct);
 }
+let recipeView = localStorage.getItem('recipeView') || 'card';
 
+function setRecipeView(view) {
+  recipeView = view;
+  localStorage.setItem('recipeView', view);
+  applyRecipeView();
+}
+
+function applyRecipeView() {
+  const grid = document.getElementById('resultsGrid');
+  const cardBtn = document.getElementById('cardViewBtn');
+  const listBtn = document.getElementById('listViewBtn');
+
+  if (!grid) return;
+
+  grid.classList.toggle('list-view', recipeView === 'list');
+
+  cardBtn?.classList.toggle('active', recipeView === 'card');
+  listBtn?.classList.toggle('active', recipeView === 'list');
+}
 // ── RESULTS ────────────────────────────────────────────────────
 function runSearch() {
   const results = matchRecipes();
@@ -786,6 +839,7 @@ results.forEach(r => {
     }, 60);
   });
 });
+  applyRecipeView();
 }
 function toggleDetail(id) {
   const d = document.getElementById(`detail-${id}`);
@@ -831,6 +885,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadUserAllergens();
   initAutofill();
   refreshUnitOptions();
+  updateExpirationField();
   validateForm();
   updateTimeValue();
   updateCalValue();
@@ -856,6 +911,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (err) {
     console.error('Failed to load inventory:', err);
   }
+  applyRecipeView();
 });
 
 window.addEventListener('pageshow', async () => {
