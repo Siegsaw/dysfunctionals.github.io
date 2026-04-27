@@ -112,7 +112,8 @@ function escapeHtml(value) {
 
 function formatNumber(value) {
   const num = Number(value ?? 0);
-  return Number.isInteger(num) ? String(num) : num.toFixed(1);
+  if (Number.isInteger(num)) return String(num);
+  return String(Math.round(num * 100) / 100);
 }
 
 function scaleAmount(amount) {
@@ -422,7 +423,7 @@ function renderRecipeContent() {
       <h1 class="recipe-title">${escapeHtml(recipe.name)}</h1>
 
       <div class="recipe-meta-row">
-        <div class="recipe-meta">🔥 ${formatNumber(recipe.calories)} kcal</div>
+        <div class="recipe-meta">🔥 ${formatNumber(scaleAmount(recipe.calories))} kcal</div>
         <div class="recipe-meta">⏱️ ${formatNumber(recipe.total_time)} min</div>
         <div class="recipe-meta">🍽️ ${currentServings} servings</div>
         <div class="recipe-meta">🥣 ${(recipe.ingredients || []).length} ingredients</div>
@@ -470,19 +471,19 @@ function renderRecipeContent() {
         <div class="nutrition-box">
           <div class="nutrition-row">
             <span class="recipe-ing-name">Calories</span>
-            <span class="recipe-ing-qty">${formatNumber(recipe.calories)} kcal</span>
+            <span class="recipe-ing-qty">${formatNumber(scaleAmount(recipe.calories))} kcal</span>
           </div>
           <div class="nutrition-row">
             <span class="recipe-ing-name">Protein</span>
-            <span class="recipe-ing-qty">${formatNumber(recipe.protein)} g</span>
+            <span class="recipe-ing-qty">${formatNumber(scaleAmount(recipe.protein))} g</span>
           </div>
           <div class="nutrition-row">
             <span class="recipe-ing-name">Carbs</span>
-            <span class="recipe-ing-qty">${formatNumber(recipe.carbs)} g</span>
+            <span class="recipe-ing-qty">${formatNumber(scaleAmount(recipe.carbs))} g</span>
           </div>
           <div class="nutrition-row">
             <span class="recipe-ing-name">Fat</span>
-            <span class="recipe-ing-qty">${formatNumber(recipe.fat)} g</span>
+            <span class="recipe-ing-qty">${formatNumber(scaleAmount(recipe.fat))} g</span>
           </div>
         </div>
       </aside>
