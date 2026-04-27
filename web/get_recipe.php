@@ -21,11 +21,12 @@ $recipeQuery = $conn->prepare("
     r.protein,
     r.carbs,
     r.fat,
+    r.servings,
     COALESCE(SUM(rs.time_minutes), 0) AS total_time
   FROM recipes r
   LEFT JOIN recipe_steps rs ON r.recipe_id = rs.recipe_id
   WHERE r.recipe_id = ?
-  GROUP BY r.recipe_id, r.title, r.description, r.calories, r.protein, r.carbs, r.fat
+  GROUP BY r.recipe_id, r.title, r.description, r.calories, r.protein, r.carbs, r.fat, r.servings
 ");
 
 $recipeQuery->bind_param('i', $recipeId);
@@ -106,6 +107,7 @@ while ($row = $stepResult->fetch_assoc()) {
 echo json_encode([
   'id' => (int)$recipe['recipe_id'],
   'name' => $recipe['title'],
+  'servings' => (int)$recipe['servings'],
   'description' => $recipe['description'],
   'calories' => (float)$recipe['calories'],
   'protein' => (float)$recipe['protein'],
