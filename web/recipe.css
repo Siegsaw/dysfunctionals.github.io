@@ -676,6 +676,35 @@ body.cook-mode-open {
     color: var(--text-dark, #eee);
 }
 
+.recipe-ing-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sub-btn {
+    background: none;
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 2px 6px;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.sub-btn:hover {
+    background: rgba(0,0,0,0.05);
+}
+
+.sub-badge {
+    font-size: 0.75rem;
+    background: #e0f0ff;
+    color: #007bff;
+    padding: 2px 5px;
+    border-radius: 4px;
+    margin-left: 5px;
+}
+
 /* ── RESPONSIVE ────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .recipe-grid {
