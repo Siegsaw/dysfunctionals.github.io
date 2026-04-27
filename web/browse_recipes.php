@@ -191,7 +191,26 @@ function toggleRecipeDetail(detailId, toggleId) {
       </svg>
     `;
 }
+let recipeView = localStorage.getItem('recipeView') || 'card';
 
+function setRecipeView(view) {
+  recipeView = view;
+  localStorage.setItem('recipeView', view);
+  applyRecipeView();
+}
+
+function applyRecipeView() {
+  const grid = document.getElementById('resultsGrid');
+  const cardBtn = document.getElementById('cardViewBtn');
+  const listBtn = document.getElementById('listViewBtn');
+
+  if (!grid) return;
+
+  grid.classList.toggle('list-view', recipeView === 'list');
+
+  cardBtn?.classList.toggle('active', recipeView === 'card');
+  listBtn?.classList.toggle('active', recipeView === 'list');
+}
 async function loadAllRecipes() {
   const grid = document.getElementById('resultsGrid');
   const empty = document.getElementById('resultsEmpty');
@@ -213,6 +232,7 @@ async function loadAllRecipes() {
     label.textContent = `All recipes (${recipes.length})`;
     empty.style.display = 'none';
     grid.innerHTML = recipes.map((recipe, index) => recipeCard(recipe, index)).join('');
+    applyRecipeView();
   } catch (error) {
     console.error(error);
     label.textContent = 'All recipes';
