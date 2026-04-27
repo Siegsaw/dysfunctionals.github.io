@@ -426,7 +426,7 @@ async function openSubModal(ingId, ingName, amount) {
     title.textContent = `Substitutes for ${ingName}`;
     body.innerHTML = '<div class="sub-loading">Searching alternatives...</div>';
     confirmBtn.disabled = true;
-    selectedSub = null; // Nunulinam ankstesnį pasirinkimą
+    selectedSub = null; 
     
     modal.classList.add('show');
     modal.setAttribute('aria-hidden', 'false');
@@ -435,7 +435,6 @@ async function openSubModal(ingId, ingName, amount) {
         const response = await fetch(`get_substitutes.php?ingredient_id=${ingId}`);
         const data = await response.json();
 
-        // Tikriname 'substitutes' masyvą, nes tavo PHP jį taip pavadino
         if (!data.substitutes || data.substitutes.length === 0) {
             body.innerHTML = '<p style="padding: 20px; text-align: center;">No substitutes found for this ingredient.</p>';
             return;
@@ -466,23 +465,19 @@ function selectSubstitute(el, id, name, ratio, unit) {
 function confirmSubstitute() {
     if (!selectedSub || !targetIngId) return;
 
-    // Surandame elementus pagrindiniame recepte pagal ID
     const nameEl = document.getElementById(`ing-name-${targetIngId}`);
     const qtyEl = document.getElementById(`ing-qty-${targetIngId}`);
     
-    if (nameEl) {
-        nameEl.innerHTML = `${selectedSub.name} <span class="sub-badge">Substituted</span>`;
-    }
-    
-    if (qtyEl) {
-        // Perskaičiuojame kiekį pagal pakaitalo koeficientą ir dabartines porcijas
-        const newBaseQty = originalQty * selectedSub.ratio;
-        const scaledQty = newBaseQty * (currentServings / originalServings);
-        qtyEl.textContent = `${formatNumber(scaledQty)} ${selectedSub.unit}`;
-    }
+    if (nameEl && qtyEl) {
+        const baseSubstituteQty = originalQty * selectedSub.ratio; 
+        const finalScaledQty = baseSubstituteQty * (currentServings / originalServings);
 
-    closeSubModal();
-    showToast(`Swapped to ${selectedSub.name}`);
+        nameEl.innerHTML = `${selectedSub.name} <span class="sub-badge">Used instead</span>`;
+        qtyEl.textContent = `${formatNumber(finalScaledQty)} ${selectedSub.unit}`;
+        
+        closeSubModal();
+        showToast(`Ingredient updated to ${selectedSub.name}`);
+    }
 }
 
 function closeSubModal() {
