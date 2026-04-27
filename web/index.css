@@ -401,12 +401,7 @@ input[type="range"] {
 }
 
 .results-grid.list-view .recipe-card {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  align-items: center;
-  gap: 14px;
-  padding: 10px 14px;
-  border-radius: 10px;
+  grid-template-columns: 1fr auto auto auto auto auto;
 }
 
 .results-grid.list-view .cuisine-row,
@@ -430,9 +425,9 @@ input[type="range"] {
 
 .results-grid.list-view .btn-view-recipe,
 .results-grid.list-view .btn-view-recipe-disabled {
-  margin-top: 0;
-  padding: 7px 10px;
-  font-size: 12px;
+  grid-column: 6;
+  justify-self: end;
+  align-self: center;
 }
 
 .results-grid.list-view .btn-view-recipe {
