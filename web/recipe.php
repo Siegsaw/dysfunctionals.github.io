@@ -508,46 +508,46 @@ function renderRecipeContent() {
       </button>
         </div>
       </div>
-    `;
-  }).join('');
+    `).join('');
 
-  const steps = (recipe.steps || []).map(step => `
-    <div class="step-card">
-      <div class="step-top">
-        <div class="step-number">Step ${escapeHtml(step.step_number)}</div>
-        <div class="step-meta">
-          <span class="step-type ${escapeHtml((step.step_type || '').toLowerCase())}">
-            ${escapeHtml(step.step_type || 'step')}
-          </span>
-          ${Number(step.time_minutes) > 0 ? `<span class="step-time">⏱️ ${formatNumber(step.time_minutes)} min</span>` : ''}
+   const flavorsHtml = (recipe.flavors || []).map(f => `
+      <span class="recipe-meta">${escapeHtml(f)}</span>
+    `).join('');
+
+   const cuisinesHtml = (recipe.cuisines || []).map(c => `
+          <div class="recipe-meta">${escapeHtml(c)}</div>
+            `).join('');
+    
+    shell.innerHTML = `
+      <div class="recipe-header-card">
+        <div class="recipe-breadcrumb">
+          <a href="browse_recipes.php">← Back to recipes</a>
         </div>
       </div>
       <div class="step-text">${escapeHtml(step.instructions)}</div>
     </div>
   `).join('');
 
-  shell.innerHTML = `
-    <div class="recipe-header-card">
-      <div class="recipe-breadcrumb">
-        <a href="browse_recipes.php">← Back to recipes</a>
-      </div>
+        <h1 class="recipe-title">${escapeHtml(recipe.name)}</h1>
+        
+        <div class="recipe-meta-row">
+          <div class="recipe-meta">🔥 ${formatNumber(recipe.calories)} kcal</div>
+          <div class="recipe-meta">⏱️ ${formatNumber(recipe.total_time)} min</div>
+          <div class="recipe-meta">🥣 ${(recipe.ingredients || []).length} ingredients</div>
+          <div class="recipe-meta">📝 ${(recipe.steps || []).length} steps</div>
+        </div>
 
-      <h1 class="recipe-title">${escapeHtml(recipe.name)}</h1>
+        ${flavorsHtml ? `<div class="recipe-meta-row">${flavorsHtml}</div>` : ''}
 
-      <div class="recipe-meta-row">
-        <div class="recipe-meta">🔥 ${formatNumber(scaleAmount(recipe.calories))} kcal</div>
-        <div class="recipe-meta">⏱️ ${formatNumber(recipe.total_time)} min</div>
-        <div class="recipe-meta">🍽️ ${currentServings} servings</div>
-        <div class="recipe-meta">🥣 ${(recipe.ingredients || []).length} ingredients</div>
-        <div class="recipe-meta">📝 ${(recipe.steps || []).length} steps</div>
-      </div>
+        <p class="recipe-description">
+          ${escapeHtml(recipe.description || 'No description available for this recipe.')}
+        </p>
 
-      <p class="recipe-description">
-        ${escapeHtml(recipe.description || 'No description available for this recipe.')}
-      </p>
+        ${cuisinesHtml ? `<div class="recipe-meta-row">${cuisinesHtml}</div>` : ''}
 
-      <div class="recipe-action-row">
-        <button class="btn-cook-mode" type="button" onclick="openCookMode()">Start cooking mode</button>
+        <div class="recipe-action-row">
+          <button class="btn-cook-mode" type="button" onclick="openCookMode()">Start cooking mode</button>
+        </div>
       </div>
     </div>
 

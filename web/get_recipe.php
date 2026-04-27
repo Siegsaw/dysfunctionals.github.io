@@ -39,6 +39,35 @@ if (!$recipe) {
   exit;
 }
 
+$flavorQuery = $conn->prepare("
+    SELECT f.name 
+    FROM flavors f
+    JOIN recipe_flavors rf ON f.flavor_id = rf.flavor_id
+    WHERE rf.recipe_id = ?
+");
+$flavorQuery->bind_param('i', $recipeId);
+$flavorQuery->execute();
+$flavorResult = $flavorQuery->get_result();
+$flavors = [];
+while ($fRow = $flavorResult->fetch_assoc()) {
+    $flavors[] = $fRow['name'];
+}
+
+$regionQuery = $conn->prepare("
+    SELECT r.name
+    FROM regions r
+    JOIN recipe_regions rr ON r.region_id = rr.region_id
+    WHERE rr.recipe_id = ?
+");
+$regionQuery->bind_param('i', $recipeId);
+$regionQuery->execute();
+$regionResult = $regionQuery->get_result();
+
+$regions = [];
+while ($row = $regionResult->fetch_assoc()) {
+    $regions[] = $row['name'];
+}
+
 $ingredientQuery = $conn->prepare("
   SELECT
     i.ingredient_id,
@@ -114,6 +143,8 @@ echo json_encode([
   'carbs' => (float)$recipe['carbs'],
   'fat' => (float)$recipe['fat'],
   'total_time' => (int)$recipe['total_time'],
+  'flavors' => $flavors,
+  'cuisines' => $regions,
   'ingredients' => $ingredients,
   'steps' => $steps
 ]);

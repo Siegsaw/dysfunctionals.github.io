@@ -921,3 +921,19 @@ window.addEventListener('pageshow', async () => {
     console.error('Pageshow inventory reload error:', err);
   }
 });
+
+function toggleFilterMenu(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  const trigger = document.querySelector(`.collapsible-trigger[data-target="${id}"]`);
+  
+  el.classList.toggle("open");
+  if (trigger) {
+    trigger.classList.toggle("active");
+    const arrow = trigger.querySelector('.arrow');
+    if (arrow) {
+      arrow.style.transform = el.classList.contains('open') ? 'rotate(180deg)' : '';
+    }
+  }
+}
