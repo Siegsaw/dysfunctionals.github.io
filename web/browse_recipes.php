@@ -205,11 +205,6 @@ if (recipeView === 'list') {
     <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
   </svg>
 </button>
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="${isDetailOpen ? 'transform: rotate(180deg);' : ''}">
-          <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-      </button>
-
       <div class="card-detail ${isDetailOpen ? 'open' : ''}" id="${detailId}">
         <div class="time-breakdown">
           <div>Prep: ${formatNumber(recipe.prep_time)} min</div>
@@ -270,19 +265,16 @@ function toggleRecipeDetail(detailId, toggleId) {
   } else {
     openBrowseDetails.delete(recipeId);
   }
-  toggle.innerHTML = isOpen
-    ? `
-      <span>Hide needed ingredients</span>
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="transform: rotate(180deg);">
-        <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-    `
-    : `
-      <span>Show needed ingredients</span>
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-        <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-    `;
+  const text = toggle.querySelector('.toggle-text');
+const icon = toggle.querySelector('svg');
+
+if (isOpen) {
+  text.textContent = 'Hide needed ingredients';
+  icon.style.transform = 'rotate(180deg)';
+} else {
+  text.textContent = 'Show needed ingredients';
+  icon.style.transform = '';
+}
 }
 let recipeView = localStorage.getItem('recipeView') || 'card';
 
