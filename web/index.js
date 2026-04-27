@@ -864,3 +864,17 @@ window.addEventListener('pageshow', async () => {
     console.error('Pageshow inventory reload error:', err);
   }
 });
+
+function toggleFilterMenu(contentId) {
+    const content = document.getElementById(contentId);
+    const trigger = content.previousElementSibling;
+    const arrow = trigger.querySelector('.arrow');
+
+    content.classList.toggle('open');
+
+    if (content.classList.contains('open')) {
+        arrow.style.transform = 'rotate(180deg)';
+    } else {
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
