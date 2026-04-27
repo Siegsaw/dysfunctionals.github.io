@@ -867,16 +867,25 @@ window.addEventListener('pageshow', async () => {
 
 function toggleFilterMenu(contentId) {
     const content = document.getElementById(contentId);
-    if (!content) return; // Saugiklis
+    if (!content) return;
 
     const trigger = content.previousElementSibling;
     const arrow = trigger ? trigger.querySelector('.arrow') : null;
 
-    content.classList.toggle('open');
+    if (content.classList.contains('open')) {
+        content.style.maxHeight = content.scrollHeight + "px"; 
+        requestAnimationFrame(() => {
+            content.style.maxHeight = "0px";
+        });
+        content.classList.remove('open');
+    } else {
+        content.classList.add('open');
+        content.style.maxHeight = content.scrollHeight + "px";
+    }
 
     if (arrow) {
-        arrow.style.transform = content.classList.contains('open') 
-            ? 'rotate(180deg)' 
+        arrow.style.transform = content.classList.contains('open')
+            ? 'rotate(180deg)'
             : 'rotate(0deg)';
     }
 }
