@@ -55,7 +55,7 @@ echo "</div>";
 echo "";
 echo "";
 echo "<div class='filter-collapsible'>";
-echo "  <button type='button' class='collapsible-trigger' onclick='toggleFilterMenu(\"flavor-content\")'>";
+echo "  <button type='button' class='collapsible-trigger' data-target='flavor-content' onclick='toggleFilterMenu(\"flavor-content\")'>";
 echo "    FILTER BY FLAVOR <span class='arrow'>▼</span>";
 echo "  </button>";
 echo "  <div id='flavor-content' class='collapsible-content'>";
@@ -64,7 +64,7 @@ echo "  </div>";
 echo "</div>";
 
 echo "<div class='filter-collapsible'>";
-echo "  <button type='button' class='collapsible-trigger' onclick='toggleFilterMenu(\"cuisine-content\")'>";
+echo "  <button type='button' class='collapsible-trigger' data-target='cuisine-content' onclick='toggleFilterMenu(\"cuisine-content\")'>";
 echo "    FILTER BY CUISINE <span class='arrow'>▼</span>";
 echo "  </button>";
 echo "  <div id='cuisine-content' class='collapsible-content'>";
