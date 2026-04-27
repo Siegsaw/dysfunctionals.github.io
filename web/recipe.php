@@ -112,8 +112,17 @@ function escapeHtml(value) {
 
 function formatNumber(value) {
   const num = Number(value ?? 0);
+
   if (Number.isInteger(num)) return String(num);
-  return String(Math.round(num * 100) / 100);
+
+  const rounded = Math.round(num * 100) / 100;
+
+  // convert common fractions
+  if (rounded === 0.5) return "0.5";
+  if (rounded === 0.25) return "0.25";
+  if (rounded === 0.75) return "0.75";
+
+  return rounded.toString();
 }
 
 function scaleAmount(amount) {
