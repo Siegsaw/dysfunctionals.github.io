@@ -869,7 +869,7 @@ function toggleFilterMenu(id) {
   const el = document.getElementById(id);
   if (!el) return;
 
-  const trigger = document.querySelector(`[onclick="toggleFilterMenu('${id}')"]`);
+  const trigger = document.querySelector(`.collapsible-trigger[data-target="${id}"]`);
   
   el.classList.toggle("open");
   if (trigger) {
