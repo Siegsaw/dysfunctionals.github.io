@@ -452,19 +452,23 @@ function renderRecipeContent() {
       <aside class="recipe-card-side">
         <div class="section-label">Ingredients</div>
 
-        <div class="servings-control">
-          <button type="button" class="servings-btn" onclick="changeServings(-1)">−</button>
-          <input
-            id="servingsInput"
-            class="servings-input"
-            type="text"
-            inputmode="numeric"
-            value="${currentServings}"
-            oninput="sanitizeServingsInput(this)"
-            onblur="setServings(this.value)"
-          >
-          <button type="button" class="servings-btn" onclick="changeServings(1)">+</button>
-        </div>
+        <div class="servings-row">
+          <span class="servings-label">Servings</span>
+
+          <div class="servings-control">
+            <button type="button" class="servings-btn" onclick="changeServings(-1)">−</button>
+            <input
+              id="servingsInput"
+              class="servings-input"
+              type="text"
+              inputmode="numeric"
+              value="${currentServings}"
+              oninput="sanitizeServingsInput(this)"
+              onblur="setServings(this.value)"
+            >
+            <button type="button" class="servings-btn" onclick="changeServings(1)">+</button>
+          </div>
+</div>
 
         ${allergicCount > 0 ? `
           <div class="allergen-summary" role="status" aria-live="polite">
