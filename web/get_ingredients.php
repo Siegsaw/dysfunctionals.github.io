@@ -6,7 +6,8 @@ $result = $conn->query("
   SELECT 
     ingredient_id,
     name_ing,
-    default_unit
+    default_unit,
+    has_expiration
   FROM ingredients
   ORDER BY name_ing
 ");
@@ -18,6 +19,7 @@ while ($row = $result->fetch_assoc()) {
     'id' => (int)$row['ingredient_id'],
     'name' => $row['name_ing'],
     'default_unit' => $row['default_unit']
+    'has_expiration' => (int)$row['has_expiration']
   ];
 }
 
