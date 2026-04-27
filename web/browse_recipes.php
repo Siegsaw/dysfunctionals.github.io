@@ -79,6 +79,7 @@ function makeFlavorTags(flavors) {
 
 let BROWSE_RECIPES = [];
 const browseServings = {};
+const openBrowseDetails = new Set();
 
 function getBrowseServings(recipe) {
   const original = Number(recipe.servings) || 1;
@@ -144,8 +145,9 @@ function recipeCard(recipe, index) {
     ? `<div class="cuisine-row"><span class="tag-cuisine">${escapeHtml(recipe.region_name)}</span></div>`
     : '';
 
-  const detailId = `recipeDetail${index}`;
-  const toggleId = `recipeToggle${index}`;
+  const detailId = `recipeDetail${recipe.id}`;
+  const toggleId = `recipeToggle${recipe.id}`;
+  const isDetailOpen = openBrowseDetails.has(String(recipe.id));
   const hasAllergen = Boolean(recipe.has_allergen);
   const currentServings = getBrowseServings(recipe);
 const matchedAllergens = Array.isArray(recipe.matched_allergens) ? recipe.matched_allergens : [];
@@ -180,13 +182,13 @@ const allergenPreview = matchedAllergens.length > 0
       ${allergenPreview}
 
       <button class="card-toggle" id="${toggleId}" onclick="toggleRecipeDetail('${detailId}', '${toggleId}')">
-        <span>Show needed ingredients</span>
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+  <span>${isDetailOpen ? 'Hide needed ingredients' : 'Show needed ingredients'}</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="${isDetailOpen ? 'transform: rotate(180deg);' : ''}">
           <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </button>
 
-      <div class="card-detail" id="${detailId}">
+      <div class="card-detail ${isDetailOpen ? 'open' : ''}" id="${detailId}">
         <div class="time-breakdown">
           <div>Prep: ${formatNumber(recipe.prep_time)} min</div>
           <div>Cook: ${formatNumber(recipe.cook_time)} min</div>
@@ -239,6 +241,13 @@ function toggleRecipeDetail(detailId, toggleId) {
   if (!detail || !toggle) return;
 
   const isOpen = detail.classList.toggle('open');
+  const recipeId = detailId.replace('recipeDetail', '');
+
+  if (isOpen) {
+    openBrowseDetails.add(recipeId);
+  } else {
+    openBrowseDetails.delete(recipeId);
+  }
   toggle.innerHTML = isOpen
     ? `
       <span>Hide needed ingredients</span>
