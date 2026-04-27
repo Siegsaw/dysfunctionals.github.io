@@ -401,7 +401,25 @@ input[type="range"] {
 }
 
 .results-grid.list-view .recipe-card {
-  grid-template-columns: 1fr auto auto auto auto auto;
+  display: grid;
+  grid-template-columns: 1fr auto auto auto auto;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 14px;
+  min-height: 52px;
+}
+
+.results-grid.list-view .card-name {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.results-grid.list-view .card-pct,
+.results-grid.list-view .recipe-calories,
+.results-grid.list-view .recipe-time {
+  white-space: nowrap;
 }
 
 .results-grid.list-view .cuisine-row,
@@ -414,20 +432,16 @@ input[type="range"] {
   display: none !important;
 }
 
-.results-grid.list-view .card-info {
-  margin: 0;
-  white-space: nowrap;
-}
-
 .results-grid.list-view .card-toggle {
   display: none !important;
 }
 
 .results-grid.list-view .btn-view-recipe,
 .results-grid.list-view .btn-view-recipe-disabled {
-  grid-column: 6;
+  margin-top: 0;
+  padding: 7px 13px;
+  min-width: max-content;
   justify-self: end;
-  align-self: center;
 }
 
 .results-grid.list-view .btn-view-recipe {
@@ -988,6 +1002,48 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 .results-grid.list-view .recipe-calories,
 .results-grid.list-view .recipe-time {
   white-space: nowrap;
+}
+
+.results-grid.list-view {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.results-grid.list-view .recipe-card {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto auto auto;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 14px;
+  min-height: 52px;
+}
+
+.results-grid.list-view .card-info,
+.results-grid.list-view .cuisine-row,
+.results-grid.list-view .tags,
+.results-grid.list-view .prog-wrap,
+.results-grid.list-view .card-sec-lbl,
+.results-grid.list-view .card-toggle,
+.results-grid.list-view .card-detail,
+.results-grid.list-view .time-breakdown {
+  display: none !important;
+}
+
+.results-grid.list-view .card-name,
+.results-grid.list-view .card-pct,
+.results-grid.list-view .recipe-calories,
+.results-grid.list-view .recipe-time {
+  white-space: nowrap;
+}
+
+.results-grid.list-view .btn-view-recipe,
+.results-grid.list-view .btn-view-recipe-disabled {
+  margin-top: 0;
+  width: auto;
+  min-width: max-content;
+  justify-self: end;
+  padding: 8px 14px;
 }
 
 /* ── RESPONSIVE ── */
