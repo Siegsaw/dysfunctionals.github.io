@@ -291,6 +291,21 @@
   box-shadow: 0 0 0 3px rgba(34,197,94,.15);
 }
 
+.servings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.servings-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
 /* ── STEP LIST ─────────────────────────────────────────────── */
 .steps-list {
   display: flex;
