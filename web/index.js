@@ -870,9 +870,4 @@ function toggleFilterMenu(id) {
   if (!el) return;
 
   el.classList.toggle("open");
-
-  const arrow = el.previousElementSibling.querySelector(".arrow");
-  arrow.style.transform = el.classList.contains("open")
-    ? "rotate(180deg)"
-    : "rotate(0deg)";
-}}
+}
