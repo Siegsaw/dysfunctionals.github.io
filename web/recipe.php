@@ -86,7 +86,30 @@ $recipeId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
     </div>
   </div>
 </div>
-
+  
+<div id="subModalOverlay" class="sub-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="subModalTitle" aria-hidden="true">
+  <div class="sub-modal">
+    <div class="sub-modal-header">
+      <div>
+        <div class="sub-modal-label">Find substitute</div>
+        <h2 id="subModalTitle" class="sub-modal-title"></h2>
+      </div>
+      <button class="cook-close-btn" type="button" onclick="closeSubModal()" aria-label="Close">✕</button>
+    </div>
+ 
+    <div class="sub-modal-body" id="subModalBody">
+      <div class="sub-loading">Loading alternatives…</div>
+    </div>
+ 
+    <div class="sub-modal-footer">
+      <button class="cook-nav-btn cook-secondary" type="button" onclick="closeSubModal()">Cancel</button>
+      <button class="cook-nav-btn cook-primary" id="subConfirmBtn" type="button" onclick="confirmSubstitute()" disabled>
+        Use this substitute
+      </button>
+    </div>
+  </div>
+</div>
+  
 <script>
   const RECIPE_ID = <?php echo $recipeId; ?>;
 </script>
@@ -387,6 +410,81 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
+  let selectedSub = null;
+let targetIngId = null;
+let originalQty = 0;
+
+async function openSubModal(ingId, ingName, amount) {
+    targetIngId = ingId;
+    originalQty = amount;
+    
+    const modal = document.getElementById('subModalOverlay');
+    const title = document.getElementById('subModalTitle');
+    const body = document.getElementById('subModalBody');
+    const confirmBtn = document.getElementById('subConfirmBtn');
+
+    title.textContent = `Substitutes for ${ingName}`;
+    body.innerHTML = '<div class="sub-loading">Searching alternatives...</div>';
+    confirmBtn.disabled = true;
+    selectedSub = null; 
+    
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+
+    try {
+        const response = await fetch(`get_substitutes.php?ingredient_id=${ingId}`);
+        const data = await response.json();
+
+        if (!data.substitutes || data.substitutes.length === 0) {
+            body.innerHTML = '<p style="padding: 20px; text-align: center;">No substitutes found for this ingredient.</p>';
+            return;
+        }
+
+        body.innerHTML = data.substitutes.map(s => `
+            <div class="sub-item" onclick="selectSubstitute(this, ${s.substitute_id}, '${escapeHtml(s.substitute_name)}', ${s.ratio}, '${escapeHtml(s.substitute_unit)}')">
+                <div class="sub-item-info">
+                    <strong>${escapeHtml(s.substitute_name)}</strong>
+                    <small>${s.note ? escapeHtml(s.note) : ''}</small>
+                </div>
+                <div class="sub-item-ratio">${s.ratio}x amount</div>
+            </div>
+        `).join('');
+    } catch (e) {
+        body.innerHTML = '<p class="recipe-error">Error loading substitutes.</p>';
+    }
+}
+
+function selectSubstitute(el, id, name, ratio, unit) {
+    document.querySelectorAll('.sub-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+    
+    selectedSub = { id, name, ratio, unit };
+    document.getElementById('subConfirmBtn').disabled = false;
+}
+
+function confirmSubstitute() {
+    if (!selectedSub || !targetIngId) return;
+
+    const nameEl = document.getElementById(`ing-name-${targetIngId}`);
+    const qtyEl = document.getElementById(`ing-qty-${targetIngId}`);
+    
+    if (nameEl && qtyEl) {
+        const baseSubstituteQty = originalQty * selectedSub.ratio; 
+        const finalScaledQty = baseSubstituteQty * (currentServings / originalServings);
+
+        nameEl.innerHTML = `${selectedSub.name} <span class="sub-badge">Used instead</span>`;
+        qtyEl.textContent = `${formatNumber(finalScaledQty)} ${selectedSub.unit}`;
+        
+        closeSubModal();
+        showToast(`Ingredient updated to ${selectedSub.name}`);
+    }
+}
+
+function closeSubModal() {
+    document.getElementById('subModalOverlay').classList.remove('show');
+    document.getElementById('subModalOverlay').setAttribute('aria-hidden', 'true');
+}
+  
 function renderRecipeContent() {
   const recipe = currentRecipe;
   const shell = document.getElementById('recipeShell');
@@ -400,10 +498,15 @@ function renderRecipeContent() {
     return `
       <div class="recipe-ing ${isAllergic ? 'recipe-ing-allergic' : ''}">
         <span class="recipe-ing-name-wrap">
-          <span class="recipe-ing-name">${escapeHtml(ing.name)}</span>
+          <span class="recipe-ing-name" id="ing-name-${ing.id}">${escapeHtml(ing.name)}</span>
           ${isAllergic ? '<span class="allergen-pill">Allergic</span>' : ''}
         </span>
-        <span class="recipe-ing-qty">${formatNumber(scaleAmount(ing.amount))} ${escapeHtml(ing.unit)}</span>
+        <div class="recipe-ing-controls">
+          <span class="recipe-ing-qty" id="ing-qty-${ing.id}">${formatNumber(scaleAmount(ing.amount))} ${escapeHtml(ing.unit)}</span>
+          <button class="sub-btn" type="button" onclick="openSubModal(${ing.id}, '${escapeHtml(ing.name)}', ${ing.amount}); return false;">
+    🔍Find Substitute
+      </button>
+        </div>
       </div>
     `;
   }).join('');

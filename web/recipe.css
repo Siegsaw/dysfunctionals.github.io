@@ -676,6 +676,117 @@ body.cook-mode-open {
     color: var(--text-dark, #eee);
 }
 
+.recipe-ing-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.recipe-ing-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sub-btn {
+    background: var(--bg-secondary, #f0f0f0);
+    border: 1px solid var(--border-color, #ccc);
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sub-btn:hover {
+    background: var(--accent-color, #e0e0e0);
+    transform: scale(1.1);
+  }
+
+  .sub-item {
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 2px solid var(--border-color, #eee);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.2s;
+  }
+
+  .sub-item:hover {
+    background: rgba(0, 123, 255, 0.05);
+    border-color: #007bff;
+  }
+
+  .sub-item.selected {
+    background: #e7f3ff;
+    border-color: #007bff;
+  }
+
+  .sub-badge {
+    font-size: 0.7rem;
+    background: #ffc107;
+    color: #000;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+.sub-modal-overlay.show {
+    display: flex !important; 
+}
+
+.sub-modal-overlay {
+  display: none;
+  position: fixed;          
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.sub-modal {
+  background: #1e1e1e; 
+  color: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  animation: fadeIn 0.2s ease;
+}
+
+.sub-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.dark .sub-btn {
+    background: #2d2d2d; 
+    border-color: #444;    
+    color: #e0e0e0;     
+}
+
+.dark .sub-btn:hover {
+    background: #3d3d3d;
+    border-color: #007bff; 
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+}
+
 /* ── RESPONSIVE ────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .recipe-grid {
