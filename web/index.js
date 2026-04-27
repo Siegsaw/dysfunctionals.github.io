@@ -682,7 +682,7 @@ let recipeView = localStorage.getItem('recipeView') || 'card';
 function setRecipeView(view) {
   recipeView = view;
   localStorage.setItem('recipeView', view);
-  applyRecipeView();
+  runSearch();
 }
 
 function applyRecipeView() {
@@ -800,54 +800,47 @@ function runSearch() {
   }
 `;
     } else {
-      card.innerHTML = `
-        <div class="card-top">
-          <div class="card-name-wrapper">
-              <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
-              ${cuisineTag ? `<div class="cuisine-row">${cuisineTag}</div>` : ''}
-          </div>
-          <span class="card-pct ${pc}">${r.pct}%</span>
-        </div>
+  card.innerHTML = `
+    <div class="card-top">
+      <div class="card-name-wrapper">
+        ${cuisineTag ? `<div class="cuisine-row">${cuisineTag}</div>` : ''}
+        <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
+      </div>
 
-        <div class="card-info">
-          <span class="recipe-calories">🔥 ${r.recipe.calories || '0'} kcal</span>
-          <span class="recipe-time">⏱️ ${r.recipe.time || 0} min</span>
-          <span class="recipe-time">🍽️ ${r.recipe.servings || 1} servings</span>
-        </div>
+      <div class="card-pct pct-high">${r.details.length} ingredients</div>
+    </div>
 
-        ${flavorTags ? `<div class="tags flavor-tags-container">${flavorTags}</div>` : ''}
-        ${allergenPreview}
+    <div class="card-info">
+      <div class="recipe-calories">🔥 ${r.recipe.calories || 0} kcal</div>
+      <div class="recipe-time">⏱️ ${r.recipe.time || 0} min</div>
+    </div>
 
-        <div class="prog-wrap"><div class="prog-bar ${bc}"></div></div>
+    ${flavorTags ? `<div class="tags">${flavorTags}</div>` : ''}
+    ${allergenPreview}
 
-        ${complete
-          ? `<div class="card-sec-lbl green">✓ You have everything!</div><div class="tags">${allHaveTags}</div>`
-          : `${r.missing.length ? `<div class="card-sec-lbl">Missing:</div><div class="tags">${mTags}</div>` : ''}
-             ${r.partial.length ? `<div class="card-sec-lbl">Partial:</div><div class="tags">${pTags}</div>` : ''}`
-        }
+    <button class="card-toggle" id="ct-${r.recipe.id}" onclick="toggleDetail('${r.recipe.id}')">
+      <span>Show needed ingredients</span>
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+        <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
 
-        <button class="card-toggle" id="ct-${r.recipe.id}" onclick="toggleDetail('${r.recipe.id}')">
-          <svg width="10" height="10" viewBox="0 0 10 10">
-            <path d="M1 3l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-          </svg>
-          Show all ingredients
-        </button>
+    <div class="card-detail" id="detail-${r.recipe.id}">
+      <div class="time-breakdown">
+        <div>Prep: ${r.recipe.prep_time || 0} min</div>
+        <div>Cook: ${r.recipe.cook_time || 0} min</div>
+      </div>
 
-        <div class="card-detail" id="detail-${r.recipe.id}">
-          <div class="time-breakdown">
-            <div>Prep time: ${r.recipe.prep_time || 0} min</div>
-            <div>Cook time: ${r.recipe.cook_time || 0} min</div>
-          </div>
-          ${detailRows}
-        </div>
+      <div class="card-sec-lbl">Needed ingredients</div>
+      ${detailRows}
+    </div>
 
-        ${hasAllergen
-          ? `<span class="btn-view-recipe btn-view-recipe-disabled" aria-disabled="true">Blocked by allergen</span>`
-          : `<a class="btn-view-recipe" href="recipe.php?id=${r.recipe.id}">Detailed Recipe</a>`
-        }
-      `;
+    ${hasAllergen
+      ? `<span class="btn-view-recipe btn-view-recipe-disabled" aria-disabled="true">Blocked by allergen</span>`
+      : `<a class="btn-view-recipe" href="recipe.php?id=${r.recipe.id}">Detailed recipe</a>`
     }
-
+  `;
+}
     grid.appendChild(card);
 
     if (recipeView !== 'list') {
