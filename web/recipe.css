@@ -744,6 +744,18 @@ body.cook-mode-open {
     display: flex !important; 
 }
 
+.dark .sub-btn {
+    background: #2d2d2d; 
+    border-color: #444;    
+    color: #e0e0e0;     
+}
+
+.dark .sub-btn:hover {
+    background: #3d3d3d;
+    border-color: #007bff; 
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+}
+
 /* ── RESPONSIVE ────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .recipe-grid {
