@@ -94,6 +94,8 @@ $recipeId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 <script src="shared.js"></script>
 <script>
 let currentRecipe = null;
+let currentServings = 1;
+let originalServings = 1;
 let userAllergens = [];
 let cookModeIndex = 0;
 let cookCompletionScreen = false;
@@ -113,6 +115,32 @@ function formatNumber(value) {
   return Number.isInteger(num) ? String(num) : num.toFixed(1);
 }
 
+function scaleAmount(amount) {
+  const base = Number(amount || 0);
+  return base * (currentServings / originalServings);
+}
+
+function changeServings(delta) {
+  setServings(currentServings + delta);
+}
+
+function setServings(value) {
+  const parsed = parseInt(value, 10);
+  currentServings = Number.isInteger(parsed) && parsed >= 1 ? parsed : 1;
+
+  const input = document.getElementById('servingsInput');
+  if (input) input.value = currentServings;
+
+  renderRecipeContent();
+}
+
+function sanitizeServingsInput(input) {
+  input.value = input.value.replace(/[^0-9]/g, '');
+
+  if (input.value === '') return;
+
+  setServings(input.value);
+}
 
 function normalizeValue(value) {
   return String(value ?? '').trim().toLowerCase();
