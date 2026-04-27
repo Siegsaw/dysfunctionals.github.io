@@ -394,12 +394,6 @@ input[type="range"] {
   margin-bottom: 0;
 }
 
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
-}
-
 .results-grid.list-view {
   display: flex;
   flex-direction: column;
