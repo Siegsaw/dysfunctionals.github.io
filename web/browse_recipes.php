@@ -200,7 +200,11 @@ if (recipeView === 'list') {
       ${allergenPreview}
 
       <button class="card-toggle" id="${toggleId}" onclick="toggleRecipeDetail('${detailId}', '${toggleId}')">
-  <span>${isDetailOpen ? 'Hide needed ingredients' : 'Show needed ingredients'}</span>
+  <span class="toggle-text">${isDetailOpen ? 'Hide needed ingredients' : 'Show needed ingredients'}</span>
+  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="${isDetailOpen ? 'transform: rotate(180deg);' : ''}">
+    <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+</button>
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="${isDetailOpen ? 'transform: rotate(180deg);' : ''}">
           <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
