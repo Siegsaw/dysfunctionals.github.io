@@ -412,6 +412,8 @@ html.dark .pct-mid { color: #fde68a; }
   margin: 4px 0 12px 0;
   display: flex;
   align-items: center;
+  flex-wrap: wrap; 
+  gap: 12px;
 }
 
 .cuisine-row {
@@ -472,6 +474,19 @@ html.dark .pct-mid { color: #fde68a; }
 }
 
 .dark .recipe-time {
+  color: #aaa;
+}
+.recipe-servings {
+  font-size: 0.85rem;
+  color: var(--muted2);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 10px; 
+}
+
+.dark .recipe-servings {
   color: #aaa;
 }
 
