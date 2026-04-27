@@ -867,14 +867,16 @@ window.addEventListener('pageshow', async () => {
 
 function toggleFilterMenu(contentId) {
     const content = document.getElementById(contentId);
+    if (!content) return; // Saugiklis
+
     const trigger = content.previousElementSibling;
-    const arrow = trigger.querySelector('.arrow');
+    const arrow = trigger ? trigger.querySelector('.arrow') : null;
 
     content.classList.toggle('open');
 
-    if (content.classList.contains('open')) {
-        arrow.style.transform = 'rotate(180deg)';
-    } else {
-        arrow.style.transform = 'rotate(0deg)';
+    if (arrow) {
+        arrow.style.transform = content.classList.contains('open') 
+            ? 'rotate(180deg)' 
+            : 'rotate(0deg)';
     }
 }
