@@ -804,6 +804,7 @@ results.forEach(r => {
     }, 60);
   });
 });
+  applyRecipeView();
 }
 function toggleDetail(id) {
   const d = document.getElementById(`detail-${id}`);
@@ -874,6 +875,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (err) {
     console.error('Failed to load inventory:', err);
   }
+  applyRecipeView();
 });
 
 window.addEventListener('pageshow', async () => {
