@@ -173,6 +173,7 @@ const allergenPreview = matchedAllergens.length > 0
       <div class="card-info">
         <div class="recipe-calories">🔥 ${formatNumber(scaleBrowseAmount(recipe.calories, recipe))} kcal</div>
         <div class="recipe-time">⏱️ ${formatNumber(recipe.time)} min</div>
+        <div class="recipe-time">🍽️ ${currentServings} servings</div>
       </div>
 
       ${makeFlavorTags(recipe.flavors)}
