@@ -834,6 +834,10 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   transform: none;
 }
 
+#ingExpDate:disabled::placeholder {
+  color: var(--muted2);
+}
+
 @media (max-width: 640px) {
   .results-head {
     align-items: flex-start;
