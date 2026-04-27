@@ -694,6 +694,7 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
     0 0 12px rgba(255, 47, 47, 0.28);
 }
 
+/* ── DARK MODE (paliekam kaip yra) ── */
 .dark .card-allergen-chip {
   color: #fecaca;
   background: rgba(248, 113, 113, 0.14);
@@ -728,94 +729,70 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
     0 0 28px rgba(255, 90, 90, 0.26);
 }
 
+/* ── COLLAPSIBLE FILTER ── */
 .filter-collapsible {
-    margin-top: 12px;
-    border: 1px solid var(--border);
-    border-radius: var(--rs);
-    background: var(--bg-s);
-    overflow: hidden;
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--rs);
+  background: var(--bg-s);
+  overflow: hidden;
 }
 
 .collapsible-trigger {
-    width: 100%;
-    padding: 12px 16px;
-    background: none;
-    border: none;
-    color: var(--muted2);
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-align: left;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background 0.2s;
+  width: 100%;
+  padding: 12px 16px;
+  margin: 15px 0 5px 0;
+
+  background: none;
+  border: none;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color, #333);
+
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  transition: background 0.2s, opacity 0.2s;
 }
 
 .collapsible-trigger:hover {
-    background: var(--bg-m);
-    color: var(--ink);
+  background: var(--bg-m);
+  opacity: 0.8;
 }
 
 .arrow {
-    transition: transform 0.3s ease;
-    font-size: 9px;
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 10px;
+  transition: transform 0.3s ease;
 }
 
 .collapsible-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out, padding 0.3s ease;
-    background: var(--bg-m);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, padding 0.3s ease;
+  background: var(--bg-m);
 }
 
 .collapsible-content.open {
-    max-height: 500px; /* Pakankamas aukštis visiems mygtukams */
-    padding: 12px 16px;
-    border-top: 1px solid var(--border);
+  max-height: 500px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
 }
 
-#flavorButtons, #cuisineButtons {
-    margin-bottom: 0 !important;
+#flavorButtons,
+#cuisineButtons {
+  margin-bottom: 0 !important;
 }
 
-.collapsible-content {
-    display: none; /* Paslepia elementą */
-    padding: 10px 0;
-}
-
-.collapsible-content.open {
-    display: block;
-}
-
-.collapsible-trigger {
-    background: none;
-    border: none;
-    padding: 0;
-    margin: 15px 0 5px 0;
-    font-family: inherit; /* Naudoja tą patį šriftą kaip visas puslapis */
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text-color, #333); /* Naudokite savo kintamąjį arba spalvą */
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.arrow {
-    display: inline-block;
-    margin-left: 8px;
-    transition: transform 0.3s ease; /* Kad rodyklė suktųsi švelniai */
-    font-size: 10px;
-}
-//
-.collapsible-trigger:hover {
-    opacity: 0.8;
-}
-
+/* ── RESPONSIVE ── */
 @media (max-width: 768px) {
   .page { padding: 28px 16px 60px; }
   .results-grid { grid-template-columns: 1fr; }
