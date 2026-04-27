@@ -435,6 +435,11 @@ input[type="range"] {
   font-size: 12px;
 }
 
+.results-grid.list-view .btn-view-recipe {
+  margin-top: 0;
+  width: auto;
+}
+
 .servings-row {
   display: flex;
   align-items: center;
