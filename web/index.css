@@ -105,7 +105,7 @@
     width: 100%;
 }
 
-#flavorButtons::before, #cuisineButtons::before {
+/*#flavorButtons::before, #cuisineButtons::before {
     display: block;
     width: 100%;
     font-size: 11px;
@@ -113,7 +113,7 @@
     color: var(--muted2);
     letter-spacing: 0.08em;
     margin-bottom: 10px;
-}
+}*/
 
 #flavorButtons button, #cuisineButtons button {
     padding: 6px 14px;
@@ -755,21 +755,19 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 
 .collapsible-trigger {
   width: 100%;
-  padding: 12px 16px;
-  margin: 5px 0; 
-  background: none;
-  border: none;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink, #333); 
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: background 0.2s, opacity 0.2s;
+    padding: 12px 16px;
+    background: var(--bg-m); /* Pridėkite foną, kad matytųsi juosta */
+    border: none;
+    font-family: inherit;
+    font-size: 13px; /* Šiek tiek mažesnis tekstas atrodo moderniau */
+    font-weight: 700;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
 }
 
 .collapsible-trigger:hover {
@@ -790,12 +788,13 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 
 .collapsible-content {
   display: none; 
-  padding: 0 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .collapsible-content.open {
   display: block; 
-  padding: 12px 16px;
+  padding: 15px;
   border-top: 1px solid var(--border);
 }
 
