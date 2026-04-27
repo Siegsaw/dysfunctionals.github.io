@@ -236,6 +236,7 @@ function buildCommonGrid() {
       document.getElementById('ingName').value = c.name;
       refreshUnitOptions();
       validateForm();
+      updateExpirationField();
       document.getElementById('ingQty').focus();
     };
     grid.appendChild(b);
@@ -256,6 +257,7 @@ function initAutofill() {
   input.addEventListener('input', function () {
     validateForm();
     refreshUnitOptions();
+    updateExpirationField();
 
     const val = this.value.trim();
     box.innerHTML = '';
@@ -284,6 +286,7 @@ function initAutofill() {
         input.value = h.name;
         refreshUnitOptions();
         validateForm();
+        updateExpirationField();
         box.style.display = 'none';
         document.getElementById('ingQty').focus();
       });
@@ -293,6 +296,7 @@ function initAutofill() {
           input.value = h.name;
           refreshUnitOptions();
           validateForm();
+          updateExpirationField();
           box.style.display = 'none';
         }
         if (e.key === 'ArrowDown' && box.children[idx + 1]) box.children[idx + 1].focus();
@@ -353,7 +357,6 @@ async function addIng() {
   const ingredient = getIngredientObj(rawName);
   const qty = parseFloat(document.getElementById('ingQty').value);
   const unit = document.getElementById('ingUnit').value;
-  const expiration_date = document.getElementById('ingExpDate').value || null;
 
   if (!ingredient) {
     showToast('⚠️ Invalid ingredient');
@@ -361,6 +364,15 @@ async function addIng() {
     return;
   }
 
+  const expiration_date = Number(ingredient.has_expiration) === 0
+    ? null
+    : (document.getElementById('ingExpDate').value || null);
+
+  if (Number(ingredient.has_expiration) === 1 && !expiration_date) {
+    showToast('⚠️ Expiration date required for this ingredient');
+    return;
+  }
+  
   const name = ingredient.name;
 
   if (isNaN(qty) || qty <= 0) {
@@ -439,6 +451,7 @@ function clearForm() {
   document.getElementById('ingName').value = '';
   document.getElementById('ingQty').value = '';
   document.getElementById('ingExpDate').value = '';
+  document.getElementById('ingExpDate').disabled = false;
   document.getElementById('suggestions').style.display = 'none';
   document.getElementById('ingName').classList.remove('field-err');
   document.getElementById('ingQty').classList.remove('field-err');
@@ -871,6 +884,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadUserAllergens();
   initAutofill();
   refreshUnitOptions();
+  updateExpirationField();
   validateForm();
   updateTimeValue();
   updateCalValue();
