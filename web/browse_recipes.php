@@ -87,6 +87,7 @@ function makeFlavorTags(flavors) {
 let BROWSE_RECIPES = [];
 const browseServings = {};
 const openBrowseDetails = new Set();
+let SAVED_RECIPE_IDS = new Set();
 
 function getBrowseServings(recipe) {
   const original = Number(recipe.servings) || 1;
@@ -123,6 +124,20 @@ function sanitizeBrowseServingsInput(input, recipeId) {
   if (input.value === '') return;
   setBrowseServings(recipeId, input.value);
 }
+
+async function loadSavedRecipeIds() {
+  try {
+    const response = await fetch('get_saved_recipe_ids.php', { cache: 'no-store' });
+    const ids = await response.json();
+
+    SAVED_RECIPE_IDS = new Set(
+      Array.isArray(ids) ? ids.map(id => Number(id)) : []
+    );
+  } catch (err) {
+    console.error('Failed to load saved recipe IDs:', err);
+    SAVED_RECIPE_IDS = new Set();
+  }
+}
   
 function makeIngredientRows(ingredients, recipe) {
   if (!Array.isArray(ingredients) || ingredients.length === 0) {
@@ -157,9 +172,10 @@ function recipeCard(recipe, index) {
   const isDetailOpen = openBrowseDetails.has(String(recipe.id));
   const hasAllergen = Boolean(recipe.has_allergen);
   const currentServings = getBrowseServings(recipe);
-const matchedAllergens = Array.isArray(recipe.matched_allergens) ? recipe.matched_allergens : [];
-
-const allergenPreview = matchedAllergens.length > 0
+  const matchedAllergens = Array.isArray(recipe.matched_allergens) ? recipe.matched_allergens : [];
+  const isSaved = SAVED_RECIPE_IDS.has(Number(recipe.id));
+  const savedIndicator = isSaved ? `<div class="saved-indicator">★ Saved</div>` : '';
+  const allergenPreview = matchedAllergens.length > 0
   ? `
     <div class="tags tags-allergen-preview">
       ${matchedAllergens.map(allergen => `
@@ -171,8 +187,7 @@ const allergenPreview = matchedAllergens.length > 0
 if (recipeView === 'list') {
   return `
     <article class="recipe-card ${hasAllergen ? 'has-allergen' : ''}">
-      <div class="card-name">${escapeHtml(recipe.name)}</div>
-
+    <div class="card-name">${isSaved ? '★ ' : ''}${escapeHtml(recipe.name)}</div>
       <span class="card-pct pct-high">
         ${Array.isArray(recipe.ingredients) ? recipe.ingredients.length : 0} ingredients
       </span>
@@ -191,6 +206,7 @@ if (recipeView === 'list') {
     <article class="recipe-card ${hasAllergen ? 'has-allergen' : ''}">
       <div class="card-top">
         <div class="card-name-wrapper">
+          ${savedIndicator}
           ${region}
           <div class="card-name">${escapeHtml(recipe.name)}</div>
         </div>
@@ -347,8 +363,9 @@ function renderBrowseRecipes() {
   applyRecipeView();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  loadAllRecipes();
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadSavedRecipeIds();
+  await loadAllRecipes();
 });
 </script>
 

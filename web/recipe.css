@@ -179,6 +179,39 @@
   opacity: 0.96;
 }
 
+.btn-save-recipe {
+  padding: 10px 18px;
+  border-radius: var(--rf);
+  border: 1px solid var(--border);
+  background: var(--bg-s);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.btn-save-recipe:hover {
+  background: var(--bg-m);
+  border-color: var(--border-h);
+}
+
+.btn-save-recipe.saved {
+  background: var(--gl);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.saved-indicator {
+  display: inline-flex;
+  width: fit-content;
+  padding: 4px 9px;
+  border-radius: var(--rf);
+  background: var(--gl);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
 /* ── INGREDIENTS / NUTRITION ───────────────────────────────── */
 .ingredients-list,
 .nutrition-box {
