@@ -729,6 +729,7 @@ function scaleHomeAmount(amount, recipe) {
 function setHomeServings(recipeId, value) {
   const parsed = parseInt(value, 10);
   homeServings[recipeId] = Number.isInteger(parsed) && parsed >= 1 ? parsed : 1;
+  openHomeDetails.add(String(recipeId));
   runSearch();
 }
 
@@ -899,13 +900,13 @@ function runSearch() {
     ${allergenPreview}
 
    <button class="card-toggle" id="ct-${r.recipe.id}" onclick="toggleDetail('${r.recipe.id}')">
-    <span class="toggle-text">Show needed ingredients</span>
+  <span class="toggle-text">${openHomeDetails.has(String(r.recipe.id)) ? 'Hide needed ingredients' : 'Show needed ingredients'}</span>
     <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
       <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
   </button>
 
-    <div class="card-detail" id="detail-${r.recipe.id}">
+   <div class="card-detail ${openHomeDetails.has(String(r.recipe.id)) ? 'open' : ''}" id="detail-${r.recipe.id}">
       <div class="time-breakdown">
         <div>Prep: ${r.recipe.prep_time || 0} min</div>
         <div>Cook: ${r.recipe.cook_time || 0} min</div>
@@ -958,6 +959,12 @@ function toggleDetail(id) {
   if (!detail || !btn) return;
 
   const isOpen = detail.classList.toggle('open');
+
+  if (isOpen) {
+    openHomeDetails.add(String(id));
+  } else {
+    openHomeDetails.delete(String(id));
+  }
 
   const text = btn.querySelector('.toggle-text');
   const icon = btn.querySelector('svg');
