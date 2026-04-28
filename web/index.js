@@ -771,6 +771,7 @@ function runSearch() {
   lbl.textContent = `${results.length} Matching Recipe${results.length !== 1 ? 's' : ''}`;
 
   results.forEach(r => {
+    const currentServings = getHomeServings(r.recipe);
     const hasAllergen = Boolean(r.recipe.has_allergen);
     const matchedAllergens = Array.isArray(r.recipe.matched_allergens) ? r.recipe.matched_allergens : [];
 
