@@ -98,10 +98,7 @@ function render() {
   list.innerHTML = '';
 
   let filtered = items.filter(i => i.name.toLowerCase().includes(q));
-
-  if (sortValue === 'expiry_asc') {
-    filtered = sortInventoryByExpiry(filtered);
-  }
+  filtered = sortInventory(filtered, sortValue);
 
   if (!filtered.length) {
     list.innerHTML = `<div class="empty">
