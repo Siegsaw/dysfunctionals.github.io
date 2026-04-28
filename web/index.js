@@ -818,12 +818,12 @@ function runSearch() {
     ${flavorTags ? `<div class="tags">${flavorTags}</div>` : ''}
     ${allergenPreview}
 
-    <button class="card-toggle" id="ct-${r.recipe.id}" onclick="toggleDetail('${r.recipe.id}')">
-      <span>Show needed ingredients</span>
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-        <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-    </button>
+   <button class="card-toggle" id="ct-${r.recipe.id}" onclick="toggleDetail('${r.recipe.id}')">
+    <span class="toggle-text">Show needed ingredients</span>
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+      <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </button>
 
     <div class="card-detail" id="detail-${r.recipe.id}">
       <div class="time-breakdown">
@@ -856,11 +856,23 @@ function runSearch() {
   applyRecipeView();
 }
 function toggleDetail(id) {
-  const d = document.getElementById(`detail-${id}`);
+  const detail = document.getElementById(`detail-${id}`);
   const btn = document.getElementById(`ct-${id}`);
-  d.classList.toggle('open');
-  btn.querySelector('svg').style.transform = d.classList.contains('open') ? 'rotate(180deg)' : '';
-  btn.lastChild.textContent = d.classList.contains('open') ? ' Hide ingredients' : ' Show needed ingredients';
+
+  if (!detail || !btn) return;
+
+  const isOpen = detail.classList.toggle('open');
+
+  const text = btn.querySelector('.toggle-text');
+  const icon = btn.querySelector('svg');
+
+  if (text) {
+    text.textContent = isOpen ? 'Hide needed ingredients' : 'Show needed ingredients';
+  }
+
+  if (icon) {
+    icon.style.transform = isOpen ? 'rotate(180deg)' : '';
+  }
 }
 
 function updateTimeValue() {
