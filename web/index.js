@@ -661,15 +661,28 @@ function matchRecipes() {
       const details = uniqueIngredients.map(ri => {
         const key = ri.name.toLowerCase();
         const have = userMap[key];
-
-        if (!have) return { ...ri, status: 'missing' };
-
-        const coverage = calculateCoverage(have.displayAmount, have.displayUnit, ri.amount, ri.unit);
+        const scaledAmount = scaleHomeAmount(ri.amount, recipe);
+      
+        if (!have) {
+          return {
+            ...ri,
+            amount: scaledAmount,
+            status: 'missing'
+          };
+        }
+      
+        const coverage = calculateCoverage(
+          have.displayAmount,
+          have.displayUnit,
+          scaledAmount,
+          ri.unit
+        );
         
         score += Math.min(1, coverage.ratio);
 
         return {
           ...ri,
+          amount: scaledAmount,
           status: coverage.status,
           have: have.displayAmount,
           haveUnit: have.displayUnit,
@@ -805,10 +818,10 @@ function runSearch() {
       const dc = d.status === 'have' ? 'dot-have' : d.status === 'partial' ? 'dot-partial' : 'dot-missing';
 
       const qt = d.status === 'partial'
-        ? `${d.haveText}/${d.amount} ${d.unit}`
+        ? `${d.haveText}/${formatNumber(d.amount)} ${d.unit}`
         : d.status === 'have'
           ? `${d.haveText}`
-          : `${d.amount} ${d.unit}`;
+          : `${formatNumber(d.amount)} ${d.unit}`;
 
       const matched = Array.isArray(d.matched_allergens) ? d.matched_allergens : [];
       const allergenLabel = matched.length > 0 ? matched.join(', ') : 'ALLERGEN';
@@ -869,7 +882,7 @@ function runSearch() {
         <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
       </div>
 
-      <div class="card-pct pct-high">${r.details.length} ingredients</div>
+      <div class="card-pct ${pc}">${r.pct}%</div>
     </div>
 
     <div class="card-info">
@@ -898,8 +911,24 @@ function runSearch() {
         <div>Cook: ${r.recipe.cook_time || 0} min</div>
       </div>
 
-      <div class="card-sec-lbl">Needed ingredients</div>
-      ${detailRows}
+      <div class="servings-row browse-servings-row">
+      <span class="servings-label">Servings</span>
+      <div class="servings-control">
+        <button type="button" class="servings-btn" onclick="changeHomeServings(${r.recipe.id}, -1)">−</button>
+        <input
+          class="servings-input"
+          type="text"
+          inputmode="numeric"
+          value="${currentServings}"
+          oninput="sanitizeHomeServingsInput(this, ${r.recipe.id})"
+          onblur="setHomeServings(${r.recipe.id}, this.value)"
+        >
+        <button type="button" class="servings-btn" onclick="changeHomeServings(${r.recipe.id}, 1)">+</button>
+      </div>
+    </div>
+    
+    <div class="card-sec-lbl">Needed ingredients</div>
+    ${detailRows}
     </div>
 
     ${hasAllergen
