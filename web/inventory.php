@@ -38,6 +38,10 @@ echo "<input id=\"search\" type=\"text\" placeholder=\"Search ingredients…\">"
 echo "</div>";
 echo "<select id=\"sortExpiry\" class=\"sort-sel\">";
 echo "<option value=\"default\">Default</option>";
+echo "<option value=\"name_asc\">Name A-Z</option>";
+echo "<option value=\"name_desc\">Name Z-A</option>";
+echo "<option value=\"amount_asc\">Amount: Low to High</option>";
+echo "<option value=\"amount_desc\">Amount: High to Low</option>";
 echo "<option value=\"expiry_asc\">Closest expiration date</option>";
 echo "</select>";
 echo "</div>";

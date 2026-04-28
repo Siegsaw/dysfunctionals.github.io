@@ -98,10 +98,7 @@ function render() {
   list.innerHTML = '';
 
   let filtered = items.filter(i => i.name.toLowerCase().includes(q));
-
-  if (sortValue === 'expiry_asc') {
-    filtered = sortInventoryByExpiry(filtered);
-  }
+  filtered = sortInventory(filtered, sortValue);
 
   if (!filtered.length) {
     list.innerHTML = `<div class="empty">
@@ -189,6 +186,32 @@ function applyStep(idx, direction) {
     inp.value = items[idx].amount;
     inp.style.width = Math.max(2.5, inp.value.length + 0.8) + 'ch';
   }
+}
+
+function sortInventory(itemsToSort, sortValue) {
+  const sorted = [...itemsToSort];
+
+  if (sortValue === 'name_asc') {
+    return sorted.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  if (sortValue === 'name_desc') {
+    return sorted.sort((a, b) => b.name.localeCompare(a.name));
+  }
+
+  if (sortValue === 'amount_asc') {
+    return sorted.sort((a, b) => Number(a.amount) - Number(b.amount));
+  }
+
+  if (sortValue === 'amount_desc') {
+    return sorted.sort((a, b) => Number(b.amount) - Number(a.amount));
+  }
+
+  if (sortValue === 'expiry_asc') {
+    return sortInventoryByExpiry(sorted);
+  }
+
+  return sorted;
 }
 
 function sortInventoryByExpiry(items) {
