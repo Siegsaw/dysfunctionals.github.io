@@ -20,10 +20,19 @@ echo  "<button class=\"nav-btn\" onclick=\"location.href='browse_recipes.php'\">
 echo  "<button class=\"nav-btn\" onclick=\"location.href='inventory.php'\">User Ingredients</button>";
 echo "</nav>";
 echo "<div class=\"h-right\">";
-echo "<a id=\"userBadge\" href=\"profile.php\"></a>";
+echo "<span id=\"userBadge\"></span>";
+
+echo "<div class=\"profile-menu-wrap\" id=\"profileMenuWrap\">";
+echo "<button class=\"profile-menu-btn\" id=\"profileMenuBtn\" type=\"button\" onclick=\"toggleProfileMenu(event)\" title=\"Profile menu\">▾</button>";
+echo "<div class=\"profile-dropdown\" id=\"profileDropdown\">";
+echo "<button type=\"button\" onclick=\"location.href='profile.php'\">Profile</button>";
+echo "<button type=\"button\" onclick=\"location.href='saved_recipes.php'\">Saved recipes</button>";
+echo "<button type=\"button\" onclick=\"doLogout()\">Logout</button>";
+echo "</div>";
+echo "</div>";
+
 echo "<button class=\"btn-theme\" onclick=\"toggleTheme()\" title=\"Toggle dark mode\">🌙</button>";
 echo "<button class=\"btn-signin\" id=\"btnSignIn\" onclick=\"location.href='login.php'\">Sign In</button>";
-echo "<button class=\"btn-logout\" id=\"btnLogout\" onclick=\"doLogout()\">Sign Out</button>";
 echo "</div>";
 echo "</header>";
 echo "";
