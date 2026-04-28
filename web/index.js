@@ -856,6 +856,11 @@ function runSearch() {
     <div class="card-info">
       <div class="recipe-calories">🔥 ${r.recipe.calories || 0} kcal</div>
       <div class="recipe-time">⏱️ ${r.recipe.time || 0} min</div>
+        <div class="recipe-time">🍽️ ${currentServings} servings</div>
+    </div>
+
+    <div class="prog">
+      <div class="prog-bar ${bc}" style="width:0%"></div>
     </div>
 
     ${flavorTags ? `<div class="tags">${flavorTags}</div>` : ''}
