@@ -860,7 +860,7 @@ function toggleDetail(id) {
   const btn = document.getElementById(`ct-${id}`);
   d.classList.toggle('open');
   btn.querySelector('svg').style.transform = d.classList.contains('open') ? 'rotate(180deg)' : '';
-  btn.lastChild.textContent = d.classList.contains('open') ? ' Hide ingredients' : ' Show all ingredients';
+  btn.lastChild.textContent = d.classList.contains('open') ? ' Hide ingredients' : ' Show needed ingredients';
 }
 
 function updateTimeValue() {
