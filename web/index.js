@@ -693,6 +693,48 @@ function matchRecipes() {
     .sort((a, b) => b.pct - a.pct);
 }
 let recipeView = localStorage.getItem('recipeView') || 'card';
+const homeServings = {};
+const openHomeDetails = new Set();
+
+function getHomeServings(recipe) {
+  const original = Number(recipe.servings) || 1;
+
+  if (!homeServings[recipe.id]) {
+    homeServings[recipe.id] = original;
+  }
+
+  return homeServings[recipe.id];
+}
+
+function scaleHomeAmount(amount, recipe) {
+  const original = Number(recipe.servings) || 1;
+  const current = getHomeServings(recipe);
+
+  return Number(amount || 0) * (current / original);
+}
+
+function setHomeServings(recipeId, value) {
+  const parsed = parseInt(value, 10);
+  homeServings[recipeId] = Number.isInteger(parsed) && parsed >= 1 ? parsed : 1;
+  runSearch();
+}
+
+function changeHomeServings(recipeId, delta) {
+  const recipe = RECIPES.find(r => Number(r.id) === Number(recipeId));
+  if (!recipe) return;
+
+  const current = getHomeServings(recipe);
+  setHomeServings(recipeId, current + delta);
+}
+
+function sanitizeHomeServingsInput(input, recipeId) {
+  input.value = input.value.replace(/[^0-9]/g, '');
+
+  if (input.value === '') return;
+
+  setHomeServings(recipeId, input.value);
+}
+
 
 function setRecipeView(view) {
   recipeView = view;
@@ -744,6 +786,7 @@ function runSearch() {
   lbl.textContent = `${results.length} Matching Recipe${results.length !== 1 ? 's' : ''}`;
 
   results.forEach(r => {
+    const currentServings = getHomeServings(r.recipe);
     const hasAllergen = Boolean(r.recipe.has_allergen);
     const matchedAllergens = Array.isArray(r.recipe.matched_allergens) ? r.recipe.matched_allergens : [];
 
@@ -830,8 +873,13 @@ function runSearch() {
     </div>
 
     <div class="card-info">
-      <div class="recipe-calories">🔥 ${r.recipe.calories || 0} kcal</div>
+      <div class="recipe-calories">🔥 ${formatNumber(scaleHomeAmount(r.recipe.calories, r.recipe))} kcal</div>
       <div class="recipe-time">⏱️ ${r.recipe.time || 0} min</div>
+      <div class="recipe-time">🍽️ ${currentServings} servings</div>
+    </div>
+    
+    <div class="prog">
+      <div class="prog-bar ${bc}" style="width:0%"></div>
     </div>
 
     ${flavorTags ? `<div class="tags">${flavorTags}</div>` : ''}
@@ -892,6 +940,12 @@ function toggleDetail(id) {
   if (icon) {
     icon.style.transform = isOpen ? 'rotate(180deg)' : '';
   }
+}
+
+function formatNumber(value) {
+  const num = Number(value ?? 0);
+  if (Number.isInteger(num)) return String(num);
+  return String(Math.round(num * 100) / 100);
 }
 
 function updateTimeValue() {
