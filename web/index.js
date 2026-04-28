@@ -647,48 +647,39 @@ function matchRecipes() {
     .map(recipe => {
       let score = 0;
 
-      const uniqueIngredients = [];
-      const seenNames = new Set();
-
-      recipe.ingredients.forEach(ri => {
-        const lowerName = ri.name.toLowerCase();
-        if (!seenNames.has(lowerName)) {
-          seenNames.add(lowerName);
-          uniqueIngredients.push(ri);
-        }
-      });
+      const uniqueIngredients = recipe.ingredients || [];
 
       const details = uniqueIngredients.map(ri => {
-        const key = ri.name.toLowerCase();
-        const have = userMap[key];
-        const scaledAmount = scaleHomeAmount(ri.amount, recipe);
-      
-        if (!have) {
-          return {
-            ...ri,
-            amount: scaledAmount,
-            status: 'missing'
-          };
-        }
-      
-        const coverage = calculateCoverage(
-          have.displayAmount,
-          have.displayUnit,
-          scaledAmount,
-          ri.unit
-        );
-        
-        score += Math.min(1, coverage.ratio);
-
+      const key = ri.name.toLowerCase();
+      const have = userMap[key];
+      const scaledAmount = scaleHomeAmount(ri.amount, recipe);
+    
+      if (!have) {
         return {
           ...ri,
           amount: scaledAmount,
-          status: coverage.status,
-          have: have.displayAmount,
-          haveUnit: have.displayUnit,
-          haveText: coverage.haveText
+          status: 'missing'
         };
-      });
+      }
+    
+      const coverage = calculateCoverage(
+        have.displayAmount,
+        have.displayUnit,
+        scaledAmount,
+        ri.unit
+      );
+    
+      score += Math.min(1, coverage.ratio);
+    
+      return {
+        ...ri,
+        amount: scaledAmount,
+        status: coverage.status,
+        have: have.displayAmount,
+        haveUnit: have.displayUnit,
+        haveText: coverage.haveText
+      };
+    });
 
       const pct = uniqueIngredients.length
         ? Math.round((score / uniqueIngredients.length) * 100)
