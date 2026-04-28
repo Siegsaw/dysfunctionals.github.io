@@ -26,10 +26,18 @@ if (!isset($_SESSION['user_id'])) {
     </nav>
 
     <div class="h-right">
-      <a id="userBadge" href="profile.php"></a>
-      <button class="btn-theme" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
-      <button class="btn-signin" id="btnSignIn" onclick="location.href='login.php'">Sign In</button>
-      <button class="btn-logout" id="btnLogout" onclick="doLogout()">Sign Out</button>
+      <span id="userBadge"></span>
+        <div class="profile-menu-wrap" id="profileMenuWrap">
+          <button class="profile-menu-btn" id="profileMenuBtn" type="button" onclick="toggleProfileMenu(event)" title="Profile menu">▾</button>
+        
+          <div class="profile-dropdown" id="profileDropdown">
+            <button type="button" onclick="location.href='profile.php'">Profile</button>
+            <button type="button" onclick="location.href='saved_recipes.php'">Saved recipes</button>
+            <button type="button" onclick="doLogout()">Logout</button>
+          </div>
+        </div>
+        <button class="btn-theme" onclick="toggleTheme()" title="Toggle dark mode">🌙</button>
+        <button class="btn-signin" id="btnSignIn" onclick="location.href='login.php'">Sign In</button>
     </div>
   </header>
 
