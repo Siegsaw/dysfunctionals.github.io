@@ -363,7 +363,7 @@ function renderBrowseRecipes() {
   applyRecipeView();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   await loadSavedRecipeIds();
   await loadAllRecipes();
 });
