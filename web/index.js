@@ -678,6 +678,48 @@ function matchRecipes() {
     .sort((a, b) => b.pct - a.pct);
 }
 let recipeView = localStorage.getItem('recipeView') || 'card';
+const homeServings = {};
+const openHomeDetails = new Set();
+
+function getHomeServings(recipe) {
+  const original = Number(recipe.servings) || 1;
+
+  if (!homeServings[recipe.id]) {
+    homeServings[recipe.id] = original;
+  }
+
+  return homeServings[recipe.id];
+}
+
+function scaleHomeAmount(amount, recipe) {
+  const original = Number(recipe.servings) || 1;
+  const current = getHomeServings(recipe);
+
+  return Number(amount || 0) * (current / original);
+}
+
+function setHomeServings(recipeId, value) {
+  const parsed = parseInt(value, 10);
+  homeServings[recipeId] = Number.isInteger(parsed) && parsed >= 1 ? parsed : 1;
+  runSearch();
+}
+
+function changeHomeServings(recipeId, delta) {
+  const recipe = RECIPES.find(r => Number(r.id) === Number(recipeId));
+  if (!recipe) return;
+
+  const current = getHomeServings(recipe);
+  setHomeServings(recipeId, current + delta);
+}
+
+function sanitizeHomeServingsInput(input, recipeId) {
+  input.value = input.value.replace(/[^0-9]/g, '');
+
+  if (input.value === '') return;
+
+  setHomeServings(recipeId, input.value);
+}
+
 
 function setRecipeView(view) {
   recipeView = view;
