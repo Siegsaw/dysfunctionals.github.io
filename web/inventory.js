@@ -191,6 +191,32 @@ function applyStep(idx, direction) {
   }
 }
 
+function sortInventory(itemsToSort, sortValue) {
+  const sorted = [...itemsToSort];
+
+  if (sortValue === 'name_asc') {
+    return sorted.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  if (sortValue === 'name_desc') {
+    return sorted.sort((a, b) => b.name.localeCompare(a.name));
+  }
+
+  if (sortValue === 'amount_asc') {
+    return sorted.sort((a, b) => Number(a.amount) - Number(b.amount));
+  }
+
+  if (sortValue === 'amount_desc') {
+    return sorted.sort((a, b) => Number(b.amount) - Number(a.amount));
+  }
+
+  if (sortValue === 'expiry_asc') {
+    return sortInventoryByExpiry(sorted);
+  }
+
+  return sorted;
+}
+
 function sortInventoryByExpiry(items) {
   return [...items].sort((a, b) => {
     const aDate = a.expiration_date ? new Date(a.expiration_date) : null;
