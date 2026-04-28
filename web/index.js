@@ -24,6 +24,7 @@ let FLAVORS = [];
 let selectedCuisines = [];
 let CUISINES = [];
 let USER_ALLERGENS = []; 
+let SAVED_RECIPE_IDS = new Set();
 
 // ── HELPERS ────────────────────────────────────────────────────
 function showToast(message) {
@@ -571,6 +572,20 @@ function updateCuisineUI() {
     });
 }
 
+async function loadSavedRecipeIds() {
+  try {
+    const response = await fetch('get_saved_recipe_ids.php', { cache: 'no-store' });
+    const ids = await response.json();
+
+    SAVED_RECIPE_IDS = new Set(
+      Array.isArray(ids) ? ids.map(id => Number(id)) : []
+    );
+  } catch (err) {
+    console.error('Failed to load saved recipe IDs:', err);
+    SAVED_RECIPE_IDS = new Set();
+  }
+}
+
 // ── CHIP RENDERING ─────────────────────────────────────────────
 function renderChips() {
   const sec  = document.getElementById('chipsSection');
@@ -732,6 +747,9 @@ function runSearch() {
     const hasAllergen = Boolean(r.recipe.has_allergen);
     const matchedAllergens = Array.isArray(r.recipe.matched_allergens) ? r.recipe.matched_allergens : [];
 
+    const isSaved = SAVED_RECIPE_IDS.has(Number(r.recipe.id));
+    const savedIndicator = isSaved ? `<div class="saved-indicator">★ Saved</div>` : '';
+
     const complete = r.pct === 100;
     const pc = complete ? 'pct-high' : r.pct >= 40 ? 'pct-mid' : 'pct-low';
     const bc = complete ? 'prog-high' : r.pct >= 40 ? 'prog-mid' : 'prog-low';
@@ -789,7 +807,7 @@ function runSearch() {
 
     if (recipeView === 'list') {
      card.innerHTML = `
-  <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
+  <div class="card-name">${isSaved ? '★ ' : ''}${complete ? '✅ ' : ''}${r.recipe.name}</div>
   <span class="card-pct ${pc}">${r.pct}%</span>
   <span class="recipe-calories">🔥 ${r.recipe.calories || 0} kcal</span>
   <span class="recipe-time">⏱️ ${r.recipe.time || 0} min</span>
@@ -803,6 +821,7 @@ function runSearch() {
   card.innerHTML = `
     <div class="card-top">
       <div class="card-name-wrapper">
+        ${savedIndicator}
         ${cuisineTag ? `<div class="cuisine-row">${cuisineTag}</div>` : ''}
         <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
       </div>
@@ -928,6 +947,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     await loadRecipes();
+    await loadSavedRecipeIds();
   } catch (err) {
     console.error('Failed to load recipes:', err);
   }
