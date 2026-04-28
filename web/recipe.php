@@ -492,6 +492,75 @@ function closeSubModal() {
     document.getElementById('subModalOverlay').classList.remove('show');
     document.getElementById('subModalOverlay').setAttribute('aria-hidden', 'true');
 }
+
+async function updateSaveButton() {
+  const btn = document.getElementById('btnSaveRecipe');
+  if (!btn || !currentRecipe) return;
+
+  try {
+    const response = await fetch(`is_recipe_saved.php?recipe_id=${currentRecipe.id}`, {
+      cache: 'no-store'
+    });
+
+    const data = await response.json();
+
+    if (!data.loggedIn) {
+      btn.textContent = '☆ Save recipe';
+      btn.classList.remove('saved');
+      return;
+    }
+
+    if (data.saved) {
+      btn.textContent = '★ Saved';
+      btn.classList.add('saved');
+    } else {
+      btn.textContent = '☆ Save recipe';
+      btn.classList.remove('saved');
+    }
+  } catch (error) {
+    console.error('Failed to check saved recipe status:', error);
+  }
+}
+
+async function toggleSavedRecipe() {
+  if (!currentRecipe) return;
+
+  const btn = document.getElementById('btnSaveRecipe');
+  if (btn) btn.disabled = true;
+
+  try {
+    const response = await fetch('toggle_saved_recipe.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        recipe_id: currentRecipe.id
+      })
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      showToast('⚠️ ' + (data.message || 'Failed to update saved recipe.'));
+      if (btn) btn.disabled = false;
+      return;
+    }
+
+    showToast(data.saved ? '✓ Recipe saved.' : '✓ Recipe removed from saved recipes.');
+
+    if (btn) {
+      btn.textContent = data.saved ? '★ Saved' : '☆ Save recipe';
+      btn.classList.toggle('saved', data.saved);
+      btn.disabled = false;
+    }
+
+  } catch (error) {
+    console.error(error);
+    showToast('⚠️ Connection error.');
+    if (btn) btn.disabled = false;
+  }
+}
   
 function renderRecipeContent() {
   const recipe = currentRecipe;
@@ -562,6 +631,15 @@ function renderRecipeContent() {
 
       <div class="recipe-action-row">
         <button class="btn-cook-mode" type="button" onclick="openCookMode()">Start cooking mode</button>
+      
+        <button
+          class="btn-save-recipe"
+          id="btnSaveRecipe"
+          type="button"
+          onclick="toggleSavedRecipe()"
+        >
+          ☆ Save recipe
+        </button>
       </div>
     </div>
 
@@ -652,6 +730,7 @@ async function loadRecipe() {
     originalServings = Number(recipe.servings) || 1;
     currentServings = originalServings;
     renderRecipeContent();
+    updateSaveButton();
   } catch (error) {
     console.error(error);
     document.getElementById('recipeShell').innerHTML = `
