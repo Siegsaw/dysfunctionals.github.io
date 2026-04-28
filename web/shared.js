@@ -46,19 +46,44 @@ async function doLogout() {
   setTimeout(() => location.href = 'login.php', 1800);
 }
 
+function toggleProfileMenu(event) {
+  event.stopPropagation();
+
+  const dropdown = document.getElementById('profileDropdown');
+  const btn = document.getElementById('profileMenuBtn');
+
+  if (!dropdown || !btn) return;
+
+  dropdown.classList.toggle('show');
+  btn.classList.toggle('open');
+}
+
+function closeProfileMenu() {
+  const dropdown = document.getElementById('profileDropdown');
+  const btn = document.getElementById('profileMenuBtn');
+
+  if (dropdown) dropdown.classList.remove('show');
+  if (btn) btn.classList.remove('open');
+}
+
 async function updateAuthUI() {
   const auth = await getAuthStatus();
 
   const signInBtn = document.getElementById('btnSignIn');
-  const logoutBtn = document.getElementById('btnLogout');
   const badge = document.getElementById('userBadge');
+  const profileMenuWrap = document.getElementById('profileMenuWrap');
 
-  if (signInBtn) signInBtn.style.display = auth.loggedIn ? 'none' : 'inline-flex';
-  if (logoutBtn) logoutBtn.style.display = auth.loggedIn ? 'inline-flex' : 'none';
+  if (signInBtn) {
+    signInBtn.style.display = auth.loggedIn ? 'none' : 'inline-flex';
+  }
 
   if (badge) {
     badge.style.display = auth.loggedIn ? 'inline-block' : 'none';
     badge.textContent = auth.username || auth.email || '';
+  }
+
+  if (profileMenuWrap) {
+    profileMenuWrap.style.display = auth.loggedIn ? 'block' : 'none';
   }
 }
 
@@ -90,4 +115,14 @@ async function saveUserIng(arr) {
 document.addEventListener('DOMContentLoaded', () => {
   initThemeBtn();
   updateAuthUI();
+
+  document.addEventListener('click', function (event) {
+    const wrap = document.getElementById('profileMenuWrap');
+
+    if (!wrap) return;
+
+    if (!wrap.contains(event.target)) {
+      closeProfileMenu();
+    }
+  });
 });

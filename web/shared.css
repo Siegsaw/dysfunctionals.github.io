@@ -133,14 +133,70 @@ header {
   border-radius: var(--rf);
   display: none;
   text-decoration: none;
-  cursor: pointer;
   position: relative;
   z-index: 200;
+  white-space: nowrap;
 }
 
-#userBadge:hover {
+.profile-menu-wrap {
+  position: relative;
+  display: none;
+}
+
+.profile-menu-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--rs);
+  border: 1px solid var(--border);
+  background: var(--bg-s);
   color: var(--ink);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-menu-btn:hover,
+.profile-menu-btn.open {
+  background: var(--bg-m);
   border-color: var(--border-h);
+}
+
+.profile-menu-btn.open {
+  transform: rotate(180deg);
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 170px;
+  background: var(--bg-s);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 8px;
+  box-shadow: var(--sh-lg);
+  display: none;
+  z-index: 1000;
+}
+
+.profile-dropdown.show {
+  display: block;
+}
+
+.profile-dropdown button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: var(--rs);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.profile-dropdown button:hover {
   background: var(--bg-m);
 }
 
