@@ -854,11 +854,11 @@ function runSearch() {
     </div>
 
     <div class="card-info">
-      <div class="recipe-calories">🔥 ${r.recipe.calories || 0} kcal</div>
+      <div class="recipe-calories">🔥 ${formatNumber(scaleHomeAmount(r.recipe.calories, r.recipe))} kcal</div>
       <div class="recipe-time">⏱️ ${r.recipe.time || 0} min</div>
-        <div class="recipe-time">🍽️ ${currentServings} servings</div>
+      <div class="recipe-time">🍽️ ${currentServings} servings</div>
     </div>
-
+    
     <div class="prog">
       <div class="prog-bar ${bc}" style="width:0%"></div>
     </div>
@@ -921,6 +921,12 @@ function toggleDetail(id) {
   if (icon) {
     icon.style.transform = isOpen ? 'rotate(180deg)' : '';
   }
+}
+
+function formatNumber(value) {
+  const num = Number(value ?? 0);
+  if (Number.isInteger(num)) return String(num);
+  return String(Math.round(num * 100) / 100);
 }
 
 function updateTimeValue() {
