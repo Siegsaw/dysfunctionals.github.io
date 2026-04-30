@@ -39,6 +39,15 @@ echo "<div class=\"page\">";
 echo "  <div class=\"page-title\">Recipe Browser</div>";
 echo "  <div class=\"page-sub\">Browse all recipes in the database for inspiration, even without adding ingredients.</div>";
 
+echo "  <div class=\"input-card\">";
+echo "    <div class=\"input-row\">";
+echo "      <div class=\"search-wrap browse-search\">";
+echo "        <span class=\"search-icon\">🔍</span>";
+echo "        <input id=\"recipeSearch\" type=\"text\" placeholder=\"Search recipes…\">";
+echo "      </div>";
+echo "    </div>";
+echo "  </div>";
+
 echo "  <div class=\"results-section\" id=\"resultsSection\" style=\"display:block\">";
 echo "    <div class=\"results-head\">";
 echo "      <div class=\"results-label\" id=\"resultsLabel\">All recipes</div>";
@@ -86,6 +95,7 @@ function makeFlavorTags(flavors) {
 
 let BROWSE_RECIPES = [];
 const browseServings = {};
+let browseSearchQuery = '';
 const openBrowseDetails = new Set();
 let SAVED_RECIPE_IDS = new Set();
 
@@ -354,9 +364,32 @@ async function loadAllRecipes() {
 }
 function renderBrowseRecipes() {
   const grid = document.getElementById('resultsGrid');
+  const empty = document.getElementById('resultsEmpty');
+  const label = document.getElementById('resultsLabel');
+
   if (!grid) return;
 
-  grid.innerHTML = BROWSE_RECIPES
+  const query = browseSearchQuery.trim().toLowerCase();
+
+  const filteredRecipes = BROWSE_RECIPES.filter(recipe =>
+    String(recipe.name || '').toLowerCase().includes(query)
+  );
+
+  grid.innerHTML = '';
+
+  if (filteredRecipes.length === 0) {
+    empty.style.display = 'block';
+    label.textContent = query ? 'No matching recipes found' : 'All recipes';
+    applyRecipeView();
+    return;
+  }
+
+  empty.style.display = 'none';
+  label.textContent = query
+    ? `Matching recipes (${filteredRecipes.length})`
+    : `All recipes (${filteredRecipes.length})`;
+
+  grid.innerHTML = filteredRecipes
     .map((recipe, index) => recipeCard(recipe, index))
     .join('');
 
@@ -366,6 +399,15 @@ function renderBrowseRecipes() {
 document.addEventListener('DOMContentLoaded', async () => {
   await loadSavedRecipeIds();
   await loadAllRecipes();
+
+  const searchInput = document.getElementById('recipeSearch');
+
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      browseSearchQuery = searchInput.value;
+      renderBrowseRecipes();
+    });
+  }
 });
 </script>
 
