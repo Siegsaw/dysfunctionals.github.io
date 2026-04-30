@@ -39,10 +39,12 @@ echo "<div class=\"page\">";
 echo "  <div class=\"page-title\">Recipe Browser</div>";
 echo "  <div class=\"page-sub\">Browse all recipes in the database for inspiration, even without adding ingredients.</div>";
 
-echo "  <div class=\"input-card\" style=\"margin-bottom:18px;\">";
-echo "    <div class=\"search-wrap\">";
-echo "      <span class=\"search-icon\">🔍</span>";
-echo "      <input id=\"recipeSearch\" type=\"text\" placeholder=\"Search recipes by name…\">";
+echo "  <div class=\"input-card\">";
+echo "    <div class=\"input-row\">";
+echo "      <div class=\"search-wrap browse-search\">";
+echo "        <span class=\"search-icon\">🔍</span>";
+echo "        <input id=\"recipeSearch\" type=\"text\" placeholder=\"Search recipes…\">";
+echo "      </div>";
 echo "    </div>";
 echo "  </div>";
 
