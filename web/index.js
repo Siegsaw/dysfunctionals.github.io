@@ -401,14 +401,23 @@ async function addIng() {
     return;
   }
 
+  const expInput = document.getElementById('ingExpDate');
+
   const expiration_date = Number(ingredient.has_expiration) === 0
     ? null
-    : (document.getElementById('ingExpDate').value || null);
-
-  if (Number(ingredient.has_expiration) === 1 && !expiration_date) {
-    showToast('⚠️ Expiration date required for this ingredient');
-    return;
-  }
+    : (expInput.value || null);
+  
+    if (Number(ingredient.has_expiration) === 1 && !expiration_date) {
+      showToast('⚠️ Expiration date required for this ingredient');
+      return;
+    }
+    
+    validateExpirationField();
+    
+    if (Number(ingredient.has_expiration) === 1 && expInput.classList.contains('exp-error')) {
+      showToast('⚠️ Expiration date cannot be in the past');
+      return;
+    }
   
   const name = ingredient.name;
 
