@@ -1,23 +1,66 @@
 <?php
 header('Content-Type: application/json');
+
 require '/var/www/private/db.php';
 require 'session.php';
 
-requireLogin();
-
-$userId = $_SESSION['user_id'];
 $data = json_decode(file_get_contents('php://input'), true);
+$ingredientId = $data['ingredient_id'] ?? null;
 
-$ingredientId = isset($data['ingredient_id']) ? (int)$data['ingredient_id'] : 0;
-
-if ($ingredientId <= 0) {
-    echo json_encode(['success' => false, 'message' => 'Invalid ingredient ID']);
+if (!$ingredientId) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Invalid ingredient ID'
+    ]);
     exit;
 }
 
-$stmt = $conn->prepare('DELETE FROM user_inventory WHERE user_id = ? AND ingredient_id = ?');
-$stmt->bind_param('ii', $userId, $ingredientId);
-$stmt->execute();
+/*
+  ── GUEST MODE ─────────────────────────────
+*/
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['guest_inventory'] = array_values(array_filter(
+        $_SESSION['guest_inventory'] ?? [],
+        fn($item) => (string)$item['ingredient_id'] !== (string)$ingredientId
+    ));
 
-echo json_encode(['success' => true]);
+    echo json_encode([
+        'success' => true,
+        'guest' => true
+    ]);
+    exit;
+}
+
+/*
+  ── LOGGED-IN MODE ─────────────────────────
+*/
+$userId = (int)$_SESSION['user_id'];
+$ingredientId = (int)$ingredientId;
+
+if ($ingredientId <= 0) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Invalid ingredient ID'
+    ]);
+    exit;
+}
+
+$stmt = $conn->prepare('
+    DELETE FROM user_inventory 
+    WHERE user_id = ? AND ingredient_id = ?
+');
+$stmt->bind_param('ii', $userId, $ingredientId);
+
+if (!$stmt->execute()) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Failed to remove ingredient: ' . $conn->error
+    ]);
+    exit;
+}
+
+echo json_encode([
+    'success' => true,
+    'guest' => false
+]);
 ?>
