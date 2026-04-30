@@ -1047,17 +1047,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadUserAllergens();
   initAutofill();
   refreshUnitOptions();
-  updateExpirationField();
   validateForm();
   updateTimeValue();
   updateCalValue();
   const expInput = document.getElementById('ingExpDate');
-  if (expInput && !expInput.value) {
-    const date = new Date();
-    date.setDate(date.getDate() + 7);
-    expInput.value = date.toISOString().split('T')[0];
-  }
-  const expInput = document.getElementById('ingExpDate');
+  
   if (expInput) {
     expInput.addEventListener('input', validateExpirationField);
   }
@@ -1071,6 +1065,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (err) {
     console.error('Failed to load ingredients:', err);
   }
+  updateExpirationField();
+  validateExpirationField();
 
   try {
     await loadRecipes();
