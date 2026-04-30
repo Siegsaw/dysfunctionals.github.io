@@ -192,16 +192,29 @@ function updateExpirationField() {
 
   const ing = getIngredientObj(name);
 
+  // If no ingredient selected → enable but don't force date
   if (!ing) {
     expInput.disabled = false;
     return;
   }
 
+  // If ingredient does NOT expire → disable
   if (Number(ing.has_expiration) === 0) {
     expInput.value = '';
     expInput.disabled = true;
-  } else {
-    expInput.disabled = false;
+    return;
+  }
+
+  // Ingredient HAS expiration → enable
+  expInput.disabled = false;
+
+  // Only set default if user hasn't picked anything yet
+  if (!expInput.value) {
+    const date = new Date();
+    date.setDate(date.getDate() + 7);
+
+    const iso = date.toISOString().split('T')[0];
+    expInput.value = iso;
   }
 }
 
@@ -1015,6 +1028,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   validateForm();
   updateTimeValue();
   updateCalValue();
+  const expInput = document.getElementById('ingExpDate');
+  if (expInput && !expInput.value) {
+    const date = new Date();
+    date.setDate(date.getDate() + 7);
+    expInput.value = date.toISOString().split('T')[0];
+  }
 
   try {
     await loadIngredients();
