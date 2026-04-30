@@ -216,6 +216,29 @@ function updateExpirationField() {
     const iso = date.toISOString().split('T')[0];
     expInput.value = iso;
   }
+  validateExpirationField();
+}
+
+function validateExpirationField() {
+  const expInput = document.getElementById('ingExpDate');
+  if (!expInput) return;
+
+  const value = expInput.value;
+  if (!value) {
+    expInput.classList.remove('exp-error');
+    return;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const selected = new Date(value);
+
+  if (selected < today) {
+    expInput.classList.add('exp-error');
+  } else {
+    expInput.classList.remove('exp-error');
+  }
 }
 
 // ── DATA LOADING ───────────────────────────────────────────────
@@ -1033,6 +1056,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const date = new Date();
     date.setDate(date.getDate() + 7);
     expInput.value = date.toISOString().split('T')[0];
+  }
+  const expInput = document.getElementById('ingExpDate');
+  if (expInput) {
+    expInput.addEventListener('input', validateExpirationField);
   }
 
   try {
