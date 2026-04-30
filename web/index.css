@@ -98,6 +98,7 @@
 }
 .exp-inp.exp-error {
   border-color: var(--red);
+   border: 2px solid var(--red);
   box-shadow: 0 0 0 2px var(--rl);
 }
 
