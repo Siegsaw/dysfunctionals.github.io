@@ -3,7 +3,6 @@ header('Content-Type: application/json');
 require '/var/www/private/db.php';
 require 'session.php';
 
-$userId = $_SESSION['user_id'];
 $data = json_decode(file_get_contents('php://input'), true);
 
 $name = trim($data['name'] ?? '');
@@ -37,6 +36,7 @@ if (!isset($_SESSION['user_id'])) {
     ]);
     exit;
 }
+$userId = $_SESSION['user_id'];
 
 // Find or create ingredient
 $ingredientStmt = $conn->prepare('SELECT ingredient_id FROM ingredients WHERE name_ing = ?');
