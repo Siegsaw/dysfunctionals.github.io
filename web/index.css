@@ -96,6 +96,10 @@
   cursor: pointer;
   opacity: 0.85;
 }
+.exp-inp.exp-error {
+  border-color: var(--red);
+  box-shadow: 0 0 0 2px var(--rl);
+}
 
 #flavorButtons, #cuisineButtons {
     display: flex;
