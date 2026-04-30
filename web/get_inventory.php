@@ -4,7 +4,7 @@ require '/var/www/private/db.php';
 require 'session.php';
 
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode([]);
+    echo json_encode($_SESSION['guest_inventory'] ?? []);
     exit;
 }
 
