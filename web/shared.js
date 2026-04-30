@@ -78,8 +78,10 @@ async function updateAuthUI() {
   }
 
   if (badge) {
-    badge.style.display = auth.loggedIn ? 'inline-block' : 'none';
-    badge.textContent = auth.username || auth.email || '';
+    badge.style.display = 'inline-block';
+    badge.textContent = auth.loggedIn
+      ? (auth.username || auth.email || '')
+      : 'Guest';
   }
 
   if (profileMenuWrap) {

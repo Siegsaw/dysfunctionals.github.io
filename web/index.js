@@ -192,16 +192,52 @@ function updateExpirationField() {
 
   const ing = getIngredientObj(name);
 
+  // If no ingredient selected → enable but don't force date
   if (!ing) {
     expInput.disabled = false;
     return;
   }
 
+  // If ingredient does NOT expire → disable
   if (Number(ing.has_expiration) === 0) {
     expInput.value = '';
     expInput.disabled = true;
+    return;
+  }
+
+  // Ingredient HAS expiration → enable
+  expInput.disabled = false;
+
+  // Only set default if user hasn't picked anything yet
+  if (!expInput.value) {
+    const date = new Date();
+    date.setDate(date.getDate() + 7);
+
+    const iso = date.toISOString().split('T')[0];
+    expInput.value = iso;
+  }
+  validateExpirationField();
+}
+
+function validateExpirationField() {
+  const expInput = document.getElementById('ingExpDate');
+  if (!expInput) return;
+
+  const value = expInput.value;
+  if (!value) {
+    expInput.classList.remove('exp-error');
+    return;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const selected = new Date(value);
+
+  if (selected < today) {
+    expInput.classList.add('exp-error');
   } else {
-    expInput.disabled = false;
+    expInput.classList.remove('exp-error');
   }
 }
 
@@ -365,14 +401,23 @@ async function addIng() {
     return;
   }
 
+  const expInput = document.getElementById('ingExpDate');
+
   const expiration_date = Number(ingredient.has_expiration) === 0
     ? null
-    : (document.getElementById('ingExpDate').value || null);
-
-  if (Number(ingredient.has_expiration) === 1 && !expiration_date) {
-    showToast('⚠️ Expiration date required for this ingredient');
-    return;
-  }
+    : (expInput.value || null);
+  
+    if (Number(ingredient.has_expiration) === 1 && !expiration_date) {
+      showToast('⚠️ Expiration date required for this ingredient');
+      return;
+    }
+    
+    validateExpirationField();
+    
+    if (Number(ingredient.has_expiration) === 1 && expInput.classList.contains('exp-error')) {
+      showToast('⚠️ Expiration date cannot be in the past');
+      return;
+    }
   
   const name = ingredient.name;
 
@@ -612,9 +657,9 @@ function renderChips() {
     const chip = document.createElement('div');
     chip.className = 'ing-chip';
 
-    const removeHandler = isServerItem
-      ? `removeInventoryIng(${i.ingredient_id})`
-      : `removeIng(${idx - serverInventory.length})`;
+  const removeHandler = isServerItem
+    ? `removeInventoryIng('${String(i.ingredient_id)}')`
+    : `removeIng(${idx - serverInventory.length})`;
 
     chip.innerHTML = `
       <span>${i.name}</span>
@@ -1011,10 +1056,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadUserAllergens();
   initAutofill();
   refreshUnitOptions();
-  updateExpirationField();
   validateForm();
   updateTimeValue();
   updateCalValue();
+  const expInput = document.getElementById('ingExpDate');
+  
+  if (expInput) {
+    expInput.addEventListener('input', validateExpirationField);
+  }
 
   try {
     await loadIngredients();
@@ -1025,6 +1074,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch (err) {
     console.error('Failed to load ingredients:', err);
   }
+  updateExpirationField();
+  validateExpirationField();
 
   try {
     await loadRecipes();

@@ -111,13 +111,14 @@ function render() {
   filtered.forEach(item => {
     const ri = items.indexOf(item);
     const d  = document.createElement('div');
-    d.className = 'inv-item';
+    const expired = isExpired(item.expiration_date);
+    d.className = `inv-item${expired ? ' inv-expired' : ''}`;
 
     d.innerHTML = `
       <div class="inv-info">
         <span class="inv-name">${item.name}</span>
         <span class="inv-unit">${item.unit}</span>
-        ${item.expiration_date ? `<span class="item-exp">Exp: ${item.expiration_date}</span>` : ''}
+        ${item.expiration_date ? `<span class="item-exp${expired ? ' item-exp-expired' : ''}">Exp: ${item.expiration_date}</span>` : ''}
       </div>
 
       <div class="inv-ctrl">
@@ -230,7 +231,19 @@ function sortInventoryByExpiry(items) {
 function applyInventorySort() {
   render();
 }
-  
+
+function isExpired(dateStr) {
+  if (!dateStr) return false;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const exp = new Date(dateStr);
+  exp.setHours(0, 0, 0, 0);
+
+  return exp < today;
+}
+
 function setDirect(idx, val) {
   const n = parseFloat(val);
   const inp = document.getElementById(`cur-${idx}`)?.querySelector('.cur-val-inp');
