@@ -3,8 +3,6 @@ header('Content-Type: application/json');
 require '/var/www/private/db.php';
 require 'session.php';
 
-requireLogin();
-
 $userId = $_SESSION['user_id'];
 $data = json_decode(file_get_contents('php://input'), true);
 
@@ -15,6 +13,28 @@ $expirationDate = trim($data['expiration_date'] ?? '');
 
 if (!$name || $amount <= 0 || !$unit) {
     echo json_encode(['success' => false, 'message' => 'Invalid input']);
+    exit;
+}
+
+if (!isset($_SESSION['user_id'])) {
+    if (!isset($_SESSION['guest_inventory'])) {
+        $_SESSION['guest_inventory'] = [];
+    }
+
+    $guestId = 'guest_' . time() . '_' . rand(1000, 9999);
+
+    $_SESSION['guest_inventory'][] = [
+        'ingredient_id' => $guestId,
+        'name' => $name,
+        'amount' => $amount,
+        'unit' => $unit,
+        'expiration_date' => $expirationDate
+    ];
+
+    echo json_encode([
+        'success' => true,
+        'guest' => true
+    ]);
     exit;
 }
 
