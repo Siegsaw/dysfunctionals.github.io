@@ -657,9 +657,9 @@ function renderChips() {
     const chip = document.createElement('div');
     chip.className = 'ing-chip';
 
-    const removeHandler = isServerItem
-      ? `removeInventoryIng(${i.ingredient_id})`
-      : `removeIng(${idx - serverInventory.length})`;
+  const removeHandler = isServerItem
+    ? `removeInventoryIng('${String(i.ingredient_id)}')`
+    : `removeIng(${idx - serverInventory.length})`;
 
     chip.innerHTML = `
       <span>${i.name}</span>
