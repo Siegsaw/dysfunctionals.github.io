@@ -86,6 +86,15 @@
   align-items: center;
   gap: 12px;
 }
+.inv-item.inv-expired {
+  border-color: var(--red);
+  box-shadow: 0 0 0 2px var(--rl);
+}
+
+.item-exp-expired {
+  color: var(--red);
+  font-weight: 700;
+}
 
 /* Current stock display */
 .inv-current {
