@@ -3,9 +3,9 @@
    ============================================================ */
 
 .inv-main {
-  max-width: 780px;
+  max-width: min(1180px, calc(100vw - 64px));
   margin: 0 auto;
-  padding: 48px 40px;
+  padding: 56px clamp(24px, 4vw, 56px);
   animation: fadeUp .4s ease both;
 }
 .inv-hdr {
@@ -27,7 +27,7 @@
 .search-wrap { position: relative; }
 .search-wrap input {
   padding-left: 32px;
-  width: 240px;
+  width: min(360px, 40vw);
   font-size: 13.5px;
   padding-top: 9px;
   padding-bottom: 9px;
@@ -308,6 +308,25 @@
 .btn-undo:hover { color: var(--gd); }
 
 @media (max-width: 768px) {
-  .inv-main { padding: 28px 16px; }
+  .inv-main { max-width: 100%; padding: 28px 16px; }
   .inv-item { flex-wrap: wrap; }
+}
+
+@media (min-width: 1200px) {
+  .inv-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 16px;
+  }
+
+  .inv-item {
+    margin-bottom: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .search-wrap,
+  .search-wrap input {
+    width: 100%;
+  }
 }
