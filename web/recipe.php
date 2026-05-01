@@ -609,7 +609,9 @@ function renderRecipeContent() {
   shell.innerHTML = `
     <div class="recipe-header-card">
       <div class="recipe-breadcrumb">
-        <a href="browse_recipes.php">← Back to recipes</a>
+        <a href="#" onclick="goToPreviousPage(); return false;">
+          ← Previous page
+        </a>
       </div>
       
       <h1 class="recipe-title">${escapeHtml(recipe.name)}</h1>
@@ -742,6 +744,20 @@ async function loadRecipe() {
   }
 }
 
+function goToPreviousPage() {
+  const referrer = document.referrer || '';
+
+  if (
+    referrer.includes('index.php') ||
+    referrer.includes('browse_recipes.php')
+  ) {
+    window.history.back();
+    return;
+  }
+
+  window.location.href = 'browse_recipes.php';
+}
+  
 document.addEventListener('DOMContentLoaded', async () => {
   await loadUserAllergens();
   await loadRecipe();
