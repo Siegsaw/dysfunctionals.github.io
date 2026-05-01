@@ -5,9 +5,9 @@
 
 /* ── PAGE LAYOUT ───────────────────────────────────────────── */
 .recipe-page {
-  max-width: min(1280px, calc(100vw - 64px));
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 56px clamp(24px, 4vw, 56px) 88px;
+  padding: 48px 40px 80px;
   animation: fadeUp 0.4s ease both;
 }
 
@@ -27,8 +27,8 @@
 
 .recipe-grid {
   display: grid;
-  grid-template-columns: minmax(320px, 360px) minmax(0, 1fr);
-  gap: 24px;
+  grid-template-columns: 300px 1fr;
+  gap: 18px;
 }
 
 .recipe-card-side,
@@ -109,9 +109,9 @@
 }
 
 .dark .flavor-pill {
-  background-color: #374151;
-  color: #e5e7eb;
-  border-color: #4b5563;
+  background-color: var(--bg-m);
+  color: var(--ink);
+  border-color: var(--border-h);
 }
 
 .recipe-description {
@@ -732,8 +732,8 @@ body.cook-mode-open {
 }
 
 .dark .recipe-meta {
-    background: var(--surface-dark, #2d2d2d);
-    color: var(--text-dark, #eee);
+    background: var(--bg-m);
+    color: var(--ink);
 }
 
 .recipe-ing-controls {
@@ -818,8 +818,8 @@ body.cook-mode-open {
 }
 
 .sub-modal {
-  background: #1e1e1e; 
-  color: #fff;
+  background: var(--bg-s); 
+  color: var(--ink);
   border-radius: 16px;
   padding: 20px;
   width: 90%;
@@ -836,15 +836,15 @@ body.cook-mode-open {
 }
 
 .dark .sub-btn {
-    background: #2d2d2d; 
-    border-color: #444;    
-    color: #e0e0e0;     
+    background: var(--bg-m); 
+    border-color: var(--border);    
+    color: var(--ink);     
 }
 
 .dark .sub-btn:hover {
-    background: #3d3d3d;
-    border-color: #007bff; 
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+    background: var(--yellow);
+    border-color: var(--border-h); 
+    box-shadow: 0 0 8px rgba(178, 129, 68, 0.3);
 }
 
 /* ── RESPONSIVE ────────────────────────────────────────────── */
@@ -855,7 +855,7 @@ body.cook-mode-open {
 }
 
 @media (max-width: 768px) {
-  .recipe-page { max-width: 100%;
+  .recipe-page {
     padding: 28px 16px 60px;
   }
 
@@ -907,10 +907,4 @@ body.cook-mode-open {
 .cook-complete-text {
   font-size: 16px;
    }
-}
-
-@media (min-width: 1200px) {
-  .recipe-header-card { padding: 34px; }
-  .recipe-card-side,
-  .recipe-card-main { padding: 28px; }
 }
