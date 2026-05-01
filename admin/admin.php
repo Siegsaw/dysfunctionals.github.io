@@ -17,7 +17,7 @@ echo "<div class='layout'>";
 echo "<aside class='sidebar'>";
 echo "<a class='logo' href='admin.php'>PantryAdmin</a>";
 echo "<a class='nav active' href='admin.php'>Dashboard</a>";
-echo "<a class='nav secondary' href='../web/index.php' target='_blank'>Main Website ↗</a>";
+echo "<a class='nav secondary' href='http://siegsaw.mockus.lt/web/index.php' target='_blank'>Main Website ↗</a>";
 echo "<a class='nav' href='add_recipe.php'>Add Recipe</a>";
 echo "<a class='nav' href='add_nutrition.php'>Nutrition Mapping</a>";
 echo "<a class='nav secondary' href='logout.php'>Log out</a>";
