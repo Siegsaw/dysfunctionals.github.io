@@ -166,20 +166,27 @@
 }
 
 .btn-qty {
-  width: 28px; height: 28px;
-  border: 1px solid var(--border);
+  width: 28px;
+  height: 28px;
+  border: 1px solid #b28144;
   border-radius: 6px;
-  background: var(--bg-m);
+  background: #9c7041;
   font-size: 16px;
   font-weight: 600;
-  color: var(--ink2);
-  display: flex; align-items: center; justify-content: center;
+  color: #f5eadb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 0;
   line-height: 1;
 }
-.btn-qty:hover   { background: var(--bg-s); border-color: var(--border-h); }
-.btn-minus:hover { background: var(--rl); border-color: var(--red); color: var(--red); }
-.btn-plus:hover  { background: var(--gl); border-color: var(--gm); color: var(--gd); }
+.btn-qty:hover,
+.btn-minus:hover,
+.btn-plus:hover {
+  background: #b28144;
+  border-color: #c99863;
+  color: #f5eadb;
+}
 
 /* Step amount input */
 .step-inp {
