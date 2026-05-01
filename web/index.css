@@ -1026,3 +1026,37 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   .common-grid  { grid-template-columns: repeat(3, 1fr); }
   .time-filter { min-width: 100%; order: 2; margin-top: 10px; }
 }
+
+/* Restore dark-mode recipe/ingredient chips to the original warm brown tones.
+   The warmer light theme should not turn these badges green in dark mode. */
+html.dark .ing-chip,
+html.dark .tag-cuisine {
+  background: #9c7041 !important;
+  border-color: #b28144 !important;
+  color: #dfe0de !important;
+}
+
+html.dark .ing-chip-qty,
+html.dark .tag-cuisine .recipe-cuisine,
+html.dark .tag-cuisine span {
+  color: #7f9db5 !important;
+}
+
+html.dark .chip-rm {
+  background: #323f53 !important;
+  color: #7f9db5 !important;
+}
+
+html.dark .tag-flavor,
+html.dark .tag {
+  background: rgba(156, 112, 65, 0.34) !important;
+  border-color: #9c7041 !important;
+  color: #7f9db5 !important;
+}
+
+html.dark .tag-have,
+html.dark .tag-partial {
+  background: rgba(156, 112, 65, 0.34) !important;
+  border-color: #9c7041 !important;
+  color: #7f9db5 !important;
+}
