@@ -17,8 +17,8 @@ if ($ingredientId === '' || !is_numeric($ingredientId)) {
 }
 
 $stmt = $conn->prepare("
-    SELECT nutrient_id, amount
-    FROM ingredient_nutrients
+    SELECT nutrient_id, amount_per_100g
+    FROM ingredient_nutrition
     WHERE ingredient_id = ?
 ");
 
@@ -30,10 +30,11 @@ $result = $stmt->get_result();
 $nutrition = [];
 
 while ($row = $result->fetch_assoc()) {
-    $nutrition[$row['nutrient_id']] = $row['amount'];
+    $nutrition[$row['nutrient_id']] = $row['amount_per_100g'];
 }
 
 echo json_encode([
     'success' => true,
     'nutrition' => $nutrition
 ]);
+?>
