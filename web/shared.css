@@ -8,27 +8,33 @@
 
 /* ── LIGHT THEME TOKENS ── */
 :root {
-  --bg: #ffffff;
-  --bg-s: #f9fafb;
-  --bg-m: #f3f4f6;
-  --border: rgba(0, 0, 0, 0.08);
-  --border-h: rgba(0, 0, 0, 0.16);
-  --ink: #0f172a;
-  --ink2: #374151;
-  --muted: #6b7280;
-  --muted2: #9ca3af;
+  /* Warm, softer light palette */
+  --bg: #f7efe4;
+  --bg-s: #fffaf2;
+  --bg-m: #efe1cf;
+  --border: rgba(91, 58, 38, 0.14);
+  --border-h: rgba(91, 58, 38, 0.28);
+  --ink: #2c2018;
+  --ink2: #4a3728;
+  --muted: #745f4d;
+  --muted2: #8c7662;
   --green: #22c55e;
   --gd: #16a34a;
-  --gl: #dcfce7;
-  --gm: #bbf7d0;
-  --red: #ef4444;
-  --rl: #fee2e2;
-  --yellow: #f59e0b;
-  --yl: #fef3c7;
-  --sh-xs: 0 1px 2px rgba(0,0,0,.05);
-  --sh-sm: 0 0 0 1px rgba(0,0,0,.04), 0 2px 4px rgba(0,0,0,.05), 0 4px 12px rgba(0,0,0,.04);
-  --sh-md: 0 0 0 1px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.08);
-  --sh-lg: 0 0 0 1px rgba(0,0,0,.05), 0 8px 32px rgba(0,0,0,.12);
+  --gl: #e4f3dc;
+  --gm: #bedfae;
+  --red: #c24132;
+  --rl: #f8ddd5;
+  --yellow: #b28144;
+  --yl: #f3dfb6;
+  --chip-bg: #b28144;
+  --chip-bg-hover: #c08a4d;
+  --chip-border: #d39a56;
+  --chip-text: #fff4df;
+  --chip-muted: #b7c6cf;
+  --sh-xs: 0 1px 2px rgba(67,42,25,.08);
+  --sh-sm: 0 0 0 1px rgba(91,58,38,.06), 0 2px 6px rgba(67,42,25,.08), 0 6px 16px rgba(67,42,25,.06);
+  --sh-md: 0 0 0 1px rgba(91,58,38,.07), 0 6px 20px rgba(67,42,25,.12);
+  --sh-lg: 0 0 0 1px rgba(91,58,38,.08), 0 12px 36px rgba(67,42,25,.16);
   --r: 12px;
   --rs: 8px;
   --rl2: 16px;
@@ -37,27 +43,33 @@
 
 /* ── DARK THEME TOKENS ── */
 html.dark {
-  --bg: #0f172a;
-  --bg-s: #1e293b;
-  --bg-m: #334155;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-h: rgba(255, 255, 255, 0.16);
-  --ink: #f1f5f9;
-  --ink2: #cbd5e1;
-  --muted: #94a3b8;
-  --muted2: #64748b;
+  /* Brown/green dark mode from the supplied screenshot */
+  --bg: #150c0c;
+  --bg-s: #331d1d;
+  --bg-m: #5a5e27;
+  --border: rgba(129, 94, 74, 0.35);
+  --border-h: rgba(178, 129, 68, 0.55);
+  --ink: #dfe0de;
+  --ink2: #cfd2d4;
+  --muted: #7f9db5;
+  --muted2: #6f879d;
   --green: #22c55e;
   --gd: #16a34a;
-  --gl: rgba(34, 197, 94, 0.15);
-  --gm: rgba(34, 197, 94, 0.25);
+  --gl: rgba(34, 197, 94, 0.18);
+  --gm: rgba(34, 197, 94, 0.32);
   --red: #f87171;
   --rl: rgba(248, 113, 113, 0.15);
-  --yellow: #fbbf24;
-  --yl: rgba(251, 191, 36, 0.15);
-  --sh-xs: 0 1px 2px rgba(0,0,0,.3);
-  --sh-sm: 0 0 0 1px rgba(255,255,255,.04), 0 2px 4px rgba(0,0,0,.3), 0 4px 12px rgba(0,0,0,.3);
-  --sh-md: 0 0 0 1px rgba(255,255,255,.04), 0 4px 16px rgba(0,0,0,.4);
-  --sh-lg: 0 0 0 1px rgba(255,255,255,.05), 0 8px 32px rgba(0,0,0,.5);
+  --yellow: #b28144;
+  --yl: rgba(178, 129, 68, 0.32);
+  --chip-bg: #b28144;
+  --chip-bg-hover: #c08a4d;
+  --chip-border: #d39a56;
+  --chip-text: #fff4df;
+  --chip-muted: #9db5c8;
+  --sh-xs: 0 1px 2px rgba(0,0,0,.35);
+  --sh-sm: 0 0 0 1px rgba(178,129,68,.10), 0 2px 4px rgba(0,0,0,.35), 0 4px 12px rgba(0,0,0,.35);
+  --sh-md: 0 0 0 1px rgba(178,129,68,.12), 0 4px 16px rgba(0,0,0,.45);
+  --sh-lg: 0 0 0 1px rgba(178,129,68,.14), 0 8px 32px rgba(0,0,0,.55);
 }
 
 html { color-scheme: light; -webkit-font-smoothing: antialiased; }
@@ -285,5 +297,20 @@ header {
 .expiry-badge {
   background-color: var(--chip-bg) !important;
   border: 1px solid var(--chip-border) !important;
+  color: var(--chip-text) !important;
+}
+
+/* Brown chip/tag palette — do not let theme controls turn these green. */
+.badge,
+.chip,
+.tag,
+.recipe-tag,
+.flavor-tag,
+.cuisine-tag,
+.ingredient-chip,
+.unit-badge,
+.expiry-badge {
+  background-color: var(--chip-bg) !important;
+  border-color: var(--chip-border) !important;
   color: var(--chip-text) !important;
 }
