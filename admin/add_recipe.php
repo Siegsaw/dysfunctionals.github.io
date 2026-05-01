@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/auth.php';
+require_admin();
 echo "<!DOCTYPE html>";
 echo "<html lang='en'>";
 echo "<head>";
@@ -18,6 +20,7 @@ echo "<a class='nav' href='admin.php'>Dashboard</a>";
 echo "<a class='nav secondary' href='../web/index.php' target='_blank'>Main Website ↗</a>";
 echo "<a class='nav active' href='add_recipe.php'>Add Recipe</a>";
 echo "<a class='nav' href='add_nutrition.php'>Nutrition Mapping</a>";
+echo "<a class='nav secondary' href='logout.php'>Log out</a>";
 echo "</aside>";
 
 echo "<main class='main'>";
