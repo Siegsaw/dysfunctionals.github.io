@@ -6,9 +6,9 @@ body {
 }
 
 .profile-page {
-  max-width: 1100px;
-  margin: 40px auto;
-  padding: 0 20px 50px;
+  max-width: min(1280px, calc(100vw - 64px));
+  margin: 48px auto;
+  padding: 0 clamp(24px, 4vw, 56px) 64px;
 }
 
 .profile-hero {
@@ -37,7 +37,7 @@ body {
 
 .profile-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: minmax(0, 2.2fr) minmax(320px, 1fr);
   gap: 24px;
   align-items: start;
 }
@@ -243,4 +243,9 @@ body {
   .profile-title {
     font-size: 38px;
   }
+}
+
+@media (min-width: 1200px) {
+  .profile-grid { gap: 32px; }
+  .profile-card { padding: 30px; }
 }
