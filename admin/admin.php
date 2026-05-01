@@ -37,10 +37,10 @@ echo "<div class='card-title'>Ingredients</div>";
 echo "<div class='card-sub'>Controlled from DB</div>";
 echo "</div>";
 
-echo "<div class='card'>";
+echo "<a class='card card-link' href='add_nutrition.php'>";
 echo "<div class='card-title'>Nutrition</div>";
 echo "<div class='card-sub'>Ingredient nutrition mapping</div>";
-echo "</div>";
+echo "</a>";
 
 echo "</div>";
 
