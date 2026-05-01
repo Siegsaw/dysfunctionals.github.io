@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <?php endif; ?>
 
       <form method="post" action="login.php" class="login-form">
-        <label for="username">Username</label>
+        <label for="username">E-mail / Username</label>
         <input id="username" name="username" type="text" autocomplete="username" required autofocus>
 
         <label for="password">Password</label>
