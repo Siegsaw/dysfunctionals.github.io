@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/auth.php';
+require_admin(true);
 header('Content-Type: application/json');
 require '/var/www/private/db.php';
 
