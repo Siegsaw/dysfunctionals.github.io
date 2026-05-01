@@ -1040,3 +1040,38 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   border: 1px solid #b28144 !important;
   color: #f5eadb !important;
 }
+
+/* Restore the screenshot's light-brown chips/tags while keeping buttons green. */
+.ing-chip,
+.cmn-btn,
+.tag-cuisine,
+.tag-flavor,
+.recipe-card .tag,
+.recipe-card .badge,
+.recipe-card .flavor-tag,
+.recipe-card .cuisine-tag {
+  background: var(--chip-bg) !important;
+  border: 1px solid var(--chip-border) !important;
+  color: var(--chip-text) !important;
+}
+
+.ing-chip-qty,
+.ing-chip .chip-rm,
+.tag-cuisine *,
+.tag-flavor * {
+  color: var(--chip-muted) !important;
+}
+
+.chip-rm {
+  background: rgba(43, 35, 35, 0.45) !important;
+  color: var(--chip-muted) !important;
+}
+
+.cmn-btn:hover,
+.ing-chip:hover,
+.tag-cuisine:hover,
+.tag-flavor:hover {
+  background: var(--chip-bg-hover) !important;
+  border-color: var(--chip-border) !important;
+  color: var(--chip-text) !important;
+}
