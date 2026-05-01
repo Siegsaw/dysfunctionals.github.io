@@ -1,15 +1,12 @@
 <?php
 // PantryChef admin authentication helper
-// Change these credentials before publishing.
-define('ADMIN_USERNAME', 'admin');
-define('ADMIN_PASSWORD', 'admin123');
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 function admin_is_logged_in(): bool {
-    return !empty($_SESSION['admin_logged_in']);
+    return !empty($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
 }
 
 function require_admin(bool $json = false): void {
