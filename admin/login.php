@@ -14,13 +14,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
 
     $stmt = $conn->prepare("
-        SELECT user_id, username, password_hash, is_admin
+        SELECT user_id, username, email, password_hash, is_admin
         FROM users
-        WHERE username = ?
+        WHERE username = ? OR email = ?
         LIMIT 1
     ");
 
-    $stmt->bind_param("s", $username);
+    $stmt->bind_param("ss", $username, $username);
     $stmt->execute();
 
     $result = $stmt->get_result();
