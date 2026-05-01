@@ -26,7 +26,7 @@ echo "<div class='layout'>";
 echo "<aside class='sidebar'>";
 echo "<a class='logo' href='admin.php'>PantryAdmin</a>";
 echo "<a class='nav' href='admin.php'>Dashboard</a>";
-echo "<a class='nav secondary' href='../index.php' target='_blank'>Main Website ↗</a>";
+echo "<a class='nav secondary' href='/web/index.php' target='_blank'>Main Website ↗</a>";
 echo "<a class='nav' href='add_recipe.php'>Add Recipe</a>";
 echo "<a class='nav active' href='add_nutrition.php'>Nutrition Mapping</a>";
 echo "<a class='nav secondary' href='logout.php'>Log out</a>";
@@ -38,7 +38,7 @@ echo "<div class='page-sub'>Assign values per 100g for each ingredient</div>";
 
 echo "<div class='card'>";
 echo "<div class='section'>1. Select Ingredient</div>";
-echo "<select id='ingredient_id' class='input'>";
+echo "<select id='ingredient_id' class='input' onchange='loadNutrition()'>";
 echo "<option value=''>-- Choose an ingredient --</option>";
 while ($ing = $ingResult->fetch_assoc()) {
     echo "<option value='{$ing['ingredient_id']}'>{$ing['name_ing']}</option>";
@@ -49,11 +49,35 @@ echo "<div class='section'>2. Nutrient Values (per 100g)</div>";
 echo "<div class='preview-list'>";
 
 foreach ($nutrients as $nutr) {
+    $nutrientName = strtolower(trim($nutr['name_nutr']));
+
+    $isRequiredMacro = in_array($nutrientName, [
+        'calories',
+        'calorie',
+        'kcal',
+        'fat',
+        'carbs',
+        'carbohydrates',
+        'protein'
+    ]);
+
+    $requiredAttr = $isRequiredMacro ? "required" : "";
+    $requiredMark = $isRequiredMacro ? " <span style='color:#ef4444;'>*</span>" : "";
+
     echo "<div class='preview-row'>";
-    echo "<div class='preview-row-left'>{$nutr['name_nutr']} ({$nutr['unit']})</div>";
+    echo "<div class='preview-row-left'>{$nutr['name_nutr']} ({$nutr['unit']}){$requiredMark}</div>";
     echo "<div class='preview-row-right'>";
-    echo "<input type='number' step='0.01' class='input nutrient-input' 
-                 data-nutrient-id='{$nutr['nutrient_id']}' placeholder='0.00' style='width: 100px; margin: 0;'>";
+    echo "<input 
+            type='number' 
+            step='0.01' 
+            min='0'
+            class='input nutrient-input' 
+            data-nutrient-id='{$nutr['nutrient_id']}'
+            data-nutrient-name='" . htmlspecialchars($nutrientName, ENT_QUOTES, 'UTF-8') . "'
+            placeholder='0.00'
+            {$requiredAttr}
+            style='width: 100px; margin: 0;'
+          >";
     echo "</div>";
     echo "</div>";
 }
@@ -68,8 +92,61 @@ echo "</div>";
 ?>
 
 <script>
+function isRequiredMacro(name) {
+    name = String(name || '').toLowerCase().trim();
+
+    return [
+        'calories',
+        'calorie',
+        'kcal',
+        'fat',
+        'carbs',
+        'carbohydrates',
+        'protein'
+    ].includes(name);
+}
+
+function clearNutritionInputs() {
+    document.querySelectorAll('.nutrient-input').forEach(input => {
+        input.value = "";
+    });
+}
+
+function loadNutrition() {
+    const ingId = document.getElementById('ingredient_id').value;
+
+    clearNutritionInputs();
+
+    if (!ingId) {
+        return;
+    }
+
+    fetch('get_nutrition_mapping.php?ingredient_id=' + encodeURIComponent(ingId))
+        .then(response => response.json())
+        .then(res => {
+            if (!res.success || !res.nutrition) {
+                return;
+            }
+
+            Object.keys(res.nutrition).forEach(nutrientId => {
+                const input = document.querySelector(
+                    `.nutrient-input[data-nutrient-id="${nutrientId}"]`
+                );
+
+                if (input) {
+                    input.value = res.nutrition[nutrientId];
+                }
+            });
+        })
+        .catch(err => {
+            console.error('Error loading nutrition:', err);
+            alert("Could not load existing nutrition data.");
+        });
+}
+
 function saveNutrition() {
     const ingId = document.getElementById('ingredient_id').value;
+
     if (!ingId) {
         alert("Please select an ingredient first!");
         return;
@@ -77,15 +154,28 @@ function saveNutrition() {
 
     const inputs = document.querySelectorAll('.nutrient-input');
     let nutritionData = [];
+    let missingRequired = [];
 
     inputs.forEach(input => {
-        if (input.value !== "") {
+        const nutrientName = input.getAttribute('data-nutrient-name');
+        const value = input.value.trim();
+
+        if (isRequiredMacro(nutrientName) && value === "") {
+            missingRequired.push(nutrientName);
+        }
+
+        if (value !== "") {
             nutritionData.push({
                 nutrient_id: input.getAttribute('data-nutrient-id'),
-                amount: input.value
+                amount: value
             });
         }
     });
+
+    if (missingRequired.length > 0) {
+        alert("Please enter required macronutrients: calories, fat, carbs and protein.");
+        return;
+    }
 
     if (nutritionData.length === 0) {
         alert("Please enter at least one value.");
@@ -103,8 +193,9 @@ function saveNutrition() {
     .then(response => response.json())
     .then(res => {
         alert(res.message);
+
         if (res.success) {
-            inputs.forEach(i => i.value = "");
+            loadNutrition();
         }
     })
     .catch(err => {
