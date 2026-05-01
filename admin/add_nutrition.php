@@ -26,7 +26,7 @@ echo "<a class='logo' href='admin.php'>PantryAdmin</a>";
 echo "<a class='nav' href='admin.php'>Dashboard</a>";
 echo "<a class='nav secondary' href='../index.php' target='_blank'>Main Website ↗</a>";
 echo "<a class='nav' href='add_recipe.php'>Add Recipe</a>";
-echo "<a class='nav' href='nutrition.php'>Nutrition Mapping</a>";
+echo "<a class='nav' href='add_nutrition.php'>Nutrition Mapping</a>";
 echo "</aside>";
 
 echo "<main class='main'>";
