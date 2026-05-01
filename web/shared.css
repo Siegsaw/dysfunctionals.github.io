@@ -265,3 +265,168 @@ header {
   header { padding: 0 20px; }
   .h-nav { display: none; }
 }
+
+/* ============================================================
+   Accessibility readability improvements
+   User story: larger, clearer, higher-contrast text site-wide
+   ============================================================ */
+
+:root {
+  /* Darker secondary text improves contrast on light backgrounds. */
+  --ink2: #1f2937;
+  --muted: #4b5563;
+  --muted2: #6b7280;
+}
+
+html.dark {
+  /* Brighter secondary text improves contrast on dark backgrounds. */
+  --ink2: #e2e8f0;
+  --muted: #cbd5e1;
+  --muted2: #94a3b8;
+}
+
+html {
+  font-size: 16px;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+p,
+li,
+label,
+input,
+select,
+textarea,
+button,
+a,
+td,
+th {
+  line-height: 1.55;
+}
+
+/* Keep regular content at a readable minimum. */
+body p,
+body li,
+body input,
+body select,
+body textarea,
+body button,
+body .nav-btn,
+body #userBadge,
+body .profile-dropdown button,
+body .recipe-meta,
+body .card-meta,
+body .results-empty p,
+body .f-wrap input,
+body .af-wrap input,
+body .qty-inp,
+body .unit-sel,
+body .exp-inp,
+body .sug-item {
+  font-size: max(1rem, 16px);
+}
+
+/* Make supporting text easier to read without overpowering headings. */
+body .page-sub,
+body .auth-sub,
+body .muted,
+body small,
+body .divider,
+body .exp-label,
+body .f-label,
+body .common-toggle,
+body .cmn-btn,
+body .ing-chip-qty,
+body .missing-item,
+body .card-pct,
+body .tag,
+body .badge {
+  font-size: max(0.95rem, 15px);
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* Important text should stand out clearly. */
+body h1,
+body h2,
+body h3,
+body h4,
+body .page-title,
+body .logo,
+body .recipe-title,
+body .card-title,
+body .section-title,
+body .modal-title {
+  color: var(--ink);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+body .page-title { font-size: clamp(2rem, 5vw, 2.75rem); }
+body h1 { font-size: clamp(2rem, 5vw, 2.75rem); }
+body h2 { font-size: clamp(1.6rem, 4vw, 2.1rem); }
+body h3 { font-size: clamp(1.25rem, 3vw, 1.6rem); }
+body .logo { font-size: 1.15rem; }
+
+/* Buttons and form controls need larger readable tap targets. */
+body button,
+body .btn-signin,
+body .btn-google,
+body .btn-primary,
+body .btn-secondary,
+body .btn-add-ing,
+body .btn-clear-ing,
+body input,
+body select,
+body textarea {
+  min-height: 44px;
+}
+
+body input,
+body select,
+body textarea {
+  color: var(--ink);
+  background-color: var(--bg-s);
+  border-color: var(--border-h);
+}
+
+body input::placeholder,
+body textarea::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+body a,
+body .nav-btn:hover,
+body .nav-btn.active {
+  text-underline-offset: 0.18em;
+}
+
+/* Stronger focus styles improve clarity for keyboard users. */
+body a:focus-visible,
+body button:focus-visible,
+body input:focus-visible,
+body select:focus-visible,
+body textarea:focus-visible,
+body [tabindex]:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  header {
+    padding-inline: 18px;
+    min-height: 64px;
+  }
+
+  body .page,
+  body .auth-wrap {
+    padding-inline: 22px;
+  }
+}
