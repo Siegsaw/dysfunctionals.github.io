@@ -80,6 +80,19 @@ body {
   color: var(--green);
 }
 
+.nav.secondary {
+    margin-top: 20px; 
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.nav.secondary:hover {
+    border-color: var(--green);
+    color: var(--green);
+    background: transparent;
+}
+
 .main {
   flex: 1;
   padding: 42px 36px 60px;
