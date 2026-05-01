@@ -322,3 +322,21 @@
   border: 1px solid #b28144 !important;
   color: #f5eadb !important;
 }
+
+/* User Ingredients badges/chips should be light brown, not green/olive. */
+.inv-unit,
+.item-exp,
+.inv-current,
+.inv-item .badge,
+.inv-item .chip {
+  background: var(--chip-bg) !important;
+  border: 1px solid var(--chip-border) !important;
+  color: var(--chip-text) !important;
+}
+
+.inv-unit *,
+.item-exp *,
+.inv-current *,
+.cur-label {
+  color: var(--chip-text) !important;
+}
