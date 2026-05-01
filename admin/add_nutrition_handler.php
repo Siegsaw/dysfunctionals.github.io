@@ -14,6 +14,45 @@ if ($ingredientId <= 0 || empty($nutrition)) {
     exit;
 }
 
+$requiredResult = $conn->query("
+    SELECT nutrient_id, LOWER(name_nutr) AS name_nutr
+    FROM nutrients
+    WHERE LOWER(name_nutr) IN ('calories', 'calorie', 'kcal', 'fat', 'carbs', 'carbohydrates', 'protein')
+");
+
+$requiredNutrients = [];
+
+while ($row = $requiredResult->fetch_assoc()) {
+    $requiredNutrients[(int)$row['nutrient_id']] = $row['name_nutr'];
+}
+
+$submittedNutrients = [];
+
+foreach ($nutrition as $item) {
+    $nutrientId = (int)($item['nutrient_id'] ?? 0);
+    $amount = $item['amount'] ?? '';
+
+    if ($nutrientId > 0 && $amount !== '' && is_numeric($amount)) {
+        $submittedNutrients[$nutrientId] = true;
+    }
+}
+
+$missing = [];
+
+foreach ($requiredNutrients as $nutrientId => $name) {
+    if (empty($submittedNutrients[$nutrientId])) {
+        $missing[] = $name;
+    }
+}
+
+if (!empty($missing)) {
+    echo json_encode([
+        'success' => false,
+        'message' => 'Missing required macronutrients: ' . implode(', ', $missing)
+    ]);
+    exit;
+}
+
 $conn->begin_transaction();
 
 try {
