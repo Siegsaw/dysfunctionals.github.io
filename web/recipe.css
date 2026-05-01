@@ -5,9 +5,9 @@
 
 /* ── PAGE LAYOUT ───────────────────────────────────────────── */
 .recipe-page {
-  max-width: 1100px;
+  max-width: min(1280px, calc(100vw - 64px));
   margin: 0 auto;
-  padding: 48px 40px 80px;
+  padding: 56px clamp(24px, 4vw, 56px) 88px;
   animation: fadeUp 0.4s ease both;
 }
 
@@ -27,8 +27,8 @@
 
 .recipe-grid {
   display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 18px;
+  grid-template-columns: minmax(320px, 360px) minmax(0, 1fr);
+  gap: 24px;
 }
 
 .recipe-card-side,
@@ -855,7 +855,7 @@ body.cook-mode-open {
 }
 
 @media (max-width: 768px) {
-  .recipe-page {
+  .recipe-page { max-width: 100%;
     padding: 28px 16px 60px;
   }
 
@@ -907,4 +907,10 @@ body.cook-mode-open {
 .cook-complete-text {
   font-size: 16px;
    }
+}
+
+@media (min-width: 1200px) {
+  .recipe-header-card { padding: 34px; }
+  .recipe-card-side,
+  .recipe-card-main { padding: 28px; }
 }
