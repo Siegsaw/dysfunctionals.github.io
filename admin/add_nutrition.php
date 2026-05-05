@@ -96,7 +96,7 @@ foreach ($nutrients as $nutr) {
           >";
     echo "</div>";
     echo "</div>";
-}
+
 
 echo "</div>";
 echo "<button class='btn primary' onclick='saveNutrition()' style='width: 100%; margin-top: 20px;'>Save All Nutrition Data</button>";
