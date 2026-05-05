@@ -50,7 +50,23 @@ echo "<div class='preview-list'>";
 
 foreach ($nutrients as $nutr) {
     $nutrientName = strtolower(trim($nutr['name_nutr']));
+    $isRequiredMacro = in_array($nutrientName, ['calories', 'calorie', 'kcal', 'fat', 'carbs', 'carbohydrates', 'protein']);
+    $requiredMark = $isRequiredMacro ? " <span style='color:#ef4444;'>*</span>" : "";
 
+    echo "<div class='preview-row' style='display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; align-items: center;'>";
+    echo "  <div class='preview-row-left'>{$nutr['name_nutr']} ({$nutr['unit']}){$requiredMark}</div>";
+    
+    echo "  <div class='nutr-input-group'>
+                <input type='number' step='0.01' min='0' class='input nutrient-input-g100' 
+                       data-nutrient-id='{$nutr['nutrient_id']}' data-nutrient-name='{$nutrientName}' placeholder='100g'>
+            </div>";
+    
+    echo "  <div class='nutr-input-group'>
+                <input type='number' step='0.01' min='0' class='input nutrient-input-pcs' 
+                       data-nutrient-id='{$nutr['nutrient_id']}' placeholder='pcs'>
+            </div>";
+    echo "</div>";
+}
     $isRequiredMacro = in_array($nutrientName, [
         'calories',
         'calorie',
@@ -114,93 +130,63 @@ function clearNutritionInputs() {
 
 function loadNutrition() {
     const ingId = document.getElementById('ingredient_id').value;
-
-    clearNutritionInputs();
-
-    if (!ingId) {
-        return;
-    }
+    document.querySelectorAll('.nutrient-input-g100, .nutrient-input-pcs').forEach(i => i.value = "");
+    if (!ingId) return;
 
     fetch('get_nutrition_mapping.php?ingredient_id=' + encodeURIComponent(ingId))
-        .then(response => response.json())
+        .then(res => res.json())
         .then(res => {
-            if (!res.success || !res.nutrition) {
-                return;
+            if (res.success && res.nutrition) {
+                Object.keys(res.nutrition).forEach(id => {
+                    const inG = document.querySelector(`.nutrient-input-g100[data-nutrient-id="${id}"]`);
+                    const inP = document.querySelector(`.nutrient-input-pcs[data-nutrient-id="${id}"]`);
+                    if (inG) inG.value = res.nutrition[id].g100;
+                    if (inP) inP.value = res.nutrition[id].pcs;
+                });
             }
-
-            Object.keys(res.nutrition).forEach(nutrientId => {
-                const input = document.querySelector(
-                    `.nutrient-input[data-nutrient-id="${nutrientId}"]`
-                );
-
-                if (input) {
-                    input.value = res.nutrition[nutrientId];
-                }
-            });
-        })
-        .catch(err => {
-            console.error('Error loading nutrition:', err);
-            alert("Could not load existing nutrition data.");
         });
 }
 
 function saveNutrition() {
     const ingId = document.getElementById('ingredient_id').value;
+    if (!ingId) return alert("Please select an ingredient!");
 
-    if (!ingId) {
-        alert("Please select an ingredient first!");
-        return;
-    }
-
-    const inputs = document.querySelectorAll('.nutrient-input');
+    const rows = document.querySelectorAll('.nutrient-input-g100');
     let nutritionData = [];
-    let missingRequired = [];
+    let missing = [];
 
-    inputs.forEach(input => {
-        const nutrientName = input.getAttribute('data-nutrient-name');
-        const value = input.value.trim();
+    rows.forEach(inputG => {
+        const id = inputG.getAttribute('data-nutrient-id');
+        const name = inputG.getAttribute('data-nutrient-name');
+        const valG = inputG.value.trim();
+        const valP = document.querySelector(`.nutrient-input-pcs[data-nutrient-id="${id}"]`).value.trim();
 
-        if (isRequiredMacro(nutrientName) && value === "") {
-            missingRequired.push(nutrientName);
+        if (isRequiredMacro(name) && valG === "") {
+            missing.push(name);
         }
 
-        if (value !== "") {
+        if (valG !== "" || valP !== "") {
             nutritionData.push({
-                nutrient_id: input.getAttribute('data-nutrient-id'),
-                amount: value
+                nutrient_id: id,
+                amount_g100: valG || 0,
+                amount_pcs: valP || 0
             });
         }
     });
 
-    if (missingRequired.length > 0) {
-        alert("Please enter required macronutrients: calories, fat, carbs and protein.");
-        return;
-    }
-
-    if (nutritionData.length === 0) {
-        alert("Please enter at least one value.");
+    if (missing.length > 0) {
+        alert("Required: calories, fat, carbs, protein must be filled (per 100g/psc)!");
         return;
     }
 
     fetch('add_nutrition_handler.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            ingredient_id: ingId,
-            nutrition: nutritionData
-        })
+        body: JSON.stringify({ ingredient_id: ingId, nutrition: nutritionData })
     })
-    .then(response => response.json())
+    .then(res => res.json())
     .then(res => {
         alert(res.message);
-
-        if (res.success) {
-            loadNutrition();
-        }
-    })
-    .catch(err => {
-        console.error('Error:', err);
-        alert("System error. Check console.");
     });
 }
 </script>
