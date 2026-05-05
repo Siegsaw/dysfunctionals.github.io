@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/auth.php';
 require_admin(true);
+
 header('Content-Type: application/json');
 require '/var/www/private/db.php'; 
 
@@ -21,26 +22,23 @@ $requiredResult = $conn->query("
 ");
 
 $requiredNutrients = [];
-
 while ($row = $requiredResult->fetch_assoc()) {
     $requiredNutrients[(int)$row['nutrient_id']] = $row['name_nutr'];
 }
 
 $submittedNutrients = [];
-
 foreach ($nutrition as $item) {
-    $nutrientId = (int)($item['nutrient_id'] ?? 0);
-    $amount = $item['amount'] ?? '';
+    $nId = (int)($item['nutrient_id'] ?? 0);
+    $valG = $item['amount_g100'] ?? '';
 
-    if ($nutrientId > 0 && $amount !== '' && is_numeric($amount)) {
-        $submittedNutrients[$nutrientId] = true;
+    if ($nId > 0 && $valG !== '' && is_numeric($valG)) {
+        $submittedNutrients[$nId] = true;
     }
 }
 
 $missing = [];
-
-foreach ($requiredNutrients as $nutrientId => $name) {
-    if (empty($submittedNutrients[$nutrientId])) {
+foreach ($requiredNutrients as $nId => $name) {
+    if (empty($submittedNutrients[$nId])) {
         $missing[] = $name;
     }
 }
@@ -57,17 +55,25 @@ $conn->begin_transaction();
 
 try {
     $stmt = $conn->prepare("
-        INSERT INTO ingredient_nutrition (ingredient_id, nutrient_id, amount_per_100g)
-        VALUES (?, ?, ?)
-        ON DUPLICATE KEY UPDATE amount_per_100g = VALUES(amount_per_100g)
+        INSERT INTO ingredient_nutrition (
+            ingredient_id, 
+            nutrient_id, 
+            amount_per_100g, 
+            amount_per_unit
+        )
+        VALUES (?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE 
+            amount_per_100g = VALUES(amount_per_100g),
+            amount_per_unit = VALUES(amount_per_unit)
     ");
 
     $count = 0;
     foreach ($nutrition as $item) {
-        $nutrientId = (int)$item['nutrient_id'];
-        $amount = (float)$item['amount'];
+        $nId = (int)$item['nutrient_id'];
+        $valG = (float)$item['amount_g100'];
+        $valP = (float)$item['amount_pcs'];
 
-        $stmt->bind_param("iid", $ingredientId, $nutrientId, $amount);
+        $stmt->bind_param("iidd", $ingredientId, $nId, $valG, $valP);
         $stmt->execute();
         $count++;
     }
@@ -85,4 +91,3 @@ try {
         'message' => 'Database error: ' . $e->getMessage()
     ]);
 }
-?>
