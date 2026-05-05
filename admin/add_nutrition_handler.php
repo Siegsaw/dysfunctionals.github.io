@@ -29,10 +29,16 @@ while ($r = $required->fetch_assoc()) {
 $submitted = [];
 
 foreach ($nutrition as $n) {
-    $id = (int)$n['nutrient_id'];
-    $val = $n['amount_g100'];
 
-    if ($val !== '' && is_numeric($val) && $val > 0) {
+    $id = (int)$n['nutrient_id'];
+
+    $valG = $n['amount_g100'];
+    $valP = $n['amount_pcs'];
+
+    if (
+        ($valG !== '' && is_numeric($valG) && $valG > 0) ||
+        ($valP !== '' && is_numeric($valP) && $valP > 0)
+    ) {
         $submitted[$id] = true;
     }
 }
