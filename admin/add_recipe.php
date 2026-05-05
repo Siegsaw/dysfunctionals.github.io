@@ -23,6 +23,20 @@ echo "<a class='nav' href='add_nutrition.php'>Nutrition Mapping</a>";
 echo "<a class='nav secondary' href='logout.php'>Log out</a>";
 echo "</aside>";
 
+require '/var/www/private/db.php';
+$flavors_res = $conn->query("SELECT * FROM flavors ORDER BY name");
+$regions_res = $conn->query("SELECT * FROM regions ORDER BY name");
+
+$flavors_options = "";
+while($f = $flavors_res->fetch_assoc()) {
+    $flavors_options .= "<option value='{$f['flavor_id']}'>{$f['name']}</option>";
+}
+
+$regions_options = "";
+while($r = $regions_res->fetch_assoc()) {
+    $regions_options .= "<option value='{$r['region_id']}'>{$r['name']}</option>";
+}
+
 echo "<main class='main'>";
 
 echo "<div class='page-title'>Create Recipe</div>";
@@ -33,6 +47,18 @@ echo "<div class='card'>";
 echo "<div class='section'>Basic Info</div>";
 echo "<input id='title' class='input' placeholder='Recipe title'>";
 echo "<textarea id='description' class='textarea' placeholder='Description'></textarea>";
+
+echo "<div class='section'>Flavors & Regions</div>";
+echo "<div style='display: grid; grid-template-columns: 1fr 1fr; gap: 20px;'>";
+    echo "<div>";
+        echo "<label>Flavors (Hold Ctrl to select multiple)</label>";
+        echo "<select id='flavors' class='input' multiple style='height: 100px;'>$flavors_options</select>";
+    echo "</div>";
+    echo "<div>";
+        echo "<label>Regions (Hold Ctrl to select multiple)</label>";
+        echo "<select id='regions' class='input' multiple style='height: 100px;'>$regions_options</select>";
+    echo "</div>";
+echo "</div>";
 
 echo "<div class='section'>Ingredients</div>";
 echo "<div id='ingredients'></div>";
