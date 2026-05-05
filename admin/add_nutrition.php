@@ -55,6 +55,9 @@ function isRequiredMacroPHP($name) {
 <?php endwhile; ?>
 </select>
 
+<div class="section">Grams per piece</div>
+<input type="number" id="grams_per_unit" class="input" placeholder="e.g. 57">
+
 <div class="section">2. Nutrient Values</div>
 <div class="preview-list">
 
@@ -176,6 +179,26 @@ function saveNutrition() {
     .then(res => res.json())
     .then(res => alert(res.message));
 }
+
+document.querySelectorAll('.nutrient-input-g100').forEach(input => {
+
+    input.addEventListener('input', () => {
+
+        const grams = Number(document.getElementById('grams_per_unit').value);
+
+        if (!grams || grams <= 0) return;
+
+        const id = input.dataset.nutrientId;
+        const g100 = Number(input.value);
+
+        const pcsInput = document.querySelector(`.nutrient-input-pcs[data-nutrient-id="${id}"]`);
+
+        if (pcsInput && g100 > 0) {
+            pcsInput.value = (g100 * grams / 100).toFixed(2);
+        }
+    });
+
+});
 
 </script>
 
