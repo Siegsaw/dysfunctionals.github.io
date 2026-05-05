@@ -49,14 +49,14 @@ echo "<input id='title' class='input' placeholder='Recipe title'>";
 echo "<textarea id='description' class='textarea' placeholder='Description'></textarea>";
 
 echo "<div class='section'>Flavors & Regions</div>";
-echo "<div style='display: grid; grid-template-columns: 1fr 1fr; gap: 20px;'>";
+echo "<div style='display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;'>";
     echo "<div>";
-        echo "<label>Flavors (Hold Ctrl to select multiple)</label>";
-        echo "<select id='flavors' class='input' multiple style='height: 100px;'>$flavors_options</select>";
+        echo "<div style='font-size: 11px; color: var(--muted); margin-bottom: 6px;'>Flavors (Ctrl + Click)</div>";
+        echo "<select id='flavors' class='input' multiple style='height: 140px; margin-bottom: 0;'>$flavors_options</select>";
     echo "</div>";
     echo "<div>";
-        echo "<label>Regions (Hold Ctrl to select multiple)</label>";
-        echo "<select id='regions' class='input' multiple style='height: 100px;'>$regions_options</select>";
+        echo "<div style='font-size: 11px; color: var(--muted); margin-bottom: 6px;'>Regions (Ctrl + Click)</div>";
+        echo "<select id='regions' class='input' multiple style='height: 140px; margin-bottom: 0;'>$regions_options</select>";
     echo "</div>";
 echo "</div>";
 
