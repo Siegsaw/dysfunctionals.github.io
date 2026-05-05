@@ -156,10 +156,6 @@ while ($row = $nutrResult->fetch_assoc()) {
     $nutrients[] = $row;
 }
 
-function isRequiredMacroPHP($name) {
-    $name = strtolower(trim($name));
-    return in_array($name, ['calories','calorie','kcal','fat','carbs','carbohydrates','protein']);
-}
 ?>
 
 <!DOCTYPE html>
