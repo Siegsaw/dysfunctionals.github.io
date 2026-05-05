@@ -98,10 +98,6 @@ Save All Nutrition Data
 </div>
 
 <script>
-function isRequiredMacro(name) {
-    name = String(name || '').toLowerCase().trim();
-    return ['calories','calorie','kcal','fat','carbs','carbohydrates','protein'].includes(name);
-}
 
 function loadNutrition() {
     const ingId = document.getElementById('ingredient_id').value;
