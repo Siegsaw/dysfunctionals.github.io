@@ -1,46 +1,48 @@
 <?php
 require_once __DIR__ . '/auth.php';
-require_admin(true);
-
-header('Content-Type: application/json; charset=utf-8');
+require_admin(); 
 require '/var/www/private/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['status' => 'error', 'message' => 'Invalid query method']);
-    exit;
+    die("Invalid request method.");
 }
 
-$action = $_POST['action'] ?? 'update'; 
-$userId = $_POST['user_id'] ?? null;
+$action   = $_POST['action'] ?? 'update'; 
+$userId   = $_POST['user_id'] ?? null;
 $username = $_POST['username'] ?? null;
-$email = $_POST['email'] ?? null;
+$email    = $_POST['email'] ?? null;
 $password = $_POST['password'] ?? '';
 
 if (!$userId) {
-    echo json_encode(['status' => 'error', 'message' => 'User ID is required']);
-    exit;
+    die("User ID is required.");
 }
 
 try {
     if ($action === 'delete') {
-        $stmt = $pdo->prepare("DELETE FROM users WHERE user_id = ?");
-        $stmt->execute([$userId]);
-        echo json_encode(['status' => 'success', 'message' => 'User removed']);
+        $stmt = mysqli_prepare($conn, "DELETE FROM users WHERE user_id = ?");
+        mysqli_stmt_bind_param($stmt, "i", $userId);
+        mysqli_stmt_execute($stmt);
+        
+        header("Location: manage_users.php?msg=User+deleted");
+        exit;
         
     } else {
-        // Atnaujinimo logika
         if (!empty($password)) {
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-            $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ?, password_hash = ? WHERE user_id = ?");
-            $stmt->execute([$username, $email, $hashedPassword, $userId]);
+            $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, email = ?, password_hash = ? WHERE user_id = ?");
+            mysqli_stmt_bind_param($stmt, "sssi", $username, $email, $hashedPassword, $userId);
         } else {
-            $stmt = $pdo->prepare("UPDATE users SET username = ?, email = ? WHERE user_id = ?");
-            $stmt->execute([$username, $email, $userId]);
+            $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, email = ? WHERE user_id = ?");
+            mysqli_stmt_bind_param($stmt, "ssi", $username, $email, $userId);
         }
         
-        echo json_encode(['status' => 'success', 'message' => 'Data successfully updated']);
+        if (mysqli_stmt_execute($stmt)) {
+            header("Location: manage_users.php?msg=User+updated");
+            exit;
+        } else {
+            throw new Exception(mysqli_error($conn));
+        }
     }
 } catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(['status' => 'error', 'message' => 'DB error: ' . $e->getMessage()]);
+    die("Database error: " . $e->getMessage());
 }
