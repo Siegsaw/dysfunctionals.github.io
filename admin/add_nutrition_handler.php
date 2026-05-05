@@ -1,59 +1,54 @@
 <?php
 require_once __DIR__ . '/auth.php';
 require_admin(true);
-
 header('Content-Type: application/json');
 require '/var/www/private/db.php'; 
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-$ingredientId = (int)($data['ingredient_id'] ?? 0);
-$nutrition = $data['nutrition'] ?? [];
+$ingredientId = isset($data['ingredient_id']) ? (int)$data['ingredient_id'] : 0;
+$nutrition    = $data['nutrition'] ?? [];
 
 if ($ingredientId <= 0 || empty($nutrition)) {
-    echo json_encode(['success'=>false,'message'=>'Invalid data']);
+    echo json_encode(['success' => false, 'message' => 'Invalid data.']);
     exit;
 }
 
-$required = $conn->query("
-SELECT nutrient_id, LOWER(name_nutr) AS name
-FROM nutrients
-WHERE LOWER(name_nutr) IN ('calories','calorie','kcal','fat','carbs','carbohydrates','protein')
+$requiredResult = $conn->query("
+    SELECT nutrient_id, LOWER(name_nutr) AS name_nutr
+    FROM nutrients
+    WHERE LOWER(name_nutr) IN ('calories', 'calorie', 'kcal', 'fat', 'carbs', 'carbohydrates', 'protein')
 ");
 
-$requiredIds = [];
-while ($r = $required->fetch_assoc()) {
-    $requiredIds[$r['nutrient_id']] = $r['name'];
+$requiredNutrients = [];
+
+while ($row = $requiredResult->fetch_assoc()) {
+    $requiredNutrients[(int)$row['nutrient_id']] = $row['name_nutr'];
 }
 
-$submitted = [];
+$submittedNutrients = [];
 
-foreach ($nutrition as $n) {
+foreach ($nutrition as $item) {
+    $nutrientId = (int)($item['nutrient_id'] ?? 0);
+    $amount = $item['amount'] ?? '';
 
-    $id = (int)$n['nutrient_id'];
-
-    $valG = $n['amount_g100'];
-    $valP = $n['amount_pcs'];
-
-    if (
-        ($valG !== '' && is_numeric($valG) && $valG > 0) ||
-        ($valP !== '' && is_numeric($valP) && $valP > 0)
-    ) {
-        $submitted[$id] = true;
+    if ($nutrientId > 0 && $amount !== '' && is_numeric($amount)) {
+        $submittedNutrients[$nutrientId] = true;
     }
 }
 
 $missing = [];
-foreach ($requiredIds as $id => $name) {
-    if (empty($submitted[$id])) {
+
+foreach ($requiredNutrients as $nutrientId => $name) {
+    if (empty($submittedNutrients[$nutrientId])) {
         $missing[] = $name;
     }
 }
 
-if ($missing) {
+if (!empty($missing)) {
     echo json_encode([
-        'success'=>false,
-        'message'=>'Missing required (>0): '.implode(', ', $missing)
+        'success' => false,
+        'message' => 'Missing required macronutrients: ' . implode(', ', $missing)
     ]);
     exit;
 }
@@ -61,39 +56,33 @@ if ($missing) {
 $conn->begin_transaction();
 
 try {
-
     $stmt = $conn->prepare("
-        INSERT INTO ingredient_nutrition
-        (ingredient_id, nutrient_id, amount_per_100g, amount_per_unit)
-        VALUES (?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-            amount_per_100g = VALUES(amount_per_100g),
-            amount_per_unit = VALUES(amount_per_unit)
+        INSERT INTO ingredient_nutrition (ingredient_id, nutrient_id, amount_per_100g)
+        VALUES (?, ?, ?)
+        ON DUPLICATE KEY UPDATE amount_per_100g = VALUES(amount_per_100g)
     ");
 
-    foreach ($nutrition as $n) {
+    $count = 0;
+    foreach ($nutrition as $item) {
+        $nutrientId = (int)$item['nutrient_id'];
+        $amount = (float)$item['amount'];
 
-        $id = (int)$n['nutrient_id'];
-        $g = (float)$n['amount_g100'];
-        $p = (float)$n['amount_pcs'];
-
-        $stmt->bind_param("iidd", $ingredientId, $id, $g, $p);
+        $stmt->bind_param("iid", $ingredientId, $nutrientId, $amount);
         $stmt->execute();
+        $count++;
     }
 
     $conn->commit();
-
     echo json_encode([
-        'success'=>true,
-        'message'=>'Saved successfully'
+        'success' => true, 
+        'message' => "Successfully updated $count nutrient values."
     ]);
 
 } catch (Throwable $e) {
-
     $conn->rollback();
-
     echo json_encode([
-        'success'=>false,
-        'message'=>$e->getMessage()
+        'success' => false, 
+        'message' => 'Database error: ' . $e->getMessage()
     ]);
 }
+?>

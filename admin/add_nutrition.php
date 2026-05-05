@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/auth.php';
 require_admin();
-
 header('Content-Type: text/html; charset=utf-8');
 require '/var/www/private/db.php'; 
 
@@ -9,175 +8,201 @@ $ingResult = $conn->query("SELECT ingredient_id, name_ing FROM ingredients ORDER
 
 $nutrResult = $conn->query("SELECT nutrient_id, name_nutr, unit FROM nutrients ORDER BY nutrient_id ASC");
 $nutrients = [];
-
 while ($row = $nutrResult->fetch_assoc()) {
     $nutrients[] = $row;
 }
 
-function isRequiredMacroPHP($name) {
-    $name = strtolower(trim($name));
-    return in_array($name, ['calories','calorie','kcal','fat','carbs','carbohydrates','protein']);
+echo "<!DOCTYPE html>";
+echo "<html lang='en'>";
+echo "<head>";
+echo "<meta charset='UTF-8'>";
+echo "<title>Nutrition Mapping</title>";
+echo "<link rel='stylesheet' href='admin.css'>";
+echo "</head>";
+echo "<body>";
+
+echo "<div class='layout'>";
+
+echo "<aside class='sidebar'>";
+echo "<a class='logo' href='admin.php'>PantryAdmin</a>";
+echo "<a class='nav' href='admin.php'>Dashboard</a>";
+echo "<a class='nav secondary' href='/web/index.php' target='_blank'>Main Website ↗</a>";
+echo "<a class='nav' href='add_recipe.php'>Add Recipe</a>";
+echo "<a class='nav active' href='add_nutrition.php'>Nutrition Mapping</a>";
+echo "<a class='nav secondary' href='logout.php'>Log out</a>";
+echo "</aside>";
+
+echo "<main class='main'>";
+echo "<div class='page-title'>Nutrition Mapping</div>";
+echo "<div class='page-sub'>Assign values per 100g for each ingredient</div>";
+
+echo "<div class='card'>";
+echo "<div class='section'>1. Select Ingredient</div>";
+echo "<select id='ingredient_id' class='input' onchange='loadNutrition()'>";
+echo "<option value=''>-- Choose an ingredient --</option>";
+while ($ing = $ingResult->fetch_assoc()) {
+    echo "<option value='{$ing['ingredient_id']}'>{$ing['name_ing']}</option>";
 }
-?>
+echo "</select>";
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Nutrition Mapping</title>
-<link rel="stylesheet" href="admin.css">
-</head>
+echo "<div class='section'>2. Nutrient Values (per 100g)</div>";
+echo "<div class='preview-list'>";
 
-<body>
-
-<div class="layout">
-
-<aside class="sidebar">
-    <a class="logo" href="admin.php">PantryAdmin</a>
-    <a class="nav" href="admin.php">Dashboard</a>
-    <a class="nav secondary" href="/web/index.php" target="_blank">Main Website ↗</a>
-    <a class="nav" href="add_recipe.php">Add Recipe</a>
-    <a class="nav active" href="add_nutrition.php">Nutrition Mapping</a>
-    <a class="nav secondary" href="logout.php">Log out</a>
-</aside>
-
-<main class="main">
-<div class="page-title">Nutrition Mapping</div>
-<div class="page-sub">Assign values per 100g or per piece</div>
-
-<div class="card">
-
-<div class="section">1. Select Ingredient</div>
-<select id="ingredient_id" class="input" onchange="loadNutrition()">
-<option value="">-- Choose an ingredient --</option>
-<?php while ($ing = $ingResult->fetch_assoc()): ?>
-    <option value="<?= $ing['ingredient_id'] ?>"><?= $ing['name_ing'] ?></option>
-<?php endwhile; ?>
-</select>
-
-<div class="section">2. Nutrient Values</div>
-<div class="preview-list">
-
-<?php foreach ($nutrients as $nutr): 
+foreach ($nutrients as $nutr) {
     $nutrientName = strtolower(trim($nutr['name_nutr']));
-    $isRequired = isRequiredMacroPHP($nutrientName);
+
+    $isRequiredMacro = in_array($nutrientName, [
+        'calories',
+        'calorie',
+        'kcal',
+        'fat',
+        'carbs',
+        'carbohydrates',
+        'protein'
+    ]);
+
+    $requiredAttr = $isRequiredMacro ? "required" : "";
+    $requiredMark = $isRequiredMacro ? " <span style='color:#ef4444;'>*</span>" : "";
+
+    echo "<div class='preview-row'>";
+    echo "<div class='preview-row-left'>{$nutr['name_nutr']} ({$nutr['unit']}){$requiredMark}</div>";
+    echo "<div class='preview-row-right'>";
+    echo "<input 
+            type='number' 
+            step='0.01' 
+            min='0'
+            class='input nutrient-input' 
+            data-nutrient-id='{$nutr['nutrient_id']}'
+            data-nutrient-name='" . htmlspecialchars($nutrientName, ENT_QUOTES, 'UTF-8') . "'
+            placeholder='0.00'
+            {$requiredAttr}
+            style='width: 100px; margin: 0;'
+          >";
+    echo "</div>";
+    echo "</div>";
+}
+
+echo "</div>";
+echo "<button class='btn primary' onclick='saveNutrition()' style='width: 100%; margin-top: 20px;'>Save All Nutrition Data</button>";
+echo "</div>";
+
+echo "</main>";
+echo "</div>";
+
 ?>
-
-<div class="preview-row" style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:10px; align-items:center;">
-    
-    <div>
-        <?= $nutr['name_nutr'] ?> (<?= $nutr['unit'] ?>)
-        <?php if ($isRequired): ?>
-            <span style="color:red">*</span>
-        <?php endif; ?>
-    </div>
-
-    <input type="number" step="0.01" min="0"
-           class="input nutrient-input-g100"
-           data-nutrient-id="<?= $nutr['nutrient_id'] ?>"
-           data-nutrient-name="<?= htmlspecialchars($nutrientName) ?>"
-           placeholder="100g">
-
-    <input type="number" step="0.01" min="0"
-           class="input nutrient-input-pcs"
-           data-nutrient-id="<?= $nutr['nutrient_id'] ?>"
-           placeholder="pcs">
-
-</div>
-
-<?php endforeach; ?>
-
-</div>
-
-<button class="btn primary" onclick="saveNutrition()" style="width:100%; margin-top:20px;">
-Save All Nutrition Data
-</button>
-
-</div>
-</main>
-</div>
 
 <script>
-
 function isRequiredMacro(name) {
     name = String(name || '').toLowerCase().trim();
-    return ['calories','calorie','kcal','fat','carbs','carbohydrates','protein'].includes(name);
+
+    return [
+        'calories',
+        'calorie',
+        'kcal',
+        'fat',
+        'carbs',
+        'carbohydrates',
+        'protein'
+    ].includes(name);
+}
+
+function clearNutritionInputs() {
+    document.querySelectorAll('.nutrient-input').forEach(input => {
+        input.value = "";
+    });
 }
 
 function loadNutrition() {
     const ingId = document.getElementById('ingredient_id').value;
 
-    document.querySelectorAll('.nutrient-input-g100, .nutrient-input-pcs')
-        .forEach(i => i.value = "");
+    clearNutritionInputs();
 
-    if (!ingId) return;
+    if (!ingId) {
+        return;
+    }
 
-    fetch('get_nutrition_mapping.php?ingredient_id=' + ingId)
-    .then(res => res.json())
-    .then(res => {
-        if (res.success) {
-            Object.keys(res.nutrition).forEach(id => {
-                const g = document.querySelector(`.nutrient-input-g100[data-nutrient-id="${id}"]`);
-                const p = document.querySelector(`.nutrient-input-pcs[data-nutrient-id="${id}"]`);
+    fetch('get_nutrition_mapping.php?ingredient_id=' + encodeURIComponent(ingId))
+        .then(response => response.json())
+        .then(res => {
+            if (!res.success || !res.nutrition) {
+                return;
+            }
 
-                if (g) g.value = res.nutrition[id].g100;
-                if (p) p.value = res.nutrition[id].pcs;
+            Object.keys(res.nutrition).forEach(nutrientId => {
+                const input = document.querySelector(
+                    `.nutrient-input[data-nutrient-id="${nutrientId}"]`
+                );
+
+                if (input) {
+                    input.value = res.nutrition[nutrientId];
+                }
             });
-        }
-    });
+        })
+        .catch(err => {
+            console.error('Error loading nutrition:', err);
+            alert("Could not load existing nutrition data.");
+        });
 }
 
 function saveNutrition() {
     const ingId = document.getElementById('ingredient_id').value;
+
     if (!ingId) {
-        alert("Select ingredient!");
+        alert("Please select an ingredient first!");
         return;
     }
 
-    let data = [];
-    let missing = [];
+    const inputs = document.querySelectorAll('.nutrient-input');
+    let nutritionData = [];
+    let missingRequired = [];
 
-    document.querySelectorAll('.nutrient-input-g100').forEach(input => {
+    inputs.forEach(input => {
+        const nutrientName = input.getAttribute('data-nutrient-name');
+        const value = input.value.trim();
 
-        const id = input.dataset.nutrientId;
-        const name = input.dataset.nutrientName;
-
-        const valG = input.value.trim();
-        const valP = document.querySelector(`.nutrient-input-pcs[data-nutrient-id="${id}"]`).value.trim();
-
-        if (isRequiredMacro(name)) {
-            if (
-                (valG === "" || Number(valG) <= 0) &&
-                (valP === "" || Number(valP) <= 0)
-            ) {
-                missing.push(name);
-            }
+        if (isRequiredMacro(nutrientName) && value === "") {
+            missingRequired.push(nutrientName);
         }
 
-        if (valG !== "" || valP !== "") {
-            data.push({
-                nutrient_id: id,
-                amount_g100: valG || 0,
-                amount_pcs: valP || 0
+        if (value !== "") {
+            nutritionData.push({
+                nutrient_id: input.getAttribute('data-nutrient-id'),
+                amount: value
             });
         }
     });
 
-    if (missing.length > 0) {
-        alert("Required (>0): calories, fat, carbs, protein (either 100g or pcs)");
+    if (missingRequired.length > 0) {
+        alert("Please enter required macronutrients: calories, fat, carbs and protein.");
+        return;
+    }
+
+    if (nutritionData.length === 0) {
+        alert("Please enter at least one value.");
         return;
     }
 
     fetch('add_nutrition_handler.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ingredient_id: ingId, nutrition: data })
+        body: JSON.stringify({
+            ingredient_id: ingId,
+            nutrition: nutritionData
+        })
     })
-    .then(res => res.json())
-    .then(res => alert(res.message));
+    .then(response => response.json())
+    .then(res => {
+        alert(res.message);
+
+        if (res.success) {
+            loadNutrition();
+        }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        alert("System error. Check console.");
+    });
 }
-
 </script>
-
 </body>
 </html>
