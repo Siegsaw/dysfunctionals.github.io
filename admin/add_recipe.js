@@ -118,7 +118,10 @@ function addStepRow() {
 function buildRawPayload() {
   const title = document.getElementById("title").value.trim();
   const description = document.getElementById("description").value.trim();
-
+  
+  const flavors = [...document.getElementById("flavors").selectedOptions].map(o => parseInt(o.value));
+  const regions = [...document.getElementById("regions").selectedOptions].map(o => parseInt(o.value));
+  
   const ingredients = [...document.querySelectorAll("#ingredients .ingredient-row")].map(r => {
     const name = r.querySelector(".ing-name").value.trim();
     const amountRaw = r.querySelector(".ing-amount").value;
@@ -129,7 +132,9 @@ function buildRawPayload() {
       ingredient_id: ingredient ? ingredient.id : null,
       name,
       amount: parseFloat(amountRaw),
-      unit
+      unit,
+      flavors,
+      regions
     };
   });
 

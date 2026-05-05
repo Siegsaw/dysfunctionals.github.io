@@ -541,3 +541,44 @@ hr {
   font-size: 13px;
   font-weight: 600;
 }
+
+select[multiple] {
+    padding: 8px !important;
+    overflow-y: auto;
+}
+
+select[multiple] option {
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 2px;
+    font-size: 13px;
+    color: var(--ink2);
+    cursor: pointer;
+    transition: background .15s;
+}
+
+select[multiple] option:hover {
+    background: #1e2630;
+}
+
+select[multiple] option:checked {
+    background: var(--green) linear-gradient(0deg, var(--green) 0%, var(--green) 100%); 
+    color: #08110b !important;
+}
+
+select[multiple]::-webkit-scrollbar {
+    width: 6px;
+}
+
+select[multiple]::-webkit-scrollbar-track {
+    background: var(--bg-m);
+}
+
+select[multiple]::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+}
+
+select[multiple]::-webkit-scrollbar-thumb:hover {
+    background: var(--muted2);
+}

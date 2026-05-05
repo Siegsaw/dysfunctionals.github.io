@@ -10,6 +10,8 @@ $title = trim($data['title'] ?? '');
 $description = trim($data['description'] ?? '');
 $ingredients = $data['ingredients'] ?? [];
 $steps = $data['steps'] ?? [];
+$flavors = $data['flavors'] ?? [];
+$regions = $data['regions'] ?? [];
 
 if ($title === '' || !is_array($ingredients) || !count($ingredients) || !is_array($steps) || !count($steps)) {
   echo json_encode([
@@ -146,7 +148,22 @@ try {
   $recipeStmt->execute();
 
   $recipeId = $conn->insert_id;
-
+  
+if (!empty($flavors)) {
+    $flStmt = $conn->prepare("INSERT INTO recipe_flavors (recipe_id, flavor_id) VALUES (?, ?)");
+    foreach ($flavors as $f_id) {
+        $flStmt->bind_param("ii", $recipeId, $f_id);
+        $flStmt->execute();
+    }
+}
+  
+if (!empty($regions)) {
+    $regStmt = $conn->prepare("INSERT INTO recipe_regions (recipe_id, region_id) VALUES (?, ?)");
+    foreach ($regions as $r_id) {
+        $regStmt->bind_param("ii", $recipeId, $r_id);
+        $regStmt->execute();
+    }
+}
   /* Insert recipe ingredients */
   $ingredientStmt = $conn->prepare("
     INSERT INTO recipe_ingredients (
