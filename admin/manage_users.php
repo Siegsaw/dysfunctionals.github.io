@@ -3,6 +3,10 @@ require_once __DIR__ . '/auth.php';
 require_admin();
 require '/var/www/private/db.php';
 
+if (!isset($pdo) && isset($conn)) {
+    $pdo = $conn;
+}
+
 try {
     $stmt = $pdo->prepare("SELECT user_id, username, email, created_at FROM users ORDER BY created_at DESC");
     $stmt->execute();
