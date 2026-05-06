@@ -3,10 +3,12 @@
    ============================================================ */
 
 .inv-main {
-  max-width: 780px;
+  width: min(1200px, calc(100vw - 64px));
+  max-width: none;
   margin: 0 auto;
-  padding: 48px 40px;
+  padding: 48px clamp(24px, 4vw, 56px);
   animation: fadeUp .4s ease both;
+  box-sizing: border-box;
 }
 .inv-hdr {
   display: flex;
@@ -315,7 +317,7 @@
 .btn-undo:hover { color: var(--gd); }
 
 @media (max-width: 768px) {
-  .inv-main { padding: 28px 16px; }
+  .inv-main { width: 100%; padding: 28px 16px; }
   .inv-item { flex-wrap: wrap; }
 }
 
