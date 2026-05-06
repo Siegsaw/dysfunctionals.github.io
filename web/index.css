@@ -3,10 +3,12 @@
    ============================================================ */
 
 .page {
-  max-width: 780px;
+  width: min(1400px, calc(100vw - 64px));
+  max-width: none;
   margin: 0 auto;
-  padding: 48px 40px 80px;
+  padding: 48px clamp(24px, 4vw, 56px) 80px;
   animation: fadeUp .4s ease both;
+  box-sizing: border-box;
 }
 .page-title {
   font-family: 'Plus Jakarta Sans', sans-serif;
@@ -957,8 +959,8 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 
 .results-grid:not(.list-view) {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 16px;
 }
 
 .results-grid:not(.list-view) .recipe-card {
@@ -1021,8 +1023,9 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 }
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
-  .page { padding: 28px 16px 60px; }
-  .results-grid { grid-template-columns: 1fr; }
+  .page { width: 100%; padding: 28px 16px 60px; }
+  .results-grid,
+  .results-grid:not(.list-view) { grid-template-columns: 1fr; }
   .common-grid  { grid-template-columns: repeat(3, 1fr); }
   .time-filter { min-width: 100%; order: 2; margin-top: 10px; }
 }
