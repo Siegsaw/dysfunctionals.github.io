@@ -595,8 +595,10 @@ function renderRecipeContent() {
   
 
   const cuisinesHtml = (recipe.cuisines || []).map(c => `
-  <div class="recipe-meta">🌍 <strong>Cuisine:</strong> ${escapeHtml(c)}</div>
- `).join('');
+  <div class="recipe-meta" style="display: inline-flex; align-items: center; gap: 5px;">
+    <strong>Region:</strong> ${escapeHtml(c)}
+  </div>
+`).join('');
 
   const stepsHtml = (recipe.steps || []).map(step => `
     <div class="recipe-step" style="margin-bottom:15px;">
