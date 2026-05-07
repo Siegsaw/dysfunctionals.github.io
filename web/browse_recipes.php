@@ -196,6 +196,12 @@ function recipeCard(recipe, index) {
   `
   : '';
 if (recipeView === 'list') {
+  const regionHtml = recipe.region_name
+    ? `<div style="display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
+         <span style="font-size:11px; font-weight:700; color:var(--muted2); text-transform: uppercase;">Region:</span>
+         <span class="tag tag-cuisine" style="margin:0;"> ${escapeHtml(recipe.region_name)}</span>
+       </div>`
+    : '';
   return `
     <article class="recipe-card ${hasAllergen ? 'has-allergen' : ''}" style="display: flex; align-items: center; gap: 15px; padding: 10px 20px;">
       
@@ -203,11 +209,9 @@ if (recipeView === 'list') {
         ${isSaved ? '★ ' : ''}${escapeHtml(recipe.name)}
       </div>
 
-      <div class="list-view-meta" style="flex-grow: 1; display: flex; align-items: center; gap: 15px; overflow: hidden;">
-          ${region}
-          <div style="display: flex; align-items: center; gap: 5px;">
-             ${makeFlavorTags(recipe.flavors)}
-          </div>
+      <div class="list-view-meta" style="flex-grow: 1; display: flex; align-items: center; gap: 20px; overflow: hidden;">
+          ${regionHtml}
+          ${makeFlavorTags(recipe.flavors)}
       </div>
 
       <div style="display: flex; align-items: center; gap: 20px; flex-shrink: 0;">
