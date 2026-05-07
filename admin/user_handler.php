@@ -12,6 +12,7 @@ $userId   = $_POST['user_id'] ?? null;
 $username = $_POST['username'] ?? null;
 $email    = $_POST['email'] ?? null;
 $password = $_POST['password'] ?? '';
+$isAdmin  = $_POST['is_admin'] ?? 0;
 
 if (!$userId) {
     die("User ID is required.");
@@ -29,11 +30,11 @@ try {
     } else {
         if (!empty($password)) {
             $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-            $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, email = ?, password_hash = ? WHERE user_id = ?");
-            mysqli_stmt_bind_param($stmt, "sssi", $username, $email, $hashedPassword, $userId);
+            $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, email = ?, password_hash = ?, is_admin = ? WHERE user_id = ?");
+            mysqli_stmt_bind_param($stmt, "sssii", $username, $email, $hashedPassword, $isAdmin, $userId);
         } else {
-            $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, email = ? WHERE user_id = ?");
-            mysqli_stmt_bind_param($stmt, "ssi", $username, $email, $userId);
+            $stmt = mysqli_prepare($conn, "UPDATE users SET username = ?, email = ?, is_admin = ? WHERE user_id = ?");
+            mysqli_stmt_bind_param($stmt, "ssii", $username, $email, $isAdmin, $userId);
         }
         
         if (mysqli_stmt_execute($stmt)) {
