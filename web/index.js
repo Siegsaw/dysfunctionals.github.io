@@ -911,8 +911,9 @@ function runSearch() {
     if (recipeView === 'list') {
      card.innerHTML = `
   <div class="card-name">${isSaved ? '★ ' : ''}${complete ? '✅ ' : ''}${r.recipe.name}</div>
-  <div class="list-view-meta">
-       ${cuisineTag} ${flavorSection}
+  <div class="list-view-meta" style="display: flex; gap: 10px; flex: 2; align-items: center; overflow: hidden;">
+       ${cuisineTag} 
+       ${flavorSection}
     </div>
   <span class="card-pct ${pc}">${r.pct}%</span>
   <span class="recipe-calories">🔥 ${r.recipe.calories || 0} kcal</span>
