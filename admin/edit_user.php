@@ -62,6 +62,12 @@ echo "<div class='section'>Security</div>";
 echo "<label class='page-sub' style='display:block; margin-bottom:4px;'>New Password (leave blank to keep current)</label>";
 echo "<input type='password' name='password' class='input' placeholder='••••••••'>";
 
+echo "<label class='page-sub' style='display:block; margin-top:10px; margin-bottom:4px;'>User Role</label>";
+echo "<select name='is_admin' class='input'>";
+echo "<option value='0'" . ($user['is_admin'] == 0 ? " selected" : "") . ">Regular User</option>";
+echo "<option value='1'" . ($user['is_admin'] == 1 ? " selected" : "") . ">Administrator</option>";
+echo "</select>";
+
 echo "<hr>";
 
 echo "<div class='action-row'>";
