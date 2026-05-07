@@ -878,12 +878,22 @@ function runSearch() {
     }).join('');
 
     const flavorTags = (r.recipe.flavors || [])
-      .map(f => `<span class="tag tag-flavor">${f}</span>`)
-      .join('');
+    .map(f => `<span class="tag tag-flavor">${f}</span>`)
+    .join('');
+
+   const flavorSection = flavorTags 
+      ? `<div class="recipe-label-group">
+          <span class="recipe-label-text">Flavor:</span> 
+          <div class="tags">${flavorTags}</div>
+         </div>` 
+      : '';
 
     const cuisineTag = r.recipe.region_name
-      ? `<span class="tag tag-cuisine">${r.recipe.region_name}</span>`
-      : '';
+        ? `<div class="recipe-label-group">
+            <span class="recipe-label-text">Region:</span>
+            <span class="tag tag-cuisine">${r.recipe.region_name}</span>
+           </div>`
+        : '';
 
     const allergenPreview = matchedAllergens.length > 0
       ? `
@@ -901,6 +911,9 @@ function runSearch() {
     if (recipeView === 'list') {
      card.innerHTML = `
   <div class="card-name">${isSaved ? '★ ' : ''}${complete ? '✅ ' : ''}${r.recipe.name}</div>
+  <div class="list-view-meta">
+       ${cuisineTag} ${flavorSection}
+    </div>
   <span class="card-pct ${pc}">${r.pct}%</span>
   <span class="recipe-calories">🔥 ${r.recipe.calories || 0} kcal</span>
   <span class="recipe-time">⏱️ ${r.recipe.time || 0} min</span>
@@ -915,7 +928,7 @@ function runSearch() {
     <div class="card-top">
       <div class="card-name-wrapper">
         ${savedIndicator}
-        ${cuisineTag ? `<div class="cuisine-row">${cuisineTag}</div>` : ''}
+        ${cuisineTag}
         <div class="card-name">${complete ? '✅ ' : ''}${r.recipe.name}</div>
       </div>
 
@@ -932,7 +945,7 @@ function runSearch() {
       <div class="prog-bar ${bc}" style="width:0%"></div>
     </div>
 
-    ${flavorTags ? `<div class="tags">${flavorTags}</div>` : ''}
+    ${flavorSection}
     ${allergenPreview}
 
    <button class="card-toggle" id="ct-${r.recipe.id}" onclick="toggleDetail('${r.recipe.id}')">
