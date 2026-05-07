@@ -910,20 +910,26 @@ function runSearch() {
 
     if (recipeView === 'list') {
      card.innerHTML = `
-  <div class="card-name">${isSaved ? '★ ' : ''}${complete ? '✅ ' : ''}${r.recipe.name}</div>
-  <div class="list-view-meta" style="display: flex; gap: 10px; flex: 2; align-items: center; overflow: hidden;">
+    <div class="card-name" style="width: 25%; min-width: 150px; flex-shrink: 0;">
+        ${isSaved ? '★ ' : ''}${complete ? '✅ ' : ''}${r.recipe.name}
+    </div>
+    
+    <div class="list-view-meta" style="flex-grow: 1; display: flex; align-items: center; gap: 15px; overflow: hidden;">
        ${cuisineTag} 
        ${flavorSection}
     </div>
-  <span class="card-pct ${pc}">${r.pct}%</span>
-  <span class="recipe-calories">🔥 ${r.recipe.calories || 0} kcal</span>
-  <span class="recipe-time">⏱️ ${r.recipe.time || 0} min</span>
 
-  ${hasAllergen
-    ? `<span class="btn-view-recipe btn-view-recipe-disabled" aria-disabled="true">Blocked by allergen</span>`
-    : `<a class="btn-view-recipe" href="recipe.php?id=${r.recipe.id}">Detailed Recipe</a>`
-  }
-`;
+    <div style="display: flex; align-items: center; gap: 20px; flex-shrink: 0;">
+        <span class="card-pct ${pc}" style="width: 50px; text-align: center;">${r.pct}%</span>
+        <span class="recipe-calories" style="width: 90px; white-space: nowrap;">🔥 ${r.recipe.calories || 0} kcal</span>
+        <span class="recipe-time" style="width: 80px; white-space: nowrap;">⏱️ ${r.recipe.time || 0} min</span>
+
+        ${hasAllergen
+          ? `<span class="btn-view-recipe btn-view-recipe-disabled" style="width: 130px; text-align: center;">Blocked</span>`
+          : `<a class="btn-view-recipe" href="recipe.php?id=${r.recipe.id}" style="width: 130px; text-align: center;">Detailed Recipe</a>`
+        }
+    </div>
+  `;
     } else {
   card.innerHTML = `
     <div class="card-top">
