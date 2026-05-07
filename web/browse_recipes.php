@@ -87,9 +87,9 @@ function formatNumber(value) {
 function makeFlavorTags(flavors) {
   if (!Array.isArray(flavors) || flavors.length === 0) return '';
   return `
-    <div class="tags">
-    <span style="font-size:11px; font-weight:700; color:var(--muted2); margin-right:4px;">Flavors:</span>
-      ${flavors.map(flavor => `<span class="tag tag-flavor">${escapeHtml(flavor)}</span>`).join('')}
+    <div class="tags" style="display: flex; align-items: center; gap: 4px;">
+      <span style="font-size:11px; font-weight:700; color:var(--muted2); text-transform: uppercase;">Flavors:</span>
+      ${flavors.map(flavor => `<span class="tag tag-flavor" style="margin: 0;">${escapeHtml(flavor)}</span>`).join('')}
     </div>
   `;
 }
@@ -175,7 +175,7 @@ function makeIngredientRows(ingredients, recipe) {
 
 function recipeCard(recipe, index) {
   const region = recipe.region_name
-  ? `<div class="cuisine-row"><span class="tag-cuisine">🌍 Region: ${escapeHtml(recipe.region_name)}</span></div>`
+  ? `<div class="cuisine-row"><span class="tag-cuisine">Region: ${escapeHtml(recipe.region_name)}</span></div>`
   : '';
 
   const detailId = `recipeDetail${recipe.id}`;
