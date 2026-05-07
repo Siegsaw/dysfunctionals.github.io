@@ -878,20 +878,20 @@ function runSearch() {
     }).join('');
 
     const flavorTags = (r.recipe.flavors || [])
-    .map(f => `<span class="tag tag-flavor">${f}</span>`)
-    .join('');
+      .map(f => `<span class="tag tag-flavor">${f}</span>`)
+      .join('');
 
-   const flavorSection = flavorTags 
-      ? `<div class="recipe-label-group">
-          <span class="recipe-label-text">Flavors:</span> 
-          <div class="tags">${flavorTags}</div>
+    const flavorSection = flavorTags 
+      ? `<div class="recipe-label-group" style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+          <span class="recipe-label-text" style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted2); white-space: nowrap;">Flavors:</span> 
+          <div class="tags" style="display: flex; flex-wrap: wrap; gap: 4px;">${flavorTags}</div>
          </div>` 
       : '';
 
     const cuisineTag = r.recipe.region_name
-        ? `<div class="recipe-label-group">
-            <span class="recipe-label-text">Region:</span>
-            <span class="tag tag-cuisine">${r.recipe.region_name}</span>
+        ? `<div class="recipe-label-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span class="recipe-label-text" style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted2);">Region:</span>
+            <span class="tag tag-cuisine" style="display: inline-flex; align-items: center; gap: 4px;"> ${r.recipe.region_name}</span>
            </div>`
         : '';
 
