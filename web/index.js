@@ -883,7 +883,7 @@ function runSearch() {
 
    const flavorSection = flavorTags 
       ? `<div class="recipe-label-group">
-          <span class="recipe-label-text">Flavor:</span> 
+          <span class="recipe-label-text">Flavors:</span> 
           <div class="tags">${flavorTags}</div>
          </div>` 
       : '';
