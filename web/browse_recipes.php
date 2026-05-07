@@ -199,6 +199,11 @@ if (recipeView === 'list') {
   return `
     <article class="recipe-card ${hasAllergen ? 'has-allergen' : ''}">
     <div class="card-name">${isSaved ? '★ ' : ''}${escapeHtml(recipe.name)}</div>
+    <div class="list-view-meta" style="display: flex; gap: 12px; flex: 1.5; align-items: center; overflow: hidden;">
+          ${region}
+          ${makeFlavorTags(recipe.flavors)}
+      </div>
+    
       <span class="card-pct pct-high">
         ${Array.isArray(recipe.ingredients) ? recipe.ingredients.length : 0} ingredients
       </span>
