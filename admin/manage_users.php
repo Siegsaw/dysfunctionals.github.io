@@ -9,7 +9,7 @@ $error = null;
 if (!isset($conn)) {
     $error = "DB connection variable ($conn) not found. Check db.php.";
 } else {
-    $sql = "SELECT user_id, username, email, created_at FROM users ORDER BY created_at DESC";
+    $sql = "SELECT user_id, username, email, created_at, is_admin FROM users ORDER BY created_at DESC";
     $result = mysqli_query($conn, $sql);
 
     if ($result) {
@@ -36,6 +36,17 @@ echo "<style>
     .user-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
     .action-btns { display: flex; gap: 8px; }
     .btn-sm { padding: 6px 10px; font-size: 12px; text-decoration: none; }
+    
+    .badge-admin { 
+        background: rgba(255, 107, 107, 0.1); 
+        color: #ff6b6b; 
+        padding: 2px 6px; 
+        border-radius: 4px; 
+        font-size: 10px; 
+        font-weight: bold; 
+        margin-left: 8px;
+        border: 1px solid rgba(255, 107, 107, 0.2);
+    }
 </style>";
 echo "</head>";
 
@@ -58,6 +69,10 @@ echo "<main class='main'>";
 
 echo "<div class='page-title'>User Manager</div>";
 echo "<div class='page-sub'>View and manage system administrators and users</div>";
+
+if (isset($_GET['msg'])) {
+    echo "<div style='color: #4cd137; margin-bottom: 20px; font-size: 14px;'>✓ " . htmlspecialchars($_GET['msg']) . "</div>";
+}
 
 if ($error) {
     echo "<div class='preview-errors'><h4>System Error</h4><ul><li>$error</li></ul></div>";
@@ -82,10 +97,13 @@ if (!empty($users)) {
         $uname = htmlspecialchars($user['username']);
         $email = htmlspecialchars($user['email']);
         $date = date('Y-m-d', strtotime($user['created_at']));
+        
+        // Patikriname, ar adminas
+        $adminBadge = ($user['is_admin'] == 1) ? "<span class='badge-admin'>ADMIN</span>" : "";
 
         echo "<tr>";
         echo "<td>$id</td>";
-        echo "<td><strong>$uname</strong></td>";
+        echo "<td><strong>$uname</strong>$adminBadge</td>"; 
         echo "<td>$email</td>";
         echo "<td>$date</td>";
         echo "<td class='action-btns'>";
