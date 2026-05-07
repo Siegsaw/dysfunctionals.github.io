@@ -197,24 +197,31 @@ function recipeCard(recipe, index) {
   : '';
 if (recipeView === 'list') {
   return `
-    <article class="recipe-card ${hasAllergen ? 'has-allergen' : ''}">
-    <div class="card-name">${isSaved ? '★ ' : ''}${escapeHtml(recipe.name)}</div>
-    <div class="list-view-meta" style="display: flex; gap: 12px; flex: 1.5; align-items: center; overflow: hidden;">
-          ${region}
-          ${makeFlavorTags(recipe.flavors)}
+    <article class="recipe-card ${hasAllergen ? 'has-allergen' : ''}" style="display: flex; align-items: center; gap: 15px; padding: 10px 20px;">
+      
+      <div class="card-name" style="width: 25%; min-width: 150px; flex-shrink: 0; margin: 0;">
+        ${isSaved ? '★ ' : ''}${escapeHtml(recipe.name)}
       </div>
-    
-      <span class="card-pct pct-high">
-        ${Array.isArray(recipe.ingredients) ? recipe.ingredients.length : 0} ingredients
-      </span>
 
-      <span class="recipe-calories">🔥 ${formatNumber(scaleBrowseAmount(recipe.calories, recipe))} kcal</span>
-      <span class="recipe-time">⏱️ ${formatNumber(recipe.time)} min</span>
+      <div class="list-view-meta" style="flex-grow: 1; display: flex; align-items: center; gap: 15px; overflow: hidden;">
+          ${region}
+          <div style="display: flex; align-items: center; gap: 5px;">
+             ${makeFlavorTags(recipe.flavors)}
+          </div>
+      </div>
 
-      ${hasAllergen
-        ? `<span class="btn-view-recipe btn-view-recipe-disabled" aria-disabled="true">Blocked by allergen</span>`
-        : `<a class="btn-view-recipe" href="recipe.php?id=${encodeURIComponent(recipe.id)}">Detailed recipe</a>`
-      }
+      <div style="display: flex; align-items: center; gap: 20px; flex-shrink: 0;">
+          <span class="card-pct pct-high" style="margin: 0;">
+            ${Array.isArray(recipe.ingredients) ? recipe.ingredients.length : 0} ingredients
+          </span>
+          <span class="recipe-calories" style="width: 80px;">🔥 ${formatNumber(scaleBrowseAmount(recipe.calories, recipe))} kcal</span>
+          <span class="recipe-time" style="width: 70px;">⏱️ ${formatNumber(recipe.time)} min</span>
+
+          ${hasAllergen
+            ? `<span class="btn-view-recipe btn-view-recipe-disabled" style="width: 130px; text-align: center;">Blocked</span>`
+            : `<a class="btn-view-recipe" href="recipe.php?id=${encodeURIComponent(recipe.id)}" style="width: 130px; text-align: center;">Detailed recipe</a>`
+          }
+      </div>
     </article>
   `;
 }
