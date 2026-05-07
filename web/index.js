@@ -877,23 +877,23 @@ function runSearch() {
       `;
     }).join('');
 
-    const flavorTags = (r.recipe.flavors || [])
-      .map(f => `<span class="tag tag-flavor">${f}</span>`)
-      .join('');
+    const flavorTags = (Array.isArray(r.recipe.flavors) ? r.recipe.flavors : [])
+  .map(f => `<span class="tag tag-flavor">${f}</span>`)
+  .join('');
 
-    const flavorSection = flavorTags 
-      ? `<div class="recipe-label-group" style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
-          <span class="recipe-label-text" style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted2); white-space: nowrap;">Flavors:</span> 
-          <div class="tags" style="display: flex; flex-wrap: wrap; gap: 4px;">${flavorTags}</div>
-         </div>` 
-      : '';
-
-    const cuisineTag = r.recipe.region_name
-        ? `<div class="recipe-label-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-            <span class="recipe-label-text" style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted2);">Region:</span>
-            <span class="tag tag-cuisine" style="display: inline-flex; align-items: center; gap: 4px;"> ${r.recipe.region_name}</span>
-           </div>`
-        : '';
+  const flavorSection = flavorTags 
+    ? `<div class="recipe-label-group" style="display: flex; align-items: center; gap: 5px;">
+        <span style="font-size: 11px; font-weight: 700; color: var(--muted2);">Flavors:</span> 
+        <div class="tags" style="display: flex; gap: 4px;">${flavorTags}</div>
+       </div>` 
+    : '';
+  
+  const cuisineTag = r.recipe.region_name
+    ? `<div class="recipe-label-group" style="display: flex; align-items: center; gap: 5px;">
+        <span style="font-size: 11px; font-weight: 700; color: var(--muted2);">Region:</span>
+        <span class="tag tag-cuisine"> ${r.recipe.region_name}</span>
+       </div>`
+    : '';
 
     const allergenPreview = matchedAllergens.length > 0
       ? `
@@ -914,7 +914,7 @@ function runSearch() {
         ${isSaved ? '★ ' : ''}${complete ? '✅ ' : ''}${r.recipe.name}
     </div>
     
-    <div class="list-view-meta" style="flex-grow: 1; display: flex; align-items: center; gap: 15px; overflow: hidden;">
+    <div class="list-view-meta" style="flex: 1; display: flex; align-items: center; gap: 20px; overflow: hidden;">
        ${cuisineTag} 
        ${flavorSection}
     </div>
