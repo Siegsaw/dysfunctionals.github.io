@@ -507,6 +507,36 @@ input[type="range"] {
 }
 .recipe-card:hover { box-shadow: var(--sh-md); transform: translateY(-2px); border-color: var(--border-h); }
 .recipe-card.complete { border-color: var(--green); box-shadow: 0 0 0 1px var(--green), 0 4px 16px rgba(34,197,94,.15); }
+.recipe-label-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.recipe-label-text {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--muted2);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    min-width: 50px; 
+}
+
+.recipe-label-group .tags {
+    margin-bottom: 0 !important;
+}
+
+.tag-cuisine {
+    font-size: 11px;
+    padding: 2px 9px;
+    font-weight: 700;
+    text-transform: none; 
+}
+
+.results-grid.list-view .recipe-label-group {
+    display: none !important;
+}
 
 .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
 .card-name {
