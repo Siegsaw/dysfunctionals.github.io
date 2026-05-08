@@ -877,23 +877,23 @@ function runSearch() {
       `;
     }).join('');
 
-    const flavorTags = (r.recipe.flavors || [])
-      .map(f => `<span class="tag tag-flavor">${f}</span>`)
-      .join('');
+    const flavorTags = (Array.isArray(r.recipe.flavors) ? r.recipe.flavors : [])
+  .map(f => `<span class="tag tag-flavor">${f}</span>`)
+  .join('');
 
-    const flavorSection = flavorTags 
-      ? `<div class="recipe-label-group" style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
-          <span class="recipe-label-text" style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted2); white-space: nowrap;">Flavors:</span> 
-          <div class="tags" style="display: flex; flex-wrap: wrap; gap: 4px;">${flavorTags}</div>
-         </div>` 
-      : '';
-
-    const cuisineTag = r.recipe.region_name
-        ? `<div class="recipe-label-group" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-            <span class="recipe-label-text" style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted2);">Region:</span>
-            <span class="tag tag-cuisine" style="display: inline-flex; align-items: center; gap: 4px;"> ${r.recipe.region_name}</span>
-           </div>`
-        : '';
+  const flavorSection = flavorTags 
+    ? `<div class="recipe-label-group" style="display: flex; align-items: center; gap: 5px;">
+        <span style="font-size: 11px; font-weight: 700; color: var(--muted2);">Flavors:</span> 
+        <div class="tags" style="display: flex; gap: 4px;">${flavorTags}</div>
+       </div>` 
+    : '';
+  
+  const cuisineTag = r.recipe.region_name
+    ? `<div class="recipe-label-group" style="display: flex; align-items: center; gap: 5px;">
+        <span style="font-size: 11px; font-weight: 700; color: var(--muted2);">Region:</span>
+        <span class="tag tag-cuisine"> ${r.recipe.region_name}</span>
+       </div>`
+    : '';
 
     const allergenPreview = matchedAllergens.length > 0
       ? `
@@ -910,19 +910,26 @@ function runSearch() {
 
     if (recipeView === 'list') {
      card.innerHTML = `
-  <div class="card-name">${isSaved ? '★ ' : ''}${complete ? '✅ ' : ''}${r.recipe.name}</div>
-  <div class="list-view-meta">
-       ${cuisineTag} ${flavorSection}
+    <div class="card-name" style="width: 25%; min-width: 150px; flex-shrink: 0;">
+        ${isSaved ? '★ ' : ''}${complete ? '✅ ' : ''}${r.recipe.name}
     </div>
-  <span class="card-pct ${pc}">${r.pct}%</span>
-  <span class="recipe-calories">🔥 ${r.recipe.calories || 0} kcal</span>
-  <span class="recipe-time">⏱️ ${r.recipe.time || 0} min</span>
+    
+    <div class="list-view-meta" style="flex: 1; display: flex; align-items: center; gap: 16px; overflow: hidden; flex-wrap: wrap;">
+   ${r.recipe.region_name ? `<div class="lv-meta-group"><span class="lv-meta-label">Region:</span><span class="tag tag-cuisine">${r.recipe.region_name}</span></div>` : ''}
+   ${(Array.isArray(r.recipe.flavors) && r.recipe.flavors.length) ? `<div class="lv-meta-group"><span class="lv-meta-label">Flavors:</span><div style="display:flex;gap:4px;flex-wrap:wrap;">${r.recipe.flavors.map(f => `<span class="tag tag-flavor">${f}</span>`).join('')}</div></div>` : ''}
+    </div>
 
-  ${hasAllergen
-    ? `<span class="btn-view-recipe btn-view-recipe-disabled" aria-disabled="true">Blocked by allergen</span>`
-    : `<a class="btn-view-recipe" href="recipe.php?id=${r.recipe.id}">Detailed Recipe</a>`
-  }
-`;
+    <div style="display: flex; align-items: center; gap: 20px; flex-shrink: 0;">
+        <span class="card-pct ${pc}" style="width: 50px; text-align: center;">${r.pct}%</span>
+        <span class="recipe-calories" style="width: 90px; white-space: nowrap;">🔥 ${r.recipe.calories || 0} kcal</span>
+        <span class="recipe-time" style="width: 80px; white-space: nowrap;">⏱️ ${r.recipe.time || 0} min</span>
+
+        ${hasAllergen
+          ? `<span class="btn-view-recipe btn-view-recipe-disabled" style="width: 130px; text-align: center;">Blocked</span>`
+          : `<a class="btn-view-recipe" href="recipe.php?id=${r.recipe.id}" style="width: 130px; text-align: center;">Detailed Recipe</a>`
+        }
+    </div>
+  `;
     } else {
   card.innerHTML = `
     <div class="card-top">

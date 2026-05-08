@@ -197,19 +197,29 @@ function recipeCard(recipe, index) {
   : '';
 if (recipeView === 'list') {
   return `
-    <article class="recipe-card ${hasAllergen ? 'has-allergen' : ''}">
-    <div class="card-name">${isSaved ? '★ ' : ''}${escapeHtml(recipe.name)}</div>
-      <span class="card-pct pct-high">
-        ${Array.isArray(recipe.ingredients) ? recipe.ingredients.length : 0} ingredients
-      </span>
+    <article class="recipe-card ${hasAllergen ? 'has-allergen' : ''}" style="display: flex; align-items: center; gap: 15px; padding: 10px 20px;">
+      
+      <div class="card-name" style="width: 25%; min-width: 150px; flex-shrink: 0; margin: 0;">
+        ${isSaved ? '★ ' : ''}${escapeHtml(recipe.name)}
+      </div>
 
-      <span class="recipe-calories">🔥 ${formatNumber(scaleBrowseAmount(recipe.calories, recipe))} kcal</span>
-      <span class="recipe-time">⏱️ ${formatNumber(recipe.time)} min</span>
+      <div class="list-view-meta" style="flex-grow: 1; display: flex; align-items: center; gap: 16px; overflow: hidden; flex-wrap: wrap;">
+  ${recipe.region_name ? `<div class="lv-meta-group"><span class="lv-meta-label">Region:</span><span class="tag tag-cuisine">${escapeHtml(recipe.region_name)}</span></div>` : ''}
+  ${(Array.isArray(recipe.flavors) && recipe.flavors.length) ? `<div class="lv-meta-group"><span class="lv-meta-label">Flavors:</span><div style="display:flex;gap:4px;flex-wrap:wrap;">${recipe.flavors.map(f => `<span class="tag tag-flavor">${escapeHtml(f)}</span>`).join('')}</div></div>` : ''}
+    </div>
 
-      ${hasAllergen
-        ? `<span class="btn-view-recipe btn-view-recipe-disabled" aria-disabled="true">Blocked by allergen</span>`
-        : `<a class="btn-view-recipe" href="recipe.php?id=${encodeURIComponent(recipe.id)}">Detailed recipe</a>`
-      }
+      <div style="display: flex; align-items: center; gap: 20px; flex-shrink: 0;">
+          <span class="card-pct pct-high" style="margin: 0;">
+            ${Array.isArray(recipe.ingredients) ? recipe.ingredients.length : 0} ingredients
+          </span>
+          <span class="recipe-calories" style="width: 80px;">🔥 ${formatNumber(scaleBrowseAmount(recipe.calories, recipe))} kcal</span>
+          <span class="recipe-time" style="width: 70px;">⏱️ ${formatNumber(recipe.time)} min</span>
+
+          ${hasAllergen
+            ? `<span class="btn-view-recipe btn-view-recipe-disabled" style="width: 130px; text-align: center;">Blocked</span>`
+            : `<a class="btn-view-recipe" href="recipe.php?id=${encodeURIComponent(recipe.id)}" style="width: 130px; text-align: center;">Detailed recipe</a>`
+          }
+      </div>
     </article>
   `;
 }
