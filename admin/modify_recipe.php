@@ -6,7 +6,7 @@ require '/var/www/private/db.php';
 $recipes = $conn->query("
   SELECT recipe_id, title, total_time_minutes, calories
   FROM recipes
-  ORDER BY recipe_id DESC
+  ORDER BY recipe_id ASC
 ");
 
 $flavors_res = $conn->query("SELECT * FROM flavors ORDER BY name");
@@ -48,12 +48,22 @@ while ($r = $regions_res->fetch_assoc()) {
   <div class="page-sub">Edit existing recipe data and update the database</div>
 
   <div class="card">
-    <div class="section">Select Recipe</div>
-
-    <select id="recipe_id" class="input" onchange="loadRecipeForEdit()">
+    <div class="section">Search Recipe</div>
+    
+    <input 
+      id="recipe_search" 
+      class="input" 
+      placeholder="Type recipe name..."
+      oninput="filterRecipeList()"
+    >
+    
+    <select id="recipe_id" class="input" size="8" onchange="loadRecipeForEdit()">
       <option value="">-- Choose recipe --</option>
       <?php while ($r = $recipes->fetch_assoc()): ?>
-        <option value="<?= $r['recipe_id'] ?>">
+        <option 
+          value="<?= $r['recipe_id'] ?>"
+          data-title="<?= htmlspecialchars(strtolower($r['title'])) ?>"
+        >
           #<?= $r['recipe_id'] ?> — <?= htmlspecialchars($r['title']) ?>
         </option>
       <?php endwhile; ?>
