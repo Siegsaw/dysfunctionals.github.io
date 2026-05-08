@@ -29,7 +29,7 @@ function addIngredientRow() {
       <input placeholder="Ingredient name" class="ing-name">
       <div class="suggestions"></div>
     </div>
-    <input placeholder="Amount" type="number" step="any" min="0.001" class="ing-amount">
+    <input placeholder="Amount" type="number" step="1" min="0.001" class="ing-amount">
     <select class="ing-unit" disabled>
       <option value="">Unit</option>
     </select>
