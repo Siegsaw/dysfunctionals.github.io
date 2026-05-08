@@ -43,7 +43,7 @@ $densityStmt = $conn->prepare("
 /* Get nutrition rows for ingredient */
 $nutritionStmt = $conn->prepare("
   SELECT 
-    n.name AS nutrient_name,
+    n.name_nutr AS nutrient_name,
     inut.amount_per_100g,
     inut.amount_per_unit
   FROM ingredient_nutrition inut
