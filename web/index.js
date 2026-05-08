@@ -909,27 +909,52 @@ function runSearch() {
     card.className = `recipe-card${complete ? ' complete' : ''}${hasAllergen ? ' has-allergen' : ''}`;
 
     if (recipeView === 'list') {
+  const ingredientCount = r.details.length;
+  
   card.innerHTML = `
-    <div class="lv-name">
-      ${isSaved ? '★ ' : ''}${complete ? '✅ ' : ''}${r.recipe.name}
+    <div class="lv-col-name">
+      <div class="lv-name">
+        ${isSaved ? '★ ' : ''}${complete ? '✅ ' : ''}${r.recipe.name}
+      </div>
     </div>
 
-    <div class="lv-meta">
-      ${r.recipe.region_name ? `<div class="lv-meta-group"><span class="lv-meta-label">Region:</span><span class="tag tag-cuisine">${r.recipe.region_name}</span></div>` : ''}
-      ${(Array.isArray(r.recipe.flavors) && r.recipe.flavors.length) ? `<div class="lv-meta-group"><span class="lv-meta-label">Flavors:</span><div class="lv-flavor-tags">${r.recipe.flavors.map(f => `<span class="tag tag-flavor">${f}</span>`).join('')}</div></div>` : ''}
+    <div class="lv-col-region">
+      ${r.recipe.region_name ? `
+        <div class="lv-meta-group">
+          <span class="lv-meta-label">Region:</span>
+          <span class="tag tag-cuisine">${r.recipe.region_name}</span>
+        </div>
+      ` : ''}
     </div>
 
-    <div class="lv-stats">
-      <span class="card-pct ${pc}">${r.pct}%</span>
+    <div class="lv-col-flavors">
+      ${(Array.isArray(r.recipe.flavors) && r.recipe.flavors.length) ? `
+        <div class="lv-meta-group">
+          <span class="lv-meta-label">Flavors:</span>
+          <div class="lv-flavor-tags">
+            ${r.recipe.flavors.map(f => `<span class="tag tag-flavor">${f}</span>`).join('')}
+          </div>
+        </div>
+      ` : ''}
+    </div>
+
+    <div class="lv-col-count">
+      <span class="tag-count-pill">${ingredientCount} ingredients</span>
+    </div>
+
+    <div class="lv-col-stats">
       <span class="recipe-calories">🔥 ${r.recipe.calories || 0} kcal</span>
       <span class="recipe-time">⏱️ ${r.recipe.time || 0} min</span>
+    </div>
+
+    <div class="lv-col-btn">
       ${hasAllergen
         ? `<span class="btn-view-recipe btn-view-recipe-disabled">Blocked</span>`
         : `<a class="btn-view-recipe" href="recipe.php?id=${r.recipe.id}">Detailed Recipe</a>`
       }
     </div>
   `;
-    } else {
+} else {
   card.innerHTML = `
     <div class="card-top">
       <div class="card-name-wrapper">
