@@ -12,6 +12,21 @@ async function loadIngredients() {
   }
 }
 
+function filterRecipeList() {
+  const search = document.getElementById('recipe_search').value.trim().toLowerCase();
+  const options = document.querySelectorAll('#recipe_id option');
+
+  options.forEach(option => {
+    if (option.value === '') {
+      option.hidden = false;
+      return;
+    }
+
+    const title = option.dataset.title || '';
+    option.hidden = !title.includes(search);
+  });
+}
+
 function findIngredientByName(name) {
   const trimmed = String(name || '').trim().toLowerCase();
   return ALL_ING.find(i => i.name.toLowerCase() === trimmed) || null;
