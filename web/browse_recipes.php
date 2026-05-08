@@ -196,12 +196,6 @@ function recipeCard(recipe, index) {
   `
   : '';
 if (recipeView === 'list') {
-  const regionHtml = recipe.region_name
-    ? `<div style="display: flex; align-items: center; gap: 5px; flex-shrink: 0;">
-         <span style="font-size:11px; font-weight:700; color:var(--muted2); text-transform: uppercase;">Region:</span>
-         <span class="tag tag-cuisine" style="margin:0;"> ${escapeHtml(recipe.region_name)}</span>
-       </div>`
-    : '';
   return `
     <article class="recipe-card ${hasAllergen ? 'has-allergen' : ''}" style="display: flex; align-items: center; gap: 15px; padding: 10px 20px;">
       
@@ -209,10 +203,10 @@ if (recipeView === 'list') {
         ${isSaved ? '★ ' : ''}${escapeHtml(recipe.name)}
       </div>
 
-      <div class="list-view-meta" style="flex-grow: 1; display: flex; align-items: center; gap: 20px; overflow: hidden;">
-          ${regionHtml}
-          ${makeFlavorTags(recipe.flavors)}
-      </div>
+      <div class="list-view-meta" style="flex-grow: 1; display: flex; align-items: center; gap: 16px; overflow: hidden; flex-wrap: wrap;">
+  ${recipe.region_name ? `<div class="lv-meta-group"><span class="lv-meta-label">Region:</span><span class="tag tag-cuisine">${escapeHtml(recipe.region_name)}</span></div>` : ''}
+  ${(Array.isArray(recipe.flavors) && recipe.flavors.length) ? `<div class="lv-meta-group"><span class="lv-meta-label">Flavors:</span><div style="display:flex;gap:4px;flex-wrap:wrap;">${recipe.flavors.map(f => `<span class="tag tag-flavor">${escapeHtml(f)}</span>`).join('')}</div></div>` : ''}
+    </div>
 
       <div style="display: flex; align-items: center; gap: 20px; flex-shrink: 0;">
           <span class="card-pct pct-high" style="margin: 0;">
