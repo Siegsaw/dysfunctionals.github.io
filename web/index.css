@@ -1018,7 +1018,7 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   flex-direction: row;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px;
+  padding: 10px 16px;
   min-height: 52px;
 }
 
@@ -1038,20 +1038,36 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   padding: 8px 14px;
 }
 
-.results-grid.list-view .card-top,
+/*.results-grid.list-view .card-top,
 .results-grid.list-view .card-name-wrapper,
 .results-grid.list-view .card-info {
   display: none;
-}
+}*/
 
-.results-grid.list-view .cuisine-row,
+/*.results-grid.list-view .cuisine-row,
 .results-grid.list-view .tags,
 .results-grid.list-view .card-toggle,
 .results-grid.list-view .card-detail,
 .results-grid.list-view .prog-wrap,
 .results-grid.list-view .card-sec-lbl {
   display: none !important;
+}*/
+
+.results-grid.list-view .card-top,
+.results-grid.list-view .card-info,
+.results-grid.list-view .card-name-wrapper,
+.results-grid.list-view .cuisine-row,
+.results-grid.list-view .tags:not(.tags-allergen-preview),
+.results-grid.list-view .card-toggle,
+.results-grid.list-view .card-detail,
+.results-grid.list-view .prog,
+.results-grid.list-view .card-sec-lbl,
+.results-grid.list-view .recipe-label-group,
+.results-grid.list-view .btn-view-recipe:not(.lv-stats .btn-view-recipe),
+.results-grid.list-view .btn-view-recipe-disabled:not(.lv-stats .btn-view-recipe-disabled) {
+  display: none !important;
 }
+
 /* ── RESPONSIVE ── */
 @media (max-width: 768px) {
   .page { width: 100%; padding: 28px 16px 60px; }
@@ -1061,8 +1077,6 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   .time-filter { min-width: 100%; order: 2; margin-top: 10px; }
 }
 
-
-/* ChatGPT fix: restore brown chips/tags */
 .ingredient-chip,
 .common-ingredient,
 .selected-ingredient,
@@ -1075,7 +1089,6 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   color: #f5eadb !important;
 }
 
-/* Restore the screenshot's light-brown chips/tags while keeping buttons green. */
 .ing-chip,
 .cmn-btn,
 .tag-cuisine,
@@ -1125,3 +1138,40 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   letter-spacing: 0.06em;
   white-space: nowrap;
 }
+.lv-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  width: 22%;
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.lv-meta {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.lv-flavor-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.lv-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.lv-stats .btn-view-recipe {
+  margin-top: 0;
+}
+
