@@ -1015,11 +1015,34 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 
 .results-grid.list-view .recipe-card {
   display: grid;
-  grid-template-columns: minmax(220px, 260px) 1fr auto;
+  grid-template-columns: 1.5fr 1fr 1.5fr 1fr 1fr auto; 
   align-items: center;
-  gap: 18px;
-  padding: 14px 18px;
+  gap: 12px;
+  padding: 12px 20px;
+  background: var(--bg-s);
 }
+
+.tag-count-pill {
+  background: #dcfce7 !important; 
+  color: #166534 !important;    
+  border: 1px solid #bbf7d0 !important;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.lv-col-name { justify-self: start; }
+.lv-col-region, .lv-col-flavors { justify-self: start; }
+.lv-col-count { justify-self: center; }
+.lv-col-stats { 
+  display: flex; 
+  gap: 12px; 
+  justify-self: center;
+  color: var(--muted);
+}
+.lv-col-btn { justify-self: end; }
 
 .results-grid.list-view .recipe-card > * {
   min-width: 0;
@@ -1173,8 +1196,7 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 .lv-meta-group {
   display: flex;
   align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+  gap: 8px;
 }
 
 .lv-meta-label {
@@ -1186,11 +1208,8 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   white-space: nowrap;
 }
 .lv-name {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 15px;
   font-weight: 700;
-  color: var(--ink);
-  min-width: 0;
+  font-size: 14px;
 }
 
 .lv-meta {
