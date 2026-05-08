@@ -914,9 +914,9 @@ function runSearch() {
         ${isSaved ? '★ ' : ''}${complete ? '✅ ' : ''}${r.recipe.name}
     </div>
     
-    <div class="list-view-meta" style="flex: 1; display: flex; align-items: center; gap: 20px; overflow: hidden;">
-       ${cuisineTag} 
-       ${flavorSection}
+    <div class="list-view-meta" style="flex: 1; display: flex; align-items: center; gap: 16px; overflow: hidden; flex-wrap: wrap;">
+   ${r.recipe.region_name ? `<div class="lv-meta-group"><span class="lv-meta-label">Region:</span><span class="tag tag-cuisine">${r.recipe.region_name}</span></div>` : ''}
+   ${(Array.isArray(r.recipe.flavors) && r.recipe.flavors.length) ? `<div class="lv-meta-group"><span class="lv-meta-label">Flavors:</span><div style="display:flex;gap:4px;flex-wrap:wrap;">${r.recipe.flavors.map(f => `<span class="tag tag-flavor">${f}</span>`).join('')}</div></div>` : ''}
     </div>
 
     <div style="display: flex; align-items: center; gap: 20px; flex-shrink: 0;">
