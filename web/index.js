@@ -939,7 +939,7 @@ function runSearch() {
     </div>
 
     <div class="lv-col-count">
-      <span class="tag-count-pill">${ingredientCount} ingredients</span>
+        <span class="tag-count-pill ${pc}">${r.pct}%</span>
     </div>
 
     <div class="lv-col-stats">
