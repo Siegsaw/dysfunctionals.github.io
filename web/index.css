@@ -1061,21 +1061,23 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   text-overflow: ellipsis;
 }
 
-.results-grid.list-view .card-pct {
-  font-size: 13px;
-    font-weight: 700;
-    padding: 6px 12px;           
-    border-radius: 999px;        
-    display: inline-flex;        
-    align-items: center;
-    justify-content: center;
-    min-width: 50px;             
-    line-height: 1;
+.results-grid.list-view .tag-count-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 44px !important; 
+    height: 44px !important;
+    border-radius: 50% !important; 
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    text-align: center;
 }
 
-.pct-high { background: var(--gl) !important; color: var(--gd) !important; }
-.pct-mid  { background: var(--yl) !important; color: #92400e !important; }
-.pct-low  { background: var(--rl) !important; color: var(--red) !important; }
+.tag-count-pill.pct-high { background: var(--gl) !important; color: var(--gd) !important; border: none !important; }
+.tag-count-pill.pct-mid  { background: var(--yl) !important; color: #92400e !important; border: none !important; }
+.tag-count-pill.pct-low  { background: var(--rl) !important; color: var(--red) !important; border: none !important; }
 
 .lv-col-pct {
     display: flex;
