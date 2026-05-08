@@ -60,6 +60,7 @@ echo "<a class='nav' href='admin.php'>Dashboard</a>";
 echo "<a class='nav secondary' href='http://siegsaw.mockus.lt/web/index.php' target='_blank'>Main Website ↗</a>";
 echo "<a class='nav active' href='manage_users.php'>User Manager</a>";
 echo "<a class='nav' href='add_recipe.php'>Add Recipe</a>";
+echo "<a class='nav' href='modify_recipe.php'>Modify Recipes</a>";
 echo "<a class='nav' href='add_nutrition.php'>Nutrition Mapping</a>";
 echo "<a class='nav secondary' href='logout.php'>Log out</a>";
 echo "</aside>";

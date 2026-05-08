@@ -38,6 +38,7 @@ function isRequiredMacroPHP($name) {
     <a class="nav secondary" href="/web/index.php" target="_blank">Main Website ↗</a>
     <a class='nav' href='manage_users.php'>User Manager</a>
     <a class="nav" href="add_recipe.php">Add Recipe</a>
+    <a class='nav' href="modify_recipe.php">Modify Recipes</a>
     <a class="nav active" href="add_nutrition.php">Nutrition Mapping</a>
     <a class="nav secondary" href="logout.php">Log out</a>
 </aside>

@@ -4,21 +4,42 @@ let lastValidatedPayload = null;
 async function loadIngredients() {
   try {
     const res = await fetch('../web/get_ingredients.php', { cache: 'no-store' });
-    if (!res.ok) throw new Error('Failed to load ingredients');
     const data = await res.json();
     ALL_ING = Array.isArray(data) ? data : [];
   } catch (err) {
-    console.error('Ingredient load error:', err);
+    console.error(err);
     ALL_ING = [];
   }
 }
 
+function filterRecipeList() {
+  const search = document.getElementById('recipe_search').value.trim().toLowerCase();
+  const options = document.querySelectorAll('#recipe_id option');
+
+  options.forEach(option => {
+    if (option.value === '') {
+      option.hidden = false;
+      return;
+    }
+
+    const title = option.dataset.title || '';
+    option.hidden = !title.includes(search);
+  });
+}
+
 function findIngredientByName(name) {
-  const trimmed = (name || '').trim().toLowerCase();
+  const trimmed = String(name || '').trim().toLowerCase();
   return ALL_ING.find(i => i.name.toLowerCase() === trimmed) || null;
 }
 
-function addIngredientRow() {
+function setMultiSelectValues(selectId, values) {
+  const set = new Set(values.map(Number));
+  [...document.getElementById(selectId).options].forEach(opt => {
+    opt.selected = set.has(Number(opt.value));
+  });
+}
+
+function addIngredientRow(existing = null) {
   const container = document.getElementById("ingredients");
 
   const row = document.createElement("div");
@@ -39,14 +60,23 @@ function addIngredientRow() {
   container.appendChild(row);
 
   const nameInput = row.querySelector('.ing-name');
+  const amountInput = row.querySelector('.ing-amount');
   const unitSelect = row.querySelector('.ing-unit');
   const suggestions = row.querySelector('.suggestions');
+
+  if (existing) {
+    nameInput.value = existing.name;
+    amountInput.value = existing.amount;
+    unitSelect.innerHTML = `<option value="${existing.unit}">${existing.unit}</option>`;
+    unitSelect.value = existing.unit;
+  }
 
   nameInput.addEventListener('input', () => {
     const val = nameInput.value.trim().toLowerCase();
     suggestions.innerHTML = '';
 
     const matched = findIngredientByName(nameInput.value);
+
     if (matched) {
       unitSelect.innerHTML = `<option value="${matched.default_unit}">${matched.default_unit}</option>`;
       unitSelect.value = matched.default_unit;
@@ -89,13 +119,11 @@ function addIngredientRow() {
   });
 
   nameInput.addEventListener('blur', () => {
-    setTimeout(() => {
-      suggestions.style.display = 'none';
-    }, 120);
+    setTimeout(() => suggestions.style.display = 'none', 120);
   });
 }
 
-function addStepRow() {
+function addStepRow(existing = null) {
   const container = document.getElementById("steps");
 
   const row = document.createElement("div");
@@ -113,15 +141,58 @@ function addStepRow() {
   `;
 
   container.appendChild(row);
+
+  if (existing) {
+    row.querySelector('.step-number').value = existing.step_number;
+    row.querySelector('.step-type').value = existing.step_type;
+    row.querySelector('.step-time').value = existing.time_minutes;
+    row.querySelector('.step-text').value = existing.instructions;
+  }
+}
+
+async function loadRecipeForEdit() {
+  const recipeId = document.getElementById('recipe_id').value;
+  lastValidatedPayload = null;
+  document.getElementById('confirmUpdateBtn').disabled = true;
+  document.getElementById('previewCard').style.display = 'none';
+
+  if (!recipeId) {
+    document.getElementById('editCard').style.display = 'none';
+    return;
+  }
+
+  const res = await fetch('get_recipe_for_edit.php?recipe_id=' + encodeURIComponent(recipeId));
+  const data = await res.json();
+
+  if (!data.success) {
+    alert(data.message || 'Could not load recipe.');
+    return;
+  }
+
+  document.getElementById('editCard').style.display = 'block';
+
+  document.getElementById('title').value = data.recipe.title || '';
+  document.getElementById('description').value = data.recipe.description || '';
+
+  setMultiSelectValues('flavors', data.flavors || []);
+  setMultiSelectValues('regions', data.regions || []);
+
+  document.getElementById('ingredients').innerHTML = '';
+  document.getElementById('steps').innerHTML = '';
+
+  data.ingredients.forEach(ing => addIngredientRow(ing));
+  data.steps.forEach(step => addStepRow(step));
 }
 
 function buildRawPayload() {
+  const recipeId = parseInt(document.getElementById('recipe_id').value, 10);
+
   const title = document.getElementById("title").value.trim();
   const description = document.getElementById("description").value.trim();
-  
-  const flavors = [...document.getElementById("flavors").selectedOptions].map(o => parseInt(o.value));
-  const regions = [...document.getElementById("regions").selectedOptions].map(o => parseInt(o.value));
-  
+
+  const flavors = [...document.getElementById("flavors").selectedOptions].map(o => parseInt(o.value, 10));
+  const regions = [...document.getElementById("regions").selectedOptions].map(o => parseInt(o.value, 10));
+
   const ingredients = [...document.querySelectorAll("#ingredients .ingredient-row")].map(r => {
     const name = r.querySelector(".ing-name").value.trim();
     const amountRaw = r.querySelector(".ing-amount").value;
@@ -132,9 +203,7 @@ function buildRawPayload() {
       ingredient_id: ingredient ? ingredient.id : null,
       name,
       amount: parseFloat(amountRaw),
-      unit,
-      flavors,
-      regions
+      unit
     };
   });
 
@@ -145,13 +214,26 @@ function buildRawPayload() {
     instructions: r.querySelector(".step-text").value.trim()
   }));
 
-  return { title, description, ingredients, steps };
+  return { recipe_id: recipeId, title, description, flavors, regions, ingredients, steps };
+}
+
+async function previewModifiedRecipe() {
+  const payload = buildRawPayload();
+
+  const res = await fetch('preview_recipe.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  renderPreview(data);
 }
 
 function renderPreview(data) {
   const previewCard = document.getElementById('previewCard');
   const previewContent = document.getElementById('previewContent');
-  const confirmBtn = document.getElementById('confirmSaveBtn');
+  const confirmBtn = document.getElementById('confirmUpdateBtn');
 
   previewCard.style.display = 'block';
 
@@ -161,15 +243,20 @@ function renderPreview(data) {
     html += `
       <div class="preview-errors">
         <h4>Validation errors</h4>
-        <ul>${data.errors.map(e => `<li>${e}</li>`).join('')}</ul>
+        <ul>${data.errors.map(e => `<li>${escapeHtml(e)}</li>`).join('')}</ul>
       </div>
     `;
     confirmBtn.disabled = true;
     lastValidatedPayload = null;
   } else {
-    html += `<div class="preview-ok">Data is valid. This is what will be inserted into the database.</div>`;
+    html += `<div class="preview-ok">Data is valid. These changes can be saved.</div>`;
     confirmBtn.disabled = false;
-    lastValidatedPayload = data.payload;
+    lastValidatedPayload = {
+      ...data.payload,
+      recipe_id: parseInt(document.getElementById('recipe_id').value, 10),
+      flavors: [...document.getElementById("flavors").selectedOptions].map(o => parseInt(o.value, 10)),
+      regions: [...document.getElementById("regions").selectedOptions].map(o => parseInt(o.value, 10))
+    };
   }
 
   if (data.preview) {
@@ -190,49 +277,11 @@ function renderPreview(data) {
       </div>
 
       <div class="preview-block">
-        <div class="section">Recipe row</div>
-        <div class="preview-list">
-          <div class="preview-row">
-            <div class="preview-row-left">title</div>
-            <div class="preview-row-right">${escapeHtml(data.preview.title)}</div>
-          </div>
-          <div class="preview-row">
-            <div class="preview-row-left">description</div>
-            <div class="preview-row-right">${escapeHtml(data.preview.description || '')}</div>
-          </div>
-          <div class="preview-row">
-            <div class="preview-row-left">created_at</div>
-            <div class="preview-row-right">AUTO (CURRENT_TIMESTAMP)</div>
-          </div>
-          <div class="preview-row">
-            <div class="preview-row-left">total_time_minutes</div>
-            <div class="preview-row-right">${data.preview.total_time_minutes}</div>
-          </div>
-          <div class="preview-row">
-            <div class="preview-row-left">calories</div>
-            <div class="preview-row-right">${data.preview.calories} kcal</div>
-          </div>
-          <div class="preview-row">
-            <div class="preview-row-left">protein</div>
-            <div class="preview-row-right">${data.preview.protein} g</div>
-          </div>
-          <div class="preview-row">
-            <div class="preview-row-left">fat</div>
-            <div class="preview-row-right">${data.preview.fat} g</div>
-          </div>
-          <div class="preview-row">
-            <div class="preview-row-left">carbs</div>
-            <div class="preview-row-right">${data.preview.carbs} g</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="preview-block">
-        <div class="section">recipe_ingredients rows</div>
+        <div class="section">Ingredients</div>
         <div class="preview-list">
           ${data.preview.ingredients.map(ing => `
             <div class="preview-row">
-              <div class="preview-row-left">${escapeHtml(ing.name)} (ingredient_id: ${ing.ingredient_id})</div>
+              <div class="preview-row-left">${escapeHtml(ing.name)} ID: ${ing.ingredient_id}</div>
               <div class="preview-row-right">${ing.amount} ${escapeHtml(ing.unit)}</div>
             </div>
           `).join('')}
@@ -240,7 +289,7 @@ function renderPreview(data) {
       </div>
 
       <div class="preview-block">
-        <div class="section">recipe_steps rows</div>
+        <div class="section">Steps</div>
         <div class="preview-list">
           ${data.preview.steps.map(step => `
             <div class="preview-row">
@@ -256,50 +305,27 @@ function renderPreview(data) {
   previewContent.innerHTML = html;
 }
 
-async function previewRecipe() {
-  const payload = buildRawPayload();
-
-  try {
-    const res = await fetch('preview_recipe.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await res.json();
-    renderPreview(data);
-  } catch (err) {
-    console.error(err);
-    alert('Preview request failed.');
-  }
-}
-
-async function confirmSaveRecipe() {
+async function confirmUpdateRecipe() {
   if (!lastValidatedPayload) {
-    alert('Please run preview first and fix any validation issues.');
+    alert('Please preview first and fix validation errors.');
     return;
   }
 
-  try {
-    const res = await fetch('add_recipe_handler.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(lastValidatedPayload)
-    });
+  const res = await fetch('modify_recipe_handler.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(lastValidatedPayload)
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    if (data.success) {
-      alert(`Recipe added successfully. New recipe_id: ${data.recipe_id}`);
-      window.location.reload();
-      return;
-    }
-
-    alert(data.message || 'Insert failed.');
-  } catch (err) {
-    console.error(err);
-    alert('Save request failed.');
+  if (data.success) {
+    alert('Recipe updated successfully.');
+    window.location.reload();
+    return;
   }
+
+  alert(data.message || 'Update failed.');
 }
 
 function escapeHtml(str) {
@@ -311,8 +337,4 @@ function escapeHtml(str) {
     .replaceAll("'", '&#39;');
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  await loadIngredients();
-  addIngredientRow();
-  addStepRow();
-});
+document.addEventListener('DOMContentLoaded', loadIngredients);
