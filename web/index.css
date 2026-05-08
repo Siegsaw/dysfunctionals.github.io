@@ -939,10 +939,10 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 .collapsible-trigger {
   width: 100%;
     padding: 12px 16px;
-    background: var(--bg-m); /* Pridėkite foną, kad matytųsi juosta */
+    background: var(--bg-m); 
     border: none;
     font-family: inherit;
-    font-size: 13px; /* Šiek tiek mažesnis tekstas atrodo moderniau */
+    font-size: 13px; 
     font-weight: 700;
     color: var(--ink);
     cursor: pointer;
@@ -1014,10 +1014,10 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 }
 
 .results-grid.list-view .recipe-card {
-  display: grid;
-  grid-template-columns: 1fr auto auto auto auto;
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 18px;
+  gap: 12px;
   padding: 10px 14px;
   min-height: 52px;
 }
@@ -1037,10 +1037,11 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   justify-self: end;
   padding: 8px 14px;
 }
+
 .results-grid.list-view .card-top,
 .results-grid.list-view .card-name-wrapper,
 .results-grid.list-view .card-info {
-  display: contents;
+  display: none;
 }
 
 .results-grid.list-view .cuisine-row,
