@@ -534,9 +534,9 @@ input[type="range"] {
     text-transform: none; 
 }
 
-.results-grid.list-view .recipe-label-group {
+/*.results-grid.list-view .recipe-label-group {
     display: none !important;
-}
+}*/
 
 .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
 .card-name {
@@ -1107,4 +1107,20 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
   background: var(--chip-bg-hover) !important;
   border-color: var(--chip-border) !important;
   color: var(--chip-text) !important;
+}
+
+.lv-meta-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.lv-meta-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
 }
