@@ -1001,21 +1001,10 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 
 .results-grid.list-view .recipe-card {
   display: grid;
-    grid-template-columns: 1.2fr 0.8fr 1.5fr 0.6fr 1fr auto;
-    align-items: center;
-    gap: 15px;
-    padding: 12px 20px;
-}
-
-.tag-count-pill {
-  background: #dcfce7 !important; 
-  color: #166534 !important;    
-  border: 1px solid #bbf7d0 !important;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 12px;
-  border-radius: 20px;
-  white-space: nowrap;
+  grid-template-columns: 1.2fr 0.8fr 1.5fr 0.6fr 1fr auto;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 20px;
 }
 
 .lv-col-name { justify-self: start; }
@@ -1081,6 +1070,7 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
     text-align: center;
     min-width: 45px;
 }
+
 .pct-high { background: var(--gl); color: var(--gd); }
 .pct-mid  { background: var(--yl); color: #92400e; }
 .pct-low  { background: var(--rl); color: var(--red); }
