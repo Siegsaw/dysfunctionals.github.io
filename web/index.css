@@ -1064,16 +1064,18 @@ html.dark .tag-partial { color: #fde68a; border-color: rgba(251,191,36,.3); }
 .results-grid.list-view .card-pct {
   font-size: 13px;
     font-weight: 700;
-    padding: 4px 10px;
-    border-radius: var(--rf); 
-    display: inline-block;
-    text-align: center;
-    min-width: 45px;
+    padding: 6px 12px;           
+    border-radius: 999px;        
+    display: inline-flex;        
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;             
+    line-height: 1;
 }
 
-.pct-high { background: var(--gl); color: var(--gd); }
-.pct-mid  { background: var(--yl); color: #92400e; }
-.pct-low  { background: var(--rl); color: var(--red); }
+.pct-high { background: var(--gl) !important; color: var(--gd) !important; }
+.pct-mid  { background: var(--yl) !important; color: #92400e !important; }
+.pct-low  { background: var(--rl) !important; color: var(--red) !important; }
 
 .lv-col-pct {
     display: flex;
