@@ -21,6 +21,7 @@ echo "<a class='nav secondary' href='../web/index.php' target='_blank'>Main Webs
 echo "<a class='nav' href='manage_users.php'>User Manager</a>";
 echo "<a class='nav active' href='add_recipe.php'>Add Recipe</a>";
 echo "<a class='nav' href='modify_recipe.php'>Modify Recipes</a>";
+echo "<a class='nav' href='ingredients.php'>Ingredients</a>";
 echo "<a class='nav' href='add_nutrition.php'>Nutrition Mapping</a>";
 echo "<a class='nav secondary' href='logout.php'>Log out</a>";
 echo "</aside>";
