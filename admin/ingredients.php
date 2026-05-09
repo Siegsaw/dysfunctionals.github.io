@@ -276,6 +276,7 @@ function sortIngredients() {
                     data-id="<?= htmlspecialchars($ing['ingredient_id']) ?>"
                     data-name="<?= htmlspecialchars(strtolower($ing['name_ing'])) ?>"
                     data-unit="<?= htmlspecialchars(strtolower($ing['default_unit'])) ?>"
+                >
                     <form method="POST" action="ingredients.php">
                         <td>
                             <?= htmlspecialchars($ing['ingredient_id']) ?>
