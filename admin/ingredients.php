@@ -271,8 +271,8 @@ function sortIngredients() {
         </thead>
         <tbody id="ingredientTableBody">
         <?php if ($result && $result->num_rows > 0): ?>
-            <?php while ($ing = $result->fetch_assoc()): ?>
-                <tr>
+             <?php while ($ing = $result->fetch_assoc()): ?>
+                <tr
                     data-id="<?= htmlspecialchars($ing['ingredient_id']) ?>"
                     data-name="<?= htmlspecialchars(strtolower($ing['name_ing'])) ?>"
                     data-unit="<?= htmlspecialchars(strtolower($ing['default_unit'])) ?>"
@@ -280,9 +280,13 @@ function sortIngredients() {
                     <form method="POST" action="ingredients.php">
                         <td>
                             <?= htmlspecialchars($ing['ingredient_id']) ?>
-                            <input type="hidden" name="ingredient_id" value="<?= htmlspecialchars($ing['ingredient_id']) ?>">
+                            <input 
+                                type="hidden" 
+                                name="ingredient_id" 
+                                value="<?= htmlspecialchars($ing['ingredient_id']) ?>"
+                            >
                         </td>
-        
+
                         <td>
                             <input 
                                 class="input"
@@ -292,7 +296,7 @@ function sortIngredients() {
                                 style="margin-bottom:0;"
                             >
                         </td>
-        
+
                         <td>
                             <select class="input" name="default_unit" required style="margin-bottom:0;">
                                 <option value="g" <?= $ing['default_unit'] === 'g' ? 'selected' : '' ?>>g</option>
@@ -300,7 +304,7 @@ function sortIngredients() {
                                 <option value="pcs" <?= $ing['default_unit'] === 'pcs' ? 'selected' : '' ?>>pcs</option>
                             </select>
                         </td>
-        
+
                         <td>
                             <input 
                                 class="input"
@@ -313,18 +317,23 @@ function sortIngredients() {
                                 style="margin-bottom:0;"
                             >
                         </td>
-        
+
                         <td class="action-btns">
-                            <button class="btn btn-sm primary" name="action" value="edit" type="submit">
+                            <button 
+                                class="btn btn-sm primary" 
+                                name="action" 
+                                value="edit" 
+                                type="submit"
+                            >
                                 Save
                             </button>
-        
+
                             <button 
                                 class="btn btn-sm row-remove"
                                 name="action"
                                 value="delete"
                                 type="submit"
-                                onclick="return confirm('Delete this ingredient? This may fail if it is used by recipes.');"
+                                onclick="return confirm('Delete this ingredient? This may fail if it is used by recipes or nutrition mappings.');"
                             >
                                 Delete
                             </button>
