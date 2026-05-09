@@ -9,46 +9,95 @@ $message = '';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'] ?? 'add';
+
+    $ingredientId = (int)($_POST['ingredient_id'] ?? 0);
     $name = trim($_POST['name_ing'] ?? '');
     $defaultUnit = trim($_POST['default_unit'] ?? '');
     $densityRaw = trim($_POST['density_g_per_ml'] ?? '');
 
-    if ($name === '') {
-        $error = 'Ingredient name is required.';
-    } elseif (!in_array($defaultUnit, ['g', 'ml', 'pcs'], true)) {
-        $error = 'Default unit must be g, ml, or pcs.';
-    } else {
-        $density = null;
-
-        if ($densityRaw !== '') {
-            $density = (float)$densityRaw;
-
-            if ($density <= 0) {
-                $error = 'Density must be greater than 0.';
-            }
-        }
-
-        if ($error === '') {
-            if ($density === null) {
-                $stmt = $conn->prepare("
-                    INSERT INTO ingredients (name_ing, default_unit, density_g_per_ml)
-                    VALUES (?, ?, NULL)
-                ");
-                $stmt->bind_param("ss", $name, $defaultUnit);
-            } else {
-                $stmt = $conn->prepare("
-                    INSERT INTO ingredients (name_ing, default_unit, density_g_per_ml)
-                    VALUES (?, ?, ?)
-                ");
-                $stmt->bind_param("ssd", $name, $defaultUnit, $density);
-            }
-
+    if ($action === 'delete') {
+        if ($ingredientId <= 0) {
+            $error = 'Invalid ingredient ID.';
+        } else {
             try {
+                $stmt = $conn->prepare("DELETE FROM ingredients WHERE ingredient_id = ?");
+                $stmt->bind_param("i", $ingredientId);
                 $stmt->execute();
-                header("Location: ingredients.php?msg=Ingredient+added");
+
+                header("Location: ingredients.php?msg=Ingredient+deleted");
                 exit;
             } catch (Throwable $e) {
-                $error = 'Could not add ingredient: ' . $e->getMessage();
+                $error = 'Could not delete ingredient. It may already be used in recipes or nutrition mappings.';
+            }
+        }
+    } else {
+        if ($name === '') {
+            $error = 'Ingredient name is required.';
+        } elseif (!in_array($defaultUnit, ['g', 'ml', 'pcs'], true)) {
+            $error = 'Default unit must be g, ml, or pcs.';
+        } else {
+            $density = null;
+
+            if ($densityRaw !== '') {
+                $density = (float)$densityRaw;
+
+                if ($density <= 0) {
+                    $error = 'Density must be greater than 0.';
+                }
+            }
+
+            if ($error === '') {
+                try {
+                    if ($action === 'edit') {
+                        if ($ingredientId <= 0) {
+                            throw new Exception('Invalid ingredient ID.');
+                        }
+
+                        if ($density === null) {
+                            $stmt = $conn->prepare("
+                                UPDATE ingredients
+                                SET name_ing = ?, default_unit = ?, density_g_per_ml = NULL
+                                WHERE ingredient_id = ?
+                            ");
+                            $stmt->bind_param("ssi", $name, $defaultUnit, $ingredientId);
+                        } else {
+                            $stmt = $conn->prepare("
+                                UPDATE ingredients
+                                SET name_ing = ?, default_unit = ?, density_g_per_ml = ?
+                                WHERE ingredient_id = ?
+                            ");
+                            $stmt->bind_param("ssdi", $name, $defaultUnit, $density, $ingredientId);
+                        }
+
+                        $stmt->execute();
+
+                        header("Location: ingredients.php?msg=Ingredient+updated");
+                        exit;
+                    }
+
+                    if ($density === null) {
+                        $stmt = $conn->prepare("
+                            INSERT INTO ingredients (name_ing, default_unit, density_g_per_ml)
+                            VALUES (?, ?, NULL)
+                        ");
+                        $stmt->bind_param("ss", $name, $defaultUnit);
+                    } else {
+                        $stmt = $conn->prepare("
+                            INSERT INTO ingredients (name_ing, default_unit, density_g_per_ml)
+                            VALUES (?, ?, ?)
+                        ");
+                        $stmt->bind_param("ssd", $name, $defaultUnit, $density);
+                    }
+
+                    $stmt->execute();
+
+                    header("Location: ingredients.php?msg=Ingredient+added");
+                    exit;
+
+                } catch (Throwable $e) {
+                    $error = 'Database error: ' . $e->getMessage();
+                }
             }
         }
     }
@@ -146,25 +195,71 @@ $result = $conn->query("
                 <th>Ingredient</th>
                 <th>Default Unit</th>
                 <th>Density g/ml</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
         <?php if ($result && $result->num_rows > 0): ?>
             <?php while ($ing = $result->fetch_assoc()): ?>
                 <tr>
-                    <td><?= htmlspecialchars($ing['ingredient_id']) ?></td>
-                    <td><strong><?= htmlspecialchars($ing['name_ing']) ?></strong></td>
-                    <td><?= htmlspecialchars($ing['default_unit']) ?></td>
-                    <td>
-                        <?= $ing['density_g_per_ml'] === null 
-                            ? '<span style="color:var(--muted);">—</span>' 
-                            : htmlspecialchars($ing['density_g_per_ml']) ?>
-                    </td>
+                    <form method="POST" action="ingredients.php">
+                        <td>
+                            <?= htmlspecialchars($ing['ingredient_id']) ?>
+                            <input type="hidden" name="ingredient_id" value="<?= htmlspecialchars($ing['ingredient_id']) ?>">
+                        </td>
+        
+                        <td>
+                            <input 
+                                class="input"
+                                name="name_ing"
+                                value="<?= htmlspecialchars($ing['name_ing']) ?>"
+                                required
+                                style="margin-bottom:0;"
+                            >
+                        </td>
+        
+                        <td>
+                            <select class="input" name="default_unit" required style="margin-bottom:0;">
+                                <option value="g" <?= $ing['default_unit'] === 'g' ? 'selected' : '' ?>>g</option>
+                                <option value="ml" <?= $ing['default_unit'] === 'ml' ? 'selected' : '' ?>>ml</option>
+                                <option value="pcs" <?= $ing['default_unit'] === 'pcs' ? 'selected' : '' ?>>pcs</option>
+                            </select>
+                        </td>
+        
+                        <td>
+                            <input 
+                                class="input"
+                                name="density_g_per_ml"
+                                type="number"
+                                step="0.0001"
+                                min="0"
+                                value="<?= htmlspecialchars($ing['density_g_per_ml'] ?? '') ?>"
+                                placeholder="—"
+                                style="margin-bottom:0;"
+                            >
+                        </td>
+        
+                        <td class="action-btns">
+                            <button class="btn btn-sm primary" name="action" value="edit" type="submit">
+                                Save
+                            </button>
+        
+                            <button 
+                                class="btn btn-sm row-remove"
+                                name="action"
+                                value="delete"
+                                type="submit"
+                                onclick="return confirm('Delete this ingredient? This may fail if it is used by recipes.');"
+                            >
+                                Delete
+                            </button>
+                        </td>
+                    </form>
                 </tr>
             <?php endwhile; ?>
         <?php else: ?>
             <tr>
-                <td colspan="4" style="text-align:center;">No ingredients found.</td>
+                <td colspan="5" style="text-align:center;">No ingredients found.</td>
             </tr>
         <?php endif; ?>
         </tbody>
