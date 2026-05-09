@@ -34,8 +34,13 @@ echo "<div class='page-sub'>Manage recipes, ingredients and structure</div>";
 echo "<div class='grid'>";
 
 echo "<a class='card card-link' href='add_recipe.php'>";
-echo "<div class='card-title'>Recipes</div>";
-echo "<div class='card-sub'>Create and manage recipes</div>";
+echo "<div class='card-title'>Add Recipe</div>";
+echo "<div class='card-sub'>Create new recipes and insert them into the database</div>";
+echo "</a>";
+
+echo "<a class='card card-link' href='modify_recipe.php'>";
+echo "<div class='card-title'>Modify Recipes</div>";
+echo "<div class='card-sub'>Edit existing recipes and update their data</div>";
 echo "</a>";
 
 echo "<a class='card card-link' href='manage_users.php'>"; // Nuoroda į vartotojų puslapį
