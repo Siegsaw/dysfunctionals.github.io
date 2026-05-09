@@ -39,6 +39,7 @@ while ($r = $regions_res->fetch_assoc()) {
   <a class="nav" href="manage_users.php">User Manager</a>
   <a class="nav" href="add_recipe.php">Add Recipe</a>
   <a class="nav active" href="modify_recipe.php">Modify Recipes</a>
+  <a class='nav' href="ingredients.php">Ingredients</a>
   <a class="nav" href="add_nutrition.php">Nutrition Mapping</a>
   <a class="nav secondary" href="logout.php">Log out</a>
 </aside>
