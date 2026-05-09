@@ -121,6 +121,52 @@ $result = $conn->query("
 <link rel="stylesheet" href="admin.css">
 </head>
 
+
+<script>
+function filterIngredients() {
+    const search = document.getElementById('ingredientSearch').value.trim().toLowerCase();
+    const rows = document.querySelectorAll('#ingredientTableBody tr[data-name]');
+
+    rows.forEach(row => {
+        const name = row.dataset.name || '';
+        row.style.display = name.includes(search) ? '' : 'none';
+    });
+}
+
+function sortIngredients() {
+    const tbody = document.getElementById('ingredientTableBody');
+    const rows = Array.from(tbody.querySelectorAll('tr[data-name]'));
+    const sortValue = document.getElementById('ingredientSort').value;
+
+    rows.sort((a, b) => {
+        if (sortValue === 'name-asc') {
+            return a.dataset.name.localeCompare(b.dataset.name);
+        }
+
+        if (sortValue === 'name-desc') {
+            return b.dataset.name.localeCompare(a.dataset.name);
+        }
+
+        if (sortValue === 'id-asc') {
+            return Number(a.dataset.id) - Number(b.dataset.id);
+        }
+
+        if (sortValue === 'id-desc') {
+            return Number(b.dataset.id) - Number(a.dataset.id);
+        }
+
+        if (sortValue === 'unit-asc') {
+            return a.dataset.unit.localeCompare(b.dataset.unit);
+        }
+
+        return 0;
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+    filterIngredients();
+}
+</script>
+    
 <body>
 <div class="layout">
 
@@ -185,20 +231,46 @@ $result = $conn->query("
     </form>
 </div>
 
+<div class="section">Search & Sort</div>
+
+<div style="display:grid; grid-template-columns:2fr 1fr; gap:10px; margin-bottom:14px;">
+    <input 
+        id="ingredientSearch" 
+        class="input" 
+        placeholder="Search ingredient name..."
+        oninput="filterIngredients()"
+        style="margin-bottom:0;"
+    >
+
+    <select 
+        id="ingredientSort" 
+        class="input" 
+        onchange="sortIngredients()"
+        style="margin-bottom:0;"
+    >
+        <option value="name-asc">Name A → Z</option>
+        <option value="name-desc">Name Z → A</option>
+        <option value="id-asc">ID ascending</option>
+        <option value="id-desc">ID descending</option>
+        <option value="unit-asc">Unit A → Z</option>
+    </select>
+</div>
+    
 <div class="card" style="margin-top:18px;">
     <div class="section">Ingredient List</div>
 
     <table class="user-table">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Ingredient</th>
-                <th>Default Unit</th>
+                
+  data-id="<?= htmlspecialchars($ing['ingredient_id']) ?>"
+  data-name="<?= htmlspecialchars(strtolower($ing['name_ing'])) ?>"
+  data-unit="<?= htmlspecialchars(strtolower($ing['default_unit'])) ?>"
                 <th>Density g/ml</th>
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="ingredientTableBody">
         <?php if ($result && $result->num_rows > 0): ?>
             <?php while ($ing = $result->fetch_assoc()): ?>
                 <tr>
