@@ -21,6 +21,7 @@ echo "<a class='nav secondary' href='http://siegsaw.mockus.lt/web/index.php' tar
 echo "<a class='nav' href='manage_users.php'>User Manager</a>";
 echo "<a class='nav' href='add_recipe.php'>Add Recipe</a>";
 echo "<a class='nav' href='modify_recipe.php'>Modify Recipes</a>";
+echo "<a class='nav' href='ingredients.php'>Ingredients</a>";
 echo "<a class='nav' href='add_nutrition.php'>Nutrition Mapping</a>";
 echo "<a class='nav secondary' href='logout.php'>Log out</a>";
 echo "</aside>";
@@ -42,10 +43,10 @@ echo "<div class='card-title'>Users</div>";
 echo "<div class='card-sub'>Manage admin accounts and permissions</div>";
 echo "</a>";
 
-echo "<div class='card'>";
+echo "<a class='card card-link' href='ingredients.php'>";
 echo "<div class='card-title'>Ingredients</div>";
-echo "<div class='card-sub'>Controlled from DB</div>";
-echo "</div>";
+echo "<div class='card-sub'>View and add ingredients</div>";
+echo "</a>";
 
 echo "<a class='card card-link' href='add_nutrition.php'>";
 echo "<div class='card-title'>Nutrition</div>";
