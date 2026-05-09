@@ -260,12 +260,11 @@ function sortIngredients() {
     <div class="section">Ingredient List</div>
 
     <table class="user-table">
-        <thead>
+       <thead>
             <tr>
-                
-  data-id="<?= htmlspecialchars($ing['ingredient_id']) ?>"
-  data-name="<?= htmlspecialchars(strtolower($ing['name_ing'])) ?>"
-  data-unit="<?= htmlspecialchars(strtolower($ing['default_unit'])) ?>"
+                <th>ID</th>
+                <th>Ingredient</th>
+                <th>Default Unit</th>
                 <th>Density g/ml</th>
                 <th>Actions</th>
             </tr>
@@ -274,6 +273,9 @@ function sortIngredients() {
         <?php if ($result && $result->num_rows > 0): ?>
             <?php while ($ing = $result->fetch_assoc()): ?>
                 <tr>
+                    data-id="<?= htmlspecialchars($ing['ingredient_id']) ?>"
+                    data-name="<?= htmlspecialchars(strtolower($ing['name_ing'])) ?>"
+                    data-unit="<?= htmlspecialchars(strtolower($ing['default_unit'])) ?>"
                     <form method="POST" action="ingredients.php">
                         <td>
                             <?= htmlspecialchars($ing['ingredient_id']) ?>
