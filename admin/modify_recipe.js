@@ -155,6 +155,7 @@ async function loadRecipeForEdit() {
   lastValidatedPayload = null;
   document.getElementById('confirmUpdateBtn').disabled = true;
   document.getElementById('previewCard').style.display = 'none';
+  
 
   if (!recipeId) {
     document.getElementById('editCard').style.display = 'none';
@@ -173,6 +174,7 @@ async function loadRecipeForEdit() {
 
   document.getElementById('title').value = data.recipe.title || '';
   document.getElementById('description').value = data.recipe.description || '';
+  document.getElementById('servings').value = data.recipe.servings || 1;
 
   setMultiSelectValues('flavors', data.flavors || []);
   setMultiSelectValues('regions', data.regions || []);
@@ -189,6 +191,7 @@ function buildRawPayload() {
 
   const title = document.getElementById("title").value.trim();
   const description = document.getElementById("description").value.trim();
+  const servings = parseInt(document.getElementById("servings").value, 10) || 1;
 
   const flavors = [...document.getElementById("flavors").selectedOptions].map(o => parseInt(o.value, 10));
   const regions = [...document.getElementById("regions").selectedOptions].map(o => parseInt(o.value, 10));
@@ -214,7 +217,16 @@ function buildRawPayload() {
     instructions: r.querySelector(".step-text").value.trim()
   }));
 
-  return { recipe_id: recipeId, title, description, flavors, regions, ingredients, steps };
+  return {
+    recipe_id: recipeId,
+    title,
+    description,
+    servings,
+    flavors,
+    regions,
+    ingredients,
+    steps
+  };
 }
 
 async function previewModifiedRecipe() {
@@ -267,6 +279,7 @@ function renderPreview(data) {
 
         <div class="meta-grid">
           <div class="meta-pill">Ingredients: ${data.preview.ingredients.length}</div>
+          <div class="meta-pill">Servings: ${data.preview.servings}</div>
           <div class="meta-pill">Steps: ${data.preview.steps.length}</div>
           <div class="meta-pill">Total time: ${data.preview.total_time_minutes} min</div>
           <div class="meta-pill">Calories: ${data.preview.calories} kcal</div>
