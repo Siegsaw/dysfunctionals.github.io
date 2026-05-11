@@ -13,7 +13,7 @@ if ($recipeId <= 0) {
 }
 
 $stmt = $conn->prepare("
-  SELECT recipe_id, title, description
+  SELECT recipe_id, title, description, servings
   FROM recipes
   WHERE recipe_id = ?
 ");
