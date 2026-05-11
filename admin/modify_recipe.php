@@ -75,6 +75,7 @@ while ($r = $regions_res->fetch_assoc()) {
     <div class="section">Basic Info</div>
     <input id="title" class="input" placeholder="Recipe title">
     <textarea id="description" class="textarea" placeholder="Description"></textarea>
+    <input id="servings" class="input" type="number" min="1" step="1" placeholder="Servings">
 
     <div class="section">Flavors & Regions</div>
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px;">
