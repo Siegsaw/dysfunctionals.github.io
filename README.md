@@ -1,5 +1,8 @@
 # dysfunctionals.github.io
 The repository for the Dysfunctionals Project "PantryChef"
+
+---
+
 # PantryChef
 
 PantryChef is a recipe and pantry management web application designed to help users discover recipes based on available ingredients, manage their personal inventory, and explore recipe nutrition information.
@@ -51,16 +54,9 @@ The project also includes a full admin panel for managing recipes, ingredients, 
 /admin      - PantryAdmin panel
 ```
 
-## Why The Project Is Useful
-
-PantryChef helps users:
-
-* Discover recipes using available ingredients
-* Organize pantry inventory
-* View recipe nutrition information
-* Manage cooking preparation more efficiently
-
 ## Documentation
+
+https://github.com/Siegsaw/dysfunctionals.github.io/wiki
 
 The project wiki contains detailed documentation for:
 
@@ -70,21 +66,11 @@ Main website pages:
 * UI descriptions
 * Example screenshots
 
-## Wiki link:
-
-https://github.com/Siegsaw/dysfunctionals.github.io/wiki
-
-Getting Help
-
-## For help or documentation:
-
-Use the project wiki
-
-Open an issue on GitHub
 
 ## Contributors
 
 Project developed by the Dysfunctionals team:
+
 Project Lead: https://github.com/Siegsaw
 
 https://github.com/Viktorija002
