@@ -279,8 +279,8 @@ function renderPreview(data) {
 
         <div class="meta-grid">
           <div class="meta-pill">Ingredients: ${data.preview.ingredients.length}</div>
-          <div class="meta-pill">Servings: ${data.preview.servings}</div>
           <div class="meta-pill">Steps: ${data.preview.steps.length}</div>
+          <div class="meta-pill">Servings: ${data.preview.servings}</div>
           <div class="meta-pill">Total time: ${data.preview.total_time_minutes} min</div>
           <div class="meta-pill">Calories: ${data.preview.calories} kcal</div>
           <div class="meta-pill">Protein: ${data.preview.protein} g</div>
