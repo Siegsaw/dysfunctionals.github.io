@@ -50,6 +50,8 @@ echo "<div class='card'>";
 echo "<div class='section'>Basic Info</div>";
 echo "<input id='title' class='input' placeholder='Recipe title'>";
 echo "<textarea id='description' class='textarea' placeholder='Description'></textarea>";
+echo "<input id='servings' class='input' type='number' min='1' step='1' value='1' placeholder='Servings'>";
+
 
 echo "<div class='section'>Flavors & Regions</div>";
 echo "<div style='display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;'>";
