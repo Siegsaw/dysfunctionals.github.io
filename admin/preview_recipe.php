@@ -8,6 +8,7 @@ $data = json_decode(file_get_contents("php://input"), true);
 
 $title = trim($data['title'] ?? '');
 $description = trim($data['description'] ?? '');
+$servings = (int)($data['servings'] ?? 1);
 $ingredients = $data['ingredients'] ?? [];
 $steps = $data['steps'] ?? [];
 
@@ -18,6 +19,10 @@ $cleanSteps = [];
 /* ── BASIC VALIDATION ───────────────────────────────────── */
 if ($title === '') {
   $errors[] = 'Recipe title is required.';
+}
+
+if ($servings < 1) {
+  $errors[] = 'Servings must be at least 1.';
 }
 
 if (!is_array($ingredients) || count($ingredients) === 0) {
@@ -226,6 +231,7 @@ $carbs    = round($carbs, 2);
 $payload = [
   'title' => $title,
   'description' => $description,
+  'servings' => $servings,
   'ingredients' => array_map(function ($ing) {
     return [
       'ingredient_id' => $ing['ingredient_id'],
@@ -245,6 +251,7 @@ $payload = [
 $preview = [
   'title' => $title,
   'description' => $description,
+  'servings' => $servings,
   'ingredients' => array_map(function ($ing) {
     return [
       'ingredient_id' => $ing['ingredient_id'],
