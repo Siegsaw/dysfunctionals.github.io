@@ -10,12 +10,13 @@ $data = json_decode(file_get_contents("php://input"), true);
 $recipeId = (int)($data['recipe_id'] ?? 0);
 $title = trim($data['title'] ?? '');
 $description = trim($data['description'] ?? '');
+$servings = (int)($data['servings'] ?? 1);
 $ingredients = $data['ingredients'] ?? [];
 $steps = $data['steps'] ?? [];
 $flavors = $data['flavors'] ?? [];
 $regions = $data['regions'] ?? [];
 
-if ($recipeId <= 0 || $title === '' || empty($ingredients) || empty($steps)) {
+if ($recipeId <= 0 || $title === '' || $servings < 1 || empty($ingredients) || empty($steps)) {
   echo json_encode(['success' => false, 'message' => 'Invalid payload.']);
   exit;
 }
@@ -115,6 +116,7 @@ try {
     SET 
       title = ?,
       description = ?,
+      servings = ?,
       calories = ?,
       protein = ?,
       fat = ?,
@@ -124,9 +126,10 @@ try {
   ");
 
   $recipeStmt->bind_param(
-    "ssddddii",
+    "ssiddddii",
     $title,
     $description,
+    $servings,
     $calories,
     $protein,
     $fat,
