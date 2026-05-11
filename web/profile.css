@@ -231,6 +231,19 @@ body {
   background: var(--bg-s);
 }
 
+.profile-side .form-grid {
+  grid-template-columns: 1fr;
+}
+
+.profile-side .form-group input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.profile-side .profile-card {
+  overflow: hidden;
+}
+
 @media (max-width: 900px) {
   .profile-grid {
     grid-template-columns: 1fr;
