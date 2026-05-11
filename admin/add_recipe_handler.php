@@ -8,12 +8,13 @@ $data = json_decode(file_get_contents("php://input"), true);
 
 $title = trim($data['title'] ?? '');
 $description = trim($data['description'] ?? '');
+$servings = (int)($data['servings'] ?? 1);
 $ingredients = $data['ingredients'] ?? [];
 $steps = $data['steps'] ?? [];
 $flavors = $data['flavors'] ?? [];
 $regions = $data['regions'] ?? [];
 
-if ($title === '' || !is_array($ingredients) || !count($ingredients) || !is_array($steps) || !count($steps)) {
+if ($title === '' || $servings < 1 || !is_array($ingredients) || !count($ingredients) || !is_array($steps) || !count($steps)) {
   echo json_encode([
     'success' => false,
     'message' => 'Invalid payload.'
@@ -125,6 +126,7 @@ try {
     INSERT INTO recipes (
       title,
       description,
+      servings,
       created_at,
       calories,
       protein,
@@ -132,13 +134,14 @@ try {
       carbs,
       total_time_minutes
     )
-    VALUES (?, ?, NOW(), ?, ?, ?, ?, ?)
-  ");
+  VALUES (?, ?, ?, NOW(), ?, ?, ?, ?, ?)
+");
 
   $recipeStmt->bind_param(
-    "ssddddi",
+    "ssiddddi",
     $title,
     $description,
+    $servings,
     $calories,
     $protein,
     $fat,
