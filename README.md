@@ -20,6 +20,7 @@ The project also includes a full admin panel for managing recipes, ingredients, 
 * Manage personal ingredient inventory
 * Save favorite recipes
 * Filter recipes by flavors and regions
+* Filter Recipes by Time and Calories
 * View recipe nutrition information
 * Dark/light theme support
 
