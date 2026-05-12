@@ -11,7 +11,8 @@ $description = trim($data['description'] ?? '');
 $servings = (int)($data['servings'] ?? 1);
 $ingredients = $data['ingredients'] ?? [];
 $steps = $data['steps'] ?? [];
-
+$flavors = $data['flavors'] ?? [];
+$regions = $data['regions'] ?? [];
 $errors = [];
 $cleanIngredients = [];
 $cleanSteps = [];
@@ -240,6 +241,8 @@ $payload = [
     ];
   }, $cleanIngredients),
   'steps' => $cleanSteps,
+  'flavors' => $flavors,
+  'regions' => $regions,
   'total_time_minutes' => $totalTime,
   'calories' => $calories,
   'protein' => $protein,
