@@ -1,13 +1,19 @@
-# dysfunctionals.github.io
-The repository for the Dysfunctionals Project "PantryChef"
+# PantryChef
+
+PantryChef is a recipe and pantry management web application that helps users discover recipes based on available ingredients, manage pantry inventory, and view nutritional information.
+
+The project also includes an admin panel for managing recipes, ingredients, and nutrition mappings.
 
 ---
 
-# PantryChef
+# Why PantryChef Is Useful
 
-PantryChef is a recipe and pantry management web application designed to help users discover recipes based on available ingredients, manage their personal inventory, and explore recipe nutrition information.
+PantryChef helps users:
 
-The project also includes a full admin panel for managing recipes, ingredients, and nutrition mappings.
+* Discover recipes using available ingredients
+* Organize pantry inventory
+* Track nutritional recipe information
+* Simplify meal preparation
 
 ---
 
@@ -20,8 +26,7 @@ The project also includes a full admin panel for managing recipes, ingredients, 
 * Manage personal ingredient inventory
 * Save favorite recipes
 * Filter recipes by flavors and regions
-* Filter Recipes by Time and Calories
-* View recipe nutrition information
+* View nutritional recipe information
 * Dark/light theme support
 
 ## Admin Panel
@@ -29,7 +34,7 @@ The project also includes a full admin panel for managing recipes, ingredients, 
 * Modify existing recipes
 * Manage ingredients
 * Assign nutrition values to ingredients
-* Manage recipe structure and metadata
+* Manage recipe metadata
 
 ---
 
@@ -43,7 +48,10 @@ The project also includes a full admin panel for managing recipes, ingredients, 
 ## Backend
 * PHP
 * MariaDB
+
+## Server
 * Nginx
+* PHP-FPM
 * phpMyAdmin
 
 ---
@@ -52,28 +60,125 @@ The project also includes a full admin panel for managing recipes, ingredients, 
 
 ```text
 /web        - Main PantryChef website
-/admin      - PantryAdmin panel
+/admin      - PantryAdmin control panel
 ```
 
-## Documentation
+---
+
+# Installation
+
+## Requirements
+
+Before installation, make sure your system has:
+
+* PHP 8+
+* MariaDB
+* Nginx
+* phpMyAdmin (optional)
+
+---
+
+## Clone the Repository
+
+```bash
+git clone https://github.com/Siegsaw/dysfunctionals.github.io.git
+cd dysfunctionals.github.io
+```
+
+---
+
+## Database Setup
+
+Create the database:
+
+```sql
+CREATE DATABASE pantrychef;
+```
+
+Import the provided SQL schema into MariaDB.
+
+---
+
+## Configure Database Connection
+
+Edit:
+
+```text
+/var/www/private/db.php
+```
+
+Set your database credentials.
+
+---
+
+## Configure Web Server
+
+Set your web root to:
+
+```text
+/web
+```
+
+Admin panel:
+
+```text
+/admin
+```
+
+Make sure PHP-FPM is enabled.
+
+---
+
+## Run the Project
+
+Start Nginx and MariaDB.
+
+Main website:
+
+```text
+http://your-server/web
+```
+
+Admin panel:
+
+```text
+http://your-server/admin
+```
+
+---
+
+# Documentation
+
+Detailed project documentation is available in the wiki:
 
 https://github.com/Siegsaw/dysfunctionals.github.io/wiki
 
-The project wiki contains detailed documentation for:
+The wiki contains:
 
-Main website pages:
-* Admin pages
-* Functionality explanations
-* UI descriptions
-* Example screenshots
+* Main website page documentation
+* Admin page documentation
+* Functionality descriptions
+* Interface screenshots
+* User interaction guides
 
+---
+
+# Getting Help
+
+For help:
+
+* Check the project wiki
+* Open an issue on GitHub
+
+---
+
+# Contributors
+
+Project developed by the Dysfunctionals team.
+
+## Project Lead
+https://github.com/Siegsaw
 
 ## Contributors
-
-Project developed by the Dysfunctionals team:
-
-Project Lead: https://github.com/Siegsaw
-
-https://github.com/Viktorija002
-
+https://github.com/Viktorija002  
 https://github.com/CaptainUnderpants-67
