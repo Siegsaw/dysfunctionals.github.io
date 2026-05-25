@@ -176,9 +176,8 @@ For help:
 
 Project developed by the Dysfunctionals team.
 
-## Project Lead
-https://github.com/Siegsaw
+**Project Lead** - https://github.com/Siegsaw
 
-## Contributors
 https://github.com/Viktorija002  
+
 https://github.com/CaptainUnderpants-67
