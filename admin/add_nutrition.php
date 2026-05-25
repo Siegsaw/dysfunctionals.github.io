@@ -59,7 +59,7 @@ function isRequiredMacroPHP($name) {
     border: 1px solid var(--border);
     border-top: none;
     border-radius: 0 0 4px 4px;
-    max-height: 250px;
+    max-height: 300px;
     overflow-y: auto;
     display: none;
     z-index: 1000;
@@ -199,33 +199,24 @@ async function loadIngredients() {
   try {
     const res = await fetch('../web/get_ingredients.php', { cache: 'no-store' });
     ALL_INGREDIENTS = await res.json();
+    // Show all ingredients on load
+    displayIngredients(ALL_INGREDIENTS);
   } catch (err) {
     console.error('Failed to load ingredients:', err);
     ALL_INGREDIENTS = [];
   }
 }
 
-function filterIngredients() {
-  const input = document.getElementById('ingredient_search');
+function displayIngredients(ingredientsList) {
   const suggestionsBox = document.getElementById('ingredient_suggestions');
-  const val = input.value.trim().toLowerCase();
-
-  if (val.length < 1) {
-    suggestionsBox.classList.remove('show');
-    return;
-  }
-
-  const filtered = ALL_INGREDIENTS
-    .filter(ing => ing.name.toLowerCase().includes(val))
-    .slice(0, 10);
-
-  if (filtered.length === 0) {
+  
+  if (ingredientsList.length === 0) {
     suggestionsBox.classList.remove('show');
     return;
   }
 
   suggestionsBox.innerHTML = '';
-  filtered.forEach(ing => {
+  ingredientsList.forEach(ing => {
     const item = document.createElement('div');
     item.className = 'suggestion-item';
     item.textContent = ing.name;
@@ -234,6 +225,23 @@ function filterIngredients() {
   });
 
   suggestionsBox.classList.add('show');
+}
+
+function filterIngredients() {
+  const input = document.getElementById('ingredient_search');
+  const val = input.value.trim().toLowerCase();
+
+  // If input is empty, show all ingredients
+  if (val.length === 0) {
+    displayIngredients(ALL_INGREDIENTS);
+    return;
+  }
+
+  // Otherwise, filter ingredients based on input
+  const filtered = ALL_INGREDIENTS
+    .filter(ing => ing.name.toLowerCase().includes(val));
+
+  displayIngredients(filtered);
 }
 
 function selectIngredient(ingredient) {
@@ -354,6 +362,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('ingredient_search');
   if (searchInput) {
     searchInput.addEventListener('input', filterIngredients);
+    
+    // Show full list when focusing on input
+    searchInput.addEventListener('focus', () => {
+      if (ALL_INGREDIENTS.length > 0) {
+        displayIngredients(ALL_INGREDIENTS);
+      }
+    });
     
     // Close suggestions when clicking outside
     document.addEventListener('click', (e) => {
