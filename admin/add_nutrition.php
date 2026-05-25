@@ -194,13 +194,11 @@ Save All Nutrition Data
 
 let ALL_INGREDIENTS = [];
 
-// Load ingredients on page load
+// Load ingredients on page load (but don't display them)
 async function loadIngredients() {
   try {
     const res = await fetch('../web/get_ingredients.php', { cache: 'no-store' });
     ALL_INGREDIENTS = await res.json();
-    // Show all ingredients on load
-    displayIngredients(ALL_INGREDIENTS);
   } catch (err) {
     console.error('Failed to load ingredients:', err);
     ALL_INGREDIENTS = [];
