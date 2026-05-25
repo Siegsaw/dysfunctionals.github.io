@@ -133,71 +133,38 @@ while ($row = $stepResult->fetch_assoc()) {
   ];
 }
 
-$nutritionFields = [
-  'vitamin_a' => ['label' => 'Vitamin A', 'unit' => 'µg'],
-  'vitamin_b1' => ['label' => 'Vitamin B1', 'unit' => 'mg'],
-  'vitamin_b2' => ['label' => 'Vitamin B2', 'unit' => 'mg'],
-  'vitamin_b3' => ['label' => 'Vitamin B3', 'unit' => 'mg'],
-  'vitamin_b5' => ['label' => 'Vitamin B5', 'unit' => 'mg'],
-  'vitamin_b6' => ['label' => 'Vitamin B6', 'unit' => 'mg'],
-  'vitamin_b7' => ['label' => 'Vitamin B7', 'unit' => 'µg'],
-  'vitamin_b9' => ['label' => 'Vitamin B9', 'unit' => 'µg'],
-  'vitamin_b12' => ['label' => 'Vitamin B12', 'unit' => 'µg'],
-  'vitamin_c' => ['label' => 'Vitamin C', 'unit' => 'mg'],
-  'vitamin_d' => ['label' => 'Vitamin D', 'unit' => 'µg'],
-  'vitamin_e' => ['label' => 'Vitamin E', 'unit' => 'mg'],
-  'vitamin_k' => ['label' => 'Vitamin K', 'unit' => 'µg'],
-  'calcium' => ['label' => 'Calcium', 'unit' => 'mg'],
-  'chloride' => ['label' => 'Chloride', 'unit' => 'mg'],
-  'chromium' => ['label' => 'Chromium', 'unit' => 'µg'],
-  'copper' => ['label' => 'Copper', 'unit' => 'mg'],
-  'fluoride' => ['label' => 'Fluoride', 'unit' => 'mg'],
-  'iodine' => ['label' => 'Iodine', 'unit' => 'µg'],
-  'iron' => ['label' => 'Iron', 'unit' => 'mg'],
-  'magnesium' => ['label' => 'Magnesium', 'unit' => 'mg'],
-  'manganese' => ['label' => 'Manganese', 'unit' => 'mg'],
-  'molybdenum' => ['label' => 'Molybdenum', 'unit' => 'µg'],
-  'phosphorus' => ['label' => 'Phosphorus', 'unit' => 'mg'],
-  'potassium' => ['label' => 'Potassium', 'unit' => 'mg'],
-  'selenium' => ['label' => 'Selenium', 'unit' => 'µg'],
-  'sodium' => ['label' => 'Sodium', 'unit' => 'mg'],
-  'zinc' => ['label' => 'Zinc', 'unit' => 'mg']
-];
+$micronutrientQuery = $conn->prepare("
+  SELECT
+    n.nutrient_id,
+    n.name_nutr AS label,
+    n.unit,
+    SUM(
+      COALESCE(inut.amount_per_100g, 0) * ri.quantity / 100
+    ) AS amount
+  FROM recipe_ingredients ri
+  JOIN ingredient_nutrition inut
+    ON ri.ingredient_id = inut.ingredient_id
+  JOIN nutrients n
+    ON inut.nutrient_id = n.nutrient_id
+  WHERE ri.recipe_id = ?
+    AND n.nutrient_id >= 11
+  GROUP BY n.nutrient_id, n.name_nutr, n.unit
+  HAVING amount > 0
+  ORDER BY n.name_nutr
+");
+
+$micronutrientQuery->bind_param('i', $recipeId);
+$micronutrientQuery->execute();
+$micronutrientResult = $micronutrientQuery->get_result();
 
 $micronutrients = [];
-$columnsResult = $conn->query("SHOW COLUMNS FROM recipes");
-$recipeColumns = [];
-if ($columnsResult) {
-  while ($column = $columnsResult->fetch_assoc()) {
-    $recipeColumns[] = $column['Field'];
-  }
-}
-
-$availableNutritionColumns = array_values(array_intersect(array_keys($nutritionFields), $recipeColumns));
-if (count($availableNutritionColumns) > 0) {
-  $safeColumns = array_map(function ($column) {
-    return '`' . str_replace('`', '``', $column) . '`';
-  }, $availableNutritionColumns);
-
-  $nutritionQuery = $conn->prepare('SELECT ' . implode(', ', $safeColumns) . ' FROM recipes WHERE recipe_id = ?');
-  $nutritionQuery->bind_param('i', $recipeId);
-  $nutritionQuery->execute();
-  $nutritionResult = $nutritionQuery->get_result();
-  $nutritionRow = $nutritionResult->fetch_assoc();
-
-  if ($nutritionRow) {
-    foreach ($availableNutritionColumns as $field) {
-      $value = isset($nutritionRow[$field]) ? (float)$nutritionRow[$field] : 0;
-      if ($value > 0) {
-        $micronutrients[] = [
-          'key' => $field,
-          'label' => $nutritionFields[$field]['label'],
-          'amount' => $value,
-          'unit' => $nutritionFields[$field]['unit']
-        ];
-      }
-    }
-  }
+while ($row = $micronutrientResult->fetch_assoc()) {
+  $micronutrients[] = [
+    'id' => (int)$row['nutrient_id'],
+    'label' => $row['label'],
+    'amount' => round((float)$row['amount'], 2),
+    'unit' => $row['unit']
+  ];
 }
 
 echo json_encode([
