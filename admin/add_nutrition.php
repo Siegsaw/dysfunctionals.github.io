@@ -237,7 +237,7 @@ function filterIngredients() {
 }
 
 function selectIngredient(ingredient) {
-  document.getElementById('ingredient_id').value = ingredient.ingredient_id;
+  document.getElementById('ingredient_id').value = ingredient.id;
   document.getElementById('ingredient_search').value = ingredient.name;
   document.getElementById('ingredient_suggestions').classList.remove('show');
   
