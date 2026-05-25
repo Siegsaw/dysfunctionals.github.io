@@ -26,6 +26,87 @@ function isRequiredMacroPHP($name) {
 <meta charset="UTF-8">
 <title>Nutrition Mapping</title>
 <link rel="stylesheet" href="admin.css">
+<style>
+  .ingredient-search-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .ingredient-search-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-s);
+    color: var(--ink);
+    font-size: 14px;
+    outline: none;
+    transition: all 0.15s ease;
+  }
+
+  .ingredient-search-input:focus {
+    border-color: var(--green, #4a9d6f);
+    background: var(--bg);
+    box-shadow: 0 0 0 2px rgba(74, 157, 111, 0.1);
+  }
+
+  .ingredient-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    max-height: 250px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .ingredient-suggestions.show {
+    display: block;
+  }
+
+  .suggestion-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s ease;
+    font-size: 14px;
+    color: var(--ink);
+  }
+
+  .suggestion-item:last-child {
+    border-bottom: none;
+  }
+
+  .suggestion-item:hover {
+    background: var(--bg-m);
+  }
+
+  .suggestion-item.selected {
+    background: var(--green, #4a9d6f);
+    color: white;
+  }
+
+  .ingredient-value {
+    display: none;
+    padding: 10px;
+    background: var(--bg-s);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-top: 10px;
+    color: var(--ink);
+    font-size: 13px;
+  }
+
+  .ingredient-value.show {
+    display: block;
+  }
+</style>
 </head>
 
 <body>
@@ -51,12 +132,18 @@ function isRequiredMacroPHP($name) {
 <div class="card">
 
 <div class="section">1. Select Ingredient</div>
-<select id="ingredient_id" class="input" onchange="loadNutrition()">
-<option value="">-- Choose an ingredient --</option>
-<?php while ($ing = $ingResult->fetch_assoc()): ?>
-    <option value="<?= $ing['ingredient_id'] ?>"><?= $ing['name_ing'] ?></option>
-<?php endwhile; ?>
-</select>
+<div class="ingredient-search-wrapper">
+  <input 
+    type="text" 
+    id="ingredient_search" 
+    class="ingredient-search-input"
+    placeholder="Search ingredient..."
+    autocomplete="off"
+  >
+  <div id="ingredient_suggestions" class="ingredient-suggestions"></div>
+  <div id="ingredient_value" class="ingredient-value"></div>
+</div>
+<input type="hidden" id="ingredient_id">
 
 <div class="section">Grams per piece</div>
 <input type="number" id="grams_per_unit" class="input" placeholder="e.g. 57">
@@ -104,6 +191,63 @@ Save All Nutrition Data
 </div>
 
 <script>
+
+let ALL_INGREDIENTS = [];
+
+// Load ingredients on page load
+async function loadIngredients() {
+  try {
+    const res = await fetch('../web/get_ingredients.php', { cache: 'no-store' });
+    ALL_INGREDIENTS = await res.json();
+  } catch (err) {
+    console.error('Failed to load ingredients:', err);
+    ALL_INGREDIENTS = [];
+  }
+}
+
+function filterIngredients() {
+  const input = document.getElementById('ingredient_search');
+  const suggestionsBox = document.getElementById('ingredient_suggestions');
+  const val = input.value.trim().toLowerCase();
+
+  if (val.length < 1) {
+    suggestionsBox.classList.remove('show');
+    return;
+  }
+
+  const filtered = ALL_INGREDIENTS
+    .filter(ing => ing.name.toLowerCase().includes(val))
+    .slice(0, 10);
+
+  if (filtered.length === 0) {
+    suggestionsBox.classList.remove('show');
+    return;
+  }
+
+  suggestionsBox.innerHTML = '';
+  filtered.forEach(ing => {
+    const item = document.createElement('div');
+    item.className = 'suggestion-item';
+    item.textContent = ing.name;
+    item.onclick = () => selectIngredient(ing);
+    suggestionsBox.appendChild(item);
+  });
+
+  suggestionsBox.classList.add('show');
+}
+
+function selectIngredient(ingredient) {
+  document.getElementById('ingredient_id').value = ingredient.ingredient_id;
+  document.getElementById('ingredient_search').value = ingredient.name;
+  document.getElementById('ingredient_suggestions').classList.remove('show');
+  
+  // Show selected ingredient info
+  const valueDiv = document.getElementById('ingredient_value');
+  valueDiv.innerHTML = `✓ Selected: <strong>${ingredient.name}</strong>`;
+  valueDiv.classList.add('show');
+  
+  loadNutrition();
+}
 
 function isRequiredMacro(name) {
     name = String(name || '').toLowerCase().trim();
@@ -201,6 +345,23 @@ document.querySelectorAll('.nutrient-input-g100').forEach(input => {
         }
     });
 
+});
+
+// Event listeners for search
+document.addEventListener('DOMContentLoaded', () => {
+  loadIngredients();
+  
+  const searchInput = document.getElementById('ingredient_search');
+  if (searchInput) {
+    searchInput.addEventListener('input', filterIngredients);
+    
+    // Close suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.ingredient-search-wrapper')) {
+        document.getElementById('ingredient_suggestions').classList.remove('show');
+      }
+    });
+  }
 });
 
 </script>
