@@ -8,15 +8,25 @@ $userId = $_SESSION['user_id'];
 
 $conn->begin_transaction();
 try {
+    // Delete user inventory
     $deleteInventory = $conn->prepare('DELETE FROM user_inventory WHERE user_id = ?');
-    if ($deleteInventory) {
-        $deleteInventory->bind_param('i', $userId);
-        $deleteInventory->execute();
+    if (!$deleteInventory) {
+        throw new Exception('Failed to prepare inventory deletion: ' . $conn->error);
+    }
+    $deleteInventory->bind_param('i', $userId);
+    if (!$deleteInventory->execute()) {
+        throw new Exception('Failed to execute inventory deletion: ' . $deleteInventory->error);
     }
 
+    // Delete user account
     $deleteUser = $conn->prepare('DELETE FROM users WHERE user_id = ?');
+    if (!$deleteUser) {
+        throw new Exception('Failed to prepare user deletion: ' . $conn->error);
+    }
     $deleteUser->bind_param('i', $userId);
-    $deleteUser->execute();
+    if (!$deleteUser->execute()) {
+        throw new Exception('Failed to execute user deletion: ' . $deleteUser->error);
+    }
 
     $conn->commit();
     session_unset();
@@ -26,5 +36,8 @@ try {
 } catch (Throwable $e) {
     $conn->rollback();
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Failed to delete profile']);
+    // Log the actual error for debugging
+    error_log('Profile deletion error: ' . $e->getMessage());
+    echo json_encode(['success' => false, 'message' => 'Failed to delete profile', 'debug' => $e->getMessage()]);
 }
+?>
