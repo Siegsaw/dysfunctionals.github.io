@@ -8,6 +8,16 @@ $userId = $_SESSION['user_id'];
 
 $conn->begin_transaction();
 try {
+    // Delete user allergens first (references user_id)
+    $deleteAllergens = $conn->prepare('DELETE FROM user_allergens WHERE user_id = ?');
+    if (!$deleteAllergens) {
+        throw new Exception('Failed to prepare allergens deletion: ' . $conn->error);
+    }
+    $deleteAllergens->bind_param('i', $userId);
+    if (!$deleteAllergens->execute()) {
+        throw new Exception('Failed to execute allergens deletion: ' . $deleteAllergens->error);
+    }
+
     // Delete user inventory
     $deleteInventory = $conn->prepare('DELETE FROM user_inventory WHERE user_id = ?');
     if (!$deleteInventory) {
@@ -18,7 +28,7 @@ try {
         throw new Exception('Failed to execute inventory deletion: ' . $deleteInventory->error);
     }
 
-    // Delete user account
+    // Delete user account last (after all foreign key references are removed)
     $deleteUser = $conn->prepare('DELETE FROM users WHERE user_id = ?');
     if (!$deleteUser) {
         throw new Exception('Failed to prepare user deletion: ' . $conn->error);
