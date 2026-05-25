@@ -20,10 +20,30 @@ if (!$userId) {
 
 try {
     if ($action === 'delete') {
+        $conn->begin_transaction();
+        
+        // Delete user allergens first (references user_id)
+        $stmt = mysqli_prepare($conn, "DELETE FROM user_allergens WHERE user_id = ?");
+        mysqli_stmt_bind_param($stmt, "i", $userId);
+        if (!mysqli_stmt_execute($stmt)) {
+            throw new Exception('Failed to delete user allergens: ' . mysqli_error($conn));
+        }
+
+        // Delete user inventory (references user_id)
+        $stmt = mysqli_prepare($conn, "DELETE FROM user_inventory WHERE user_id = ?");
+        mysqli_stmt_bind_param($stmt, "i", $userId);
+        if (!mysqli_stmt_execute($stmt)) {
+            throw new Exception('Failed to delete user inventory: ' . mysqli_error($conn));
+        }
+
+        // Delete user account last (after all foreign key references are removed)
         $stmt = mysqli_prepare($conn, "DELETE FROM users WHERE user_id = ?");
         mysqli_stmt_bind_param($stmt, "i", $userId);
-        mysqli_stmt_execute($stmt);
-        
+        if (!mysqli_stmt_execute($stmt)) {
+            throw new Exception('Failed to delete user: ' . mysqli_error($conn));
+        }
+
+        $conn->commit();
         header("Location: manage_users.php?msg=User+deleted");
         exit;
         
@@ -45,5 +65,6 @@ try {
         }
     }
 } catch (Exception $e) {
+    $conn->rollback();
     die("Database error: " . $e->getMessage());
 }
