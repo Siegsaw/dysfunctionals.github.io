@@ -607,6 +607,14 @@ function renderRecipeContent() {
     </div>
   `).join('');
 
+  const micronutrients = (recipe.micronutrients || []).filter(item => Number(item.amount) > 0);
+  const micronutrientsHtml = micronutrients.map(item => `
+    <div class="nutrition-row">
+      <span class="recipe-ing-name">${escapeHtml(item.label)}</span>
+      <span class="recipe-ing-qty">${formatNumber(scaleAmount(item.amount))} ${escapeHtml(item.unit)}</span>
+    </div>
+  `).join('');
+
   shell.innerHTML = `
     <div class="recipe-header-card">
       <div class="recipe-breadcrumb">
@@ -695,6 +703,10 @@ function renderRecipeContent() {
             <span class="recipe-ing-name">Fat</span>
             <span class="recipe-ing-qty">${formatNumber(scaleAmount(recipe.fat))} g</span>
           </div>
+          ${micronutrientsHtml ? `
+            <div class="section-label section-gap">Vitamins & minerals</div>
+            ${micronutrientsHtml}
+          ` : ''}
         </div>
       </aside>
 
