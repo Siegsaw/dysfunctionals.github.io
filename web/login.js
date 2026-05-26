@@ -25,14 +25,6 @@ function renderLogin(prefillEmail = '') {
     <h2>Welcome back</h2>
     <p class="auth-sub">Sign in to access your pantry and recipes.</p>
 
-    <button class="btn-google" id="btnGoogle" onclick="googleSignIn()">
-      <span class="g-icon"></span>
-      <span id="gText">Continue with Google</span>
-      <span class="g-spinner" id="gSpinner"></span>
-    </button>
-
-    <div class="divider">or</div>
-
     <div class="fields">
       <div>
         <label class="f-label" for="email">Email</label>
@@ -238,82 +230,7 @@ async function doRegister() {
   }
 }
 
-// ── GOOGLE OAUTH 2.0 ──────────────────────────────────────────
-// Replace the Client ID below with your own from:
-// console.cloud.google.com → APIs & Services → Credentials
-const GOOGLE_CLIENT_ID = '1050170511740-mt281jgcf5kha02e91l8dic149nup4fl.apps.googleusercontent.com';
-
-function googleSignIn() {
-  const btn  = document.getElementById('btnGoogle');
-  const text = document.getElementById('gText');
-  const spin = document.getElementById('gSpinner');
-  const msg  = document.getElementById('msg');
-
-  // Guard — show error if Client ID not set yet
-  if (GOOGLE_CLIENT_ID.startsWith('YOUR_CLIENT_ID')) {
-    msg.style.color = 'var(--red)';
-    msg.textContent = '⚠️ Paste your Google Client ID into login.js first.';
-    return;
-  }
-
-  btn.disabled = true;
-  text.textContent = 'Connecting…';
-  spin.style.display = 'block';
-  msg.textContent = '';
-
-  // Initialize Google token client and request access token
-  const client = google.accounts.oauth2.initTokenClient({
-    client_id: GOOGLE_CLIENT_ID,
-    scope: 'email profile',
-    callback: (response) => {
-      if (response.error) {
-        spin.style.display = 'none';
-        btn.disabled = false;
-        text.textContent = 'Continue with Google';
-        msg.style.color = 'var(--red)';
-        msg.textContent = '⚠️ Google Sign-In failed. Please try again.';
-        return;
-      }
-
-      // Fetch the user's profile info using the access token
-      fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-        headers: { Authorization: `Bearer ${response.access_token}` }
-      })
-      .then(r => r.json())
-      .then(user => {
-        spin.style.display = 'none';
-
-        // Save session
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('userEmail', user.email);
-        localStorage.setItem('userName', user.name || user.email.split('@')[0]);
-
-        // If account doesn't exist yet, auto-register it
-        const accounts = getAccounts();
-        const key = user.email.toLowerCase();
-        if (!accounts[key]) {
-          accounts[key] = { username: user.name || user.email.split('@')[0], passwordHash: null, google: true };
-          saveAccounts(accounts);
-        }
-
-        msg.style.color = '#16a34a';
-        msg.textContent = `✓ Welcome, ${user.name}! Redirecting…`;
-        setTimeout(() => location.href = 'index.php', 900);
-      })
-      .catch(() => {
-        spin.style.display = 'none';
-        btn.disabled = false;
-        text.textContent = 'Continue with Google';
-        msg.style.color = 'var(--red)';
-        msg.textContent = '⚠️ Could not get user info. Try again.';
-      });
-    }
-  });
-
-  client.requestAccessToken({ prompt: 'select_account' });
-}
-
-// ── INIT ────────────────────────────��─────────────────────────
+// ── INIT ────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   renderLogin();
 });
